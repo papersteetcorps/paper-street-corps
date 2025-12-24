@@ -10,24 +10,31 @@ export default function ResourcesPage() {
       </header>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-medium">Scoring Algorithms</h2>
+        <h2 className="text-xl font-medium">How the Scoring Works</h2>
         <p className="text-neutral-400">
-          The scoring methods used in our assessments are openly documented and
-          based on published research.
+          Our assessments use straightforward methods to match your responses to personality types.
         </p>
         <div className="space-y-3">
-          <ResourceLink
-            title="MBTI Nearest Centroid Classifier"
-            description="Python implementation of neurochemical-based MBTI classification using Euclidean distance to type centroids."
-            href="/mbti.py"
-            type="code"
-          />
-          <ResourceLink
-            title="Temperament Variance Classifier"
-            description="C implementation of variance-based temperament classification with blend detection."
-            href="/temperament.c"
-            type="code"
-          />
+          <div className="border border-neutral-800 p-4">
+            <div className="text-xs text-neutral-500 uppercase tracking-wide">MBTI Test</div>
+            <h3 className="mt-2 font-medium">Finding Your Closest Match</h3>
+            <p className="mt-1 text-sm text-neutral-400">
+              Each of the 16 MBTI types has an ideal profile based on four traits. When you rate yourself
+              on these traits, we compare your answers to all 16 profiles and find which one is most
+              similar to yours. Think of it like finding which preset radio station is closest to your
+              preferred frequency.
+            </p>
+          </div>
+          <div className="border border-neutral-800 p-4">
+            <div className="text-xs text-neutral-500 uppercase tracking-wide">Temperament Test</div>
+            <h3 className="mt-2 font-medium">Measuring Consistency</h3>
+            <p className="mt-1 text-sm text-neutral-400">
+              Each temperament (Choleric, Melancholic, Phlegmatic, Sanguine) has an ideal chemical profile.
+              We measure how consistently your answers match each profile. The temperament where your
+              answers are most evenly aligned becomes your result. If two temperaments are very close,
+              we show you as a blend of both.
+            </p>
+          </div>
         </div>
       </section>
 
