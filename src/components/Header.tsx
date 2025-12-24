@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <header className="border-b border-neutral-800 px-6 py-4 flex items-center justify-between">
+    <header className="border-b border-neutral-800 px-6 py-4 flex items-center justify-center gap-8">
       <div className="font-semibold tracking-wide">
         Paper Street Corps
       </div>
