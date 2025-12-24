@@ -56,7 +56,7 @@ export default function ResourcesPage() {
           <ResourceLink
             title="The Four Temperaments (Eysenck)"
             description="Hans Eysenck's work connecting classical temperaments to biological factors."
-            href="https://www.simplypsychology.org/eysenck.html"
+            href="https://www.scribd.com/document/423878777/PERSONALITY-docx"
             type="paper"
           />
         </div>
