@@ -44,7 +44,7 @@ export default function ResourcesPage() {
           <ResourceLink
             title="Psychological Types (Jung, 1921)"
             description="Carl Jung's original work on psychological types, the foundation for MBTI and related systems."
-            href="https://archive.org/details/psychologicaltyp00LRAMjung"
+            href="https://jungiancenter.org/wp-content/uploads/2023/09/Vol-6-psychological-types.pdf"
             type="paper"
           />
           <ResourceLink
