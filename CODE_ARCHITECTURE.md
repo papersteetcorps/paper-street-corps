@@ -39,11 +39,9 @@ src/
 │   ├── Header.tsx                # Navigation bar
 │   ├── Footer.tsx                # Site footer
 │   ├── Card.tsx                  # Generic card component
-│   ├── Tabs.tsx                  # Tab navigation component
-│   └── ThemeToggle.tsx           # Dark/light theme switcher
+│   └── Tabs.tsx                  # Tab navigation component
 │
 ├── lib/                          # Core logic and utilities
-│   ├── theme.ts                  # Theme management
 │   └── scoring/
 │       ├── mbti.ts               # MBTI scoring algorithm (Nearest Centroid)
 │       └── temperaments.ts       # Temperament scoring algorithm (Variance-Based)

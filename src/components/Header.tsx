@@ -1,5 +1,3 @@
-import ThemeToggle from "./ThemeToggle";
-
 export default function Header() {
   return (
     <header className="border-b border-neutral-800 px-6 py-4 flex items-center justify-between">
@@ -14,8 +12,6 @@ export default function Header() {
         <a href="/theory" className="hover:text-white">Theory</a>
         <a href="/resources" className="hover:text-white">Resources</a>
       </nav>
-
-      <ThemeToggle />
     </header>
   );
 }
