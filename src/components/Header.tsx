@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <header className="border-b border-neutral-800 px-6 py-4 flex items-center justify-center gap-8">
+    <header className="border-b border-neutral-800 px-6 py-4 flex items-center justify-between">
       <div className="font-semibold tracking-wide">
         Paper Street Corps
       </div>
@@ -12,6 +12,10 @@ export default function Header() {
         <a href="/theory" className="hover:text-white">Theory</a>
         <a href="/resources" className="hover:text-white">Resources</a>
       </nav>
+
+      <div className="font-semibold tracking-wide invisible">
+        Paper Street Corps
+      </div>
     </header>
   );
 }
