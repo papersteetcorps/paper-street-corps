@@ -68,7 +68,7 @@ export default function ResourcesPage() {
           <ResourceLink
             title="MBTI Manual (Myers & Myers)"
             description="The definitive guide to Myers-Briggs Type Indicator theory and application."
-            href="https://www.themyersbriggs.com"
+            href="https://eu.themyersbriggs.com/-/media/Files/PDFs/Book-Previews/MB0280e_preview.pdf"
             type="book"
           />
           <ResourceLink
@@ -80,7 +80,7 @@ export default function ResourcesPage() {
           <ResourceLink
             title="Big Five Personality Model"
             description="Academic overview of the research-backed five-factor model of personality."
-            href="https://www.apa.org/topics/personality"
+            href="https://www.verywellmind.com/the-big-five-personality-dimensions-2795422"
             type="website"
           />
         </div>
@@ -96,7 +96,7 @@ export default function ResourcesPage() {
           <ResourceLink
             title="MBTI: Critiques and Alternatives"
             description="Academic analysis of MBTI reliability, validity, and scientific status."
-            href="https://www.psychologytoday.com/us/blog/give-and-take/201309/goodbye-to-mbti-the-fad-that-won-t-die"
+            href="https://eu.themyersbriggs.com/en/Knowledge-centre/Blog/mbti-facts-and-common-criticisms"
             type="paper"
           />
           <ResourceLink
