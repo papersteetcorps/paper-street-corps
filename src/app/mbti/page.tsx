@@ -1,40 +1,57 @@
 "use client";
 
 import { useState } from "react";
-import { classifyMBTI, AXIS_DESCRIPTIONS, MBTIResult, getCentroid } from "@/lib/scoring/mbti";
-
-type Axis = "dopamine" | "serotonin" | "testosterone" | "estrogen";
+import { MBTI_QUESTIONS, Axis } from "@/data/mbtiQuestions";
+import {
+  classifyMBTI,
+  MBTIResult,
+  getCentroid,
+} from "@/lib/scoring/mbti";
 
 export default function MBTITestPage() {
-  const [scores, setScores] = useState<Record<Axis, number | null>>({
-    dopamine: null,
-    serotonin: null,
-    testosterone: null,
-    estrogen: null,
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [scores, setScores] = useState<Record<Axis, number[]>>({
+    dopamine: [],
+    serotonin: [],
+    testosterone: [],
+    estrogen: [],
   });
   const [result, setResult] = useState<MBTIResult | null>(null);
 
-  const axes: Axis[] = ["dopamine", "serotonin", "testosterone", "estrogen"];
+  const handleAnswer = (qid: string, axis: Axis, value: number) => {
+    setAnswers((prev) => ({ ...prev, [qid]: value }));
 
-  const handleScoreChange = (axis: Axis, value: number) => {
-    setScores((prev) => ({ ...prev, [axis]: value }));
+    setScores((prev) => ({
+      ...prev,
+      [axis]: [...prev[axis], value],
+    }));
   };
 
-  const isComplete = axes.every((axis) => scores[axis] !== null);
+  const isComplete = MBTI_QUESTIONS.every(
+    (q) => answers[q.id] !== undefined
+  );
 
   const handleSubmit = () => {
     if (!isComplete) return;
-    const mbtiResult = classifyMBTI(
-      scores.dopamine!,
-      scores.serotonin!,
-      scores.testosterone!,
-      scores.estrogen!
+
+    setResult(
+      classifyMBTI(
+        scores.dopamine,
+        scores.serotonin,
+        scores.testosterone,
+        scores.estrogen
+      )
     );
-    setResult(mbtiResult);
   };
 
   const handleReset = () => {
-    setScores({ dopamine: null, serotonin: null, testosterone: null, estrogen: null });
+    setAnswers({});
+    setScores({
+      dopamine: [],
+      serotonin: [],
+      testosterone: [],
+      estrogen: [],
+    });
     setResult(null);
   };
 
@@ -43,88 +60,82 @@ export default function MBTITestPage() {
   }
 
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="max-w-2xl space-y-10">
+      {/* Header */}
       <header>
-        <h1 className="text-3xl font-semibold">MBTI Neurochemical Assessment</h1>
-        <p className="mt-2 text-neutral-400">
-          Rate yourself on each neurochemical axis. This assessment uses nearest centroid
-          classification to match your profile to one of 16 MBTI types.
+        <h1 className="text-3xl font-semibold">
+          MBTI Neurochemical Assessment
+        </h1>
+
+        <p className="text-1xl text-neutral-400">
+          Rate yourself on each neurochemical axis. This assessment applies nearest-centroid
+          classification to align your profile with one of 16 MBTI types. Please answer according
+          to your usual tendencies, not temporary or context-specific behavior.
         </p>
       </header>
 
-      <div className="text-sm text-neutral-500 border border-neutral-800 p-4">
-        <strong>Rating Scale:</strong> 1 = Very low, 2 = Slightly low, 3 = Balanced, 4 = Slightly high, 5 = Very high
-      </div>
+      <section className="border border-neutral-800 p-5 text-sm text-neutral-400">
+        <div className="font-medium text-neutral-300 mb-1">
+          RATING SCALE:
+        </div>
+        <p>
+          1 = Very Low,&nbsp;
+          2 = Slightly Low,&nbsp;
+          3 = Balanced,&nbsp;
+          4 = Slightly High,&nbsp;
+          5 = Very High
+        </p>
+      </section>
 
+
+      {/* Questions */}
       <div className="space-y-8">
-        {axes.map((axis, index) => (
-          <AxisQuestion
-            key={axis}
-            axis={axis}
-            index={index + 1}
-            value={scores[axis]}
-            onChange={(value) => handleScoreChange(axis, value)}
-          />
+        {MBTI_QUESTIONS.map((q, i) => (
+          <div key={q.id} className="border border-neutral-800 p-5">
+            <div className="text-xs uppercase tracking-wide text-neutral-500">
+              Question {i + 1}
+            </div>
+
+            <p className="mt-2 text-lg">{q.text}</p>
+
+            <div className="mt-4 flex justify-between">
+              {[1, 2, 3, 4, 5].map((v) => (
+                <button
+                  key={v}
+                  onClick={() => handleAnswer(q.id, q.axis, v)}
+                  className={`w-12 h-12 border ${
+                    answers[q.id] === v
+                      ? "border-white bg-white text-black"
+                      : "border-neutral-700 text-neutral-400 hover:border-neutral-500"
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 
+      {/* Submit */}
       <button
-        onClick={handleSubmit}
         disabled={!isComplete}
+        onClick={handleSubmit}
         className={`w-full py-3 text-sm font-medium ${
           isComplete
             ? "bg-white text-black hover:bg-neutral-200"
             : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
         }`}
       >
-        {isComplete ? "Calculate MBTI Type" : "Answer all questions to continue"}
+        Calculate MBTI Type
       </button>
     </div>
   );
 }
 
-function AxisQuestion({
-  axis,
-  index,
-  value,
-  onChange,
-}: {
-  axis: Axis;
-  index: number;
-  value: number | null;
-  onChange: (value: number) => void;
-}) {
-  const info = AXIS_DESCRIPTIONS[axis];
-
-  return (
-    <div className="border border-neutral-800 p-5">
-      <div className="text-xs text-neutral-500 uppercase tracking-wide">Question {index}</div>
-      <h3 className="mt-2 text-lg font-medium">{info.label}</h3>
-      <p className="mt-1 text-sm text-neutral-400">{info.description}</p>
-
-      <div className="mt-4 flex justify-between text-xs text-neutral-500">
-        <span>{info.low}</span>
-        <span>{info.high}</span>
-      </div>
-
-      <div className="mt-2 flex justify-between">
-        {[1, 2, 3, 4, 5].map((score) => (
-          <button
-            key={score}
-            onClick={() => onChange(score)}
-            className={`w-12 h-12 border ${
-              value === score
-                ? "border-white bg-white text-black"
-                : "border-neutral-700 text-neutral-400 hover:border-neutral-500"
-            }`}
-          >
-            {score}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
+/* ============================
+   RESULTS VIEW
+   ============================ */
 
 function ResultsView({
   result,
@@ -134,41 +145,57 @@ function ResultsView({
   onReset: () => void;
 }) {
   const centroid = getCentroid(result.type);
-  const axisLabels = ["Dopamine", "Serotonin", "Testosterone", "Estrogen"];
+
+  const rows = [
+    { label: "Dopamine", user: result.userScores.dopamine, type: centroid[0] },
+    { label: "Serotonin", user: result.userScores.serotonin, type: centroid[1] },
+    { label: "Testosterone", user: result.userScores.testosterone, type: centroid[2] },
+    { label: "Estrogen", user: result.userScores.estrogen, type: centroid[3] },
+  ];
 
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="max-w-2xl space-y-10">
+      {/* Header */}
       <header>
-        <div className="text-xs text-neutral-500 uppercase tracking-wide">Your Result</div>
+        <div className="text-xs uppercase tracking-wide text-neutral-500">
+          Your Result
+        </div>
         <h1 className="mt-2 text-5xl font-bold">{result.type}</h1>
         <p className="mt-2 text-neutral-400">
           Distance from centroid: {result.distance.toFixed(2)}
         </p>
       </header>
 
-      <section className="border border-neutral-800 p-5">
-        <h2 className="text-lg font-medium">Your Scores vs Type Centroid</h2>
-        <div className="mt-4 space-y-3">
-          {axisLabels.map((label, i) => {
-            const userScore = Object.values(result.userScores)[i];
-            const typeScore = centroid[i];
-            return (
-              <div key={label} className="flex items-center justify-between text-sm">
-                <span className="text-neutral-400">{label}</span>
-                <div className="flex items-center gap-4">
-                  <span>You: {userScore}</span>
-                  <span className="text-neutral-500">|</span>
-                  <span className="text-neutral-500">{result.type}: {typeScore}</span>
-                </div>
+      {/* Scores vs Centroid */}
+      <section className="border border-neutral-800 p-6">
+        <h2 className="text-lg font-medium">
+          Your Scores vs Type Centroid
+        </h2>
+
+        <div className="mt-6 space-y-4">
+          {rows.map((row) => (
+            <div
+              key={row.label}
+              className="flex items-center justify-between text-sm"
+            >
+              <span className="text-neutral-400">{row.label}</span>
+              <div className="flex items-center gap-4">
+                <span>You: {row.user}</span>
+                <span className="text-neutral-600">|</span>
+                <span className="text-neutral-500">
+                  {result.type}: {row.type}
+                </span>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="border border-neutral-800 p-5">
+      {/* Top Matches */}
+      <section className="border border-neutral-800 p-6">
         <h2 className="text-lg font-medium">Top 5 Matches</h2>
-        <div className="mt-4 space-y-2">
+
+        <div className="mt-6 space-y-2">
           {result.ranking.slice(0, 5).map((match, i) => (
             <div
               key={match.type}
@@ -185,16 +212,16 @@ function ResultsView({
         </div>
       </section>
 
-      <section className="text-sm text-neutral-500">
-        <p>
-          This assessment uses neurochemical-based nearest centroid classification.
-          Personality is complex and cannot be fully captured by any typology system.
-        </p>
-      </section>
+      {/* Disclaimer */}
+      <p className="text-sm text-neutral-500">
+        This assessment uses neurochemical-based nearest centroid classification.
+        Personality is complex and cannot be fully captured by any typology system.
+      </p>
 
+      {/* Reset */}
       <button
         onClick={onReset}
-        className="w-full py-3 text-sm font-medium border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-500"
+        className="w-full py-3 text-sm border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-500"
       >
         Take Again
       </button>
