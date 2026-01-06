@@ -4,18 +4,27 @@ export type MBTIType =
   | "ESTP" | "ESFP" | "ENFP" | "ENTP"
   | "ESTJ" | "ESFJ" | "ENFJ" | "ENTJ";
 
+/**
+ * Single-question → single-integer contract
+ * Decimals are impossible by design.
+ */
+export type ChemicalScore = 1 | 2 | 3 | 4 | 5;
+
 export interface MBTIResult {
   type: MBTIType;
   distance: number;
   ranking: Array<{ type: MBTIType; distance: number }>;
   userScores: {
-    dopamine: number;
-    serotonin: number;
-    testosterone: number;
-    estrogen: number;
+    dopamine: ChemicalScore;
+    serotonin: ChemicalScore;
+    testosterone: ChemicalScore;
+    estrogen: ChemicalScore;
   };
 }
 
+/**
+ * Fixed centroids (engine-layer data)
+ */
 const CENTROIDS: Record<MBTIType, [number, number, number, number]> = {
   ISTJ: [2, 5, 3, 2],
   ISFJ: [2, 5, 2, 3],
@@ -35,33 +44,37 @@ const CENTROIDS: Record<MBTIType, [number, number, number, number]> = {
   ENTJ: [4, 2, 5, 2],
 };
 
+/**
+ * Euclidean distance (pure math, no averaging)
+ */
 function euclideanDistance(a: number[], b: number[]): number {
   return Math.sqrt(
     a.reduce((sum, val, i) => sum + Math.pow(val - b[i], 2), 0)
   );
 }
 
-const avg = (arr: number[]) =>
-  arr.reduce((a, b) => a + b, 0) / arr.length;
-
+/**
+ * Core classifier
+ * One answer per chemical → no aggregation → no decimals
+ */
 export function classifyMBTI(
-  dopamine: number[],
-  serotonin: number[],
-  testosterone: number[],
-  estrogen: number[]
+  dopamine: ChemicalScore,
+  serotonin: ChemicalScore,
+  testosterone: ChemicalScore,
+  estrogen: ChemicalScore
 ): MBTIResult {
-  const averaged = {
-    dopamine: avg(dopamine),
-    serotonin: avg(serotonin),
-    testosterone: avg(testosterone),
-    estrogen: avg(estrogen),
+  const userScores = {
+    dopamine,
+    serotonin,
+    testosterone,
+    estrogen,
   };
 
-  const userVector = [
-    averaged.dopamine,
-    averaged.serotonin,
-    averaged.testosterone,
-    averaged.estrogen,
+  const userVector: number[] = [
+    dopamine,
+    serotonin,
+    testosterone,
+    estrogen,
   ];
 
   const distances: Array<{ type: MBTIType; distance: number }> = [];
@@ -79,11 +92,13 @@ export function classifyMBTI(
     type: distances[0].type,
     distance: distances[0].distance,
     ranking: distances,
-    userScores: averaged,
+    userScores,
   };
 }
 
-
+/**
+ * Public helper (read-only centroid access)
+ */
 export function getCentroid(
   type: MBTIType
 ): [number, number, number, number] {
