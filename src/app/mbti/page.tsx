@@ -8,22 +8,25 @@ import {
   getCentroid,
 } from "@/lib/scoring/mbti";
 
+type AxisScores = Record<Axis, number>;
+
 export default function MBTITestPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [scores, setScores] = useState<Record<Axis, number[]>>({
-    dopamine: [],
-    serotonin: [],
-    testosterone: [],
-    estrogen: [],
+  const [scores, setScores] = useState<AxisScores>({
+    dopamine: 0,
+    serotonin: 0,
+    testosterone: 0,
+    estrogen: 0,
   });
   const [result, setResult] = useState<MBTIResult | null>(null);
 
   const handleAnswer = (qid: string, axis: Axis, value: number) => {
     setAnswers((prev) => ({ ...prev, [qid]: value }));
 
+    // single-question-per-axis → overwrite, do not accumulate
     setScores((prev) => ({
       ...prev,
-      [axis]: [...prev[axis], value],
+      [axis]: value,
     }));
   };
 
@@ -36,10 +39,10 @@ export default function MBTITestPage() {
 
     setResult(
       classifyMBTI(
-        scores.dopamine,
-        scores.serotonin,
-        scores.testosterone,
-        scores.estrogen
+        scores.dopamine as 1 | 2 | 3 | 4 | 5,
+        scores.serotonin as 1 | 2 | 3 | 4 | 5,
+        scores.testosterone as 1 | 2 | 3 | 4 | 5,
+        scores.estrogen as 1 | 2 | 3 | 4 | 5
       )
     );
   };
@@ -47,10 +50,10 @@ export default function MBTITestPage() {
   const handleReset = () => {
     setAnswers({});
     setScores({
-      dopamine: [],
-      serotonin: [],
-      testosterone: [],
-      estrogen: [],
+      dopamine: 0,
+      serotonin: 0,
+      testosterone: 0,
+      estrogen: 0,
     });
     setResult(null);
   };
@@ -86,7 +89,6 @@ export default function MBTITestPage() {
           5 = Very High
         </p>
       </section>
-
 
       {/* Questions */}
       <div className="space-y-8">
