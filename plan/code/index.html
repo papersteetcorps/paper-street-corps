@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Street Corps</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/home.css">
+    <meta name="description" content="Paper Street Corps - Professional Typology Tests and Software Tools.">
+<link rel="icon" href="assets/img/favicon.ico">
+</head>
+<body>
+
+    <header>
+        <div class="logo">Paper Street Corps</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li class="dropdown">
+                    <a href="tests.html">Typology Tests</a>
+                    <div class="dropdown-content">
+                        <a href="#">MBTI</a>
+                        <a href="#">Enneagram</a>
+                    </div>
+                </li>
+                <li><a href="theories.html">Typology Theories</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+        <div class="header-right">
+            <button class="btn auth-trigger">Log-in</button>
+            <button class="btn auth-trigger">Sign-up</button>
+            <input type="checkbox" id="theme-toggle" onclick="toggleTheme()">
+        </div>
+    </header>
+
+    <main>
+        <h2 style="padding: 20px 5% 0;">Latest Updates</h2>
+        <section class="updates-container">
+            <div class="update-card">
+                <img src="assets/software_tools.png" alt="img">
+                <div class="card-content">
+                    <h3>New Software Tool v1.0</h3>
+                    <div class="labels">
+                        <span class="label label-paid">Paid</span>
+                        <span class="label">Software</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <h2 style="padding: 20px 5% 0;">Suggestions</h2>
+        <section class="suggestions-list">
+            <div class="suggestion-card">
+                <img src="assets/enneagram.png" alt="img">
+                <div class="card-content">
+                    <h3>Exploring Enneagram Type 4</h3>
+                    <div class="labels">
+                        <span class="label">Free</span>
+                        <span class="label">Typology</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ethos">
+            <h2>Our Ethos</h2>
+            <p>Precise typology. Professional tools. Serious community.</p>
+        </section>
+    </main>
+
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin-bottom:20px;">Sign Up</h2>
+            <input type="email" placeholder="Email" style="width:100%; padding:10px; margin-bottom:10px; border-radius:50px; border:1px solid #fff; background:transparent; color:#fff;">
+            <button class="auth-submit-btn" style="width:100%; padding:10px; border-radius:50px; background:var(--accent); border:none; color:#white; cursor:pointer;">Continue</button>
+            <button onclick="closeAuthModal()" style="margin-top:15px; background:none; border:none; color:#fff; cursor:pointer;">Close</button>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>Paper Street Corps</h3>
+                <p>Advancing the science of typology through professional tools and community-driven research.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="#">Tests</a></li>
+                    <li><a href="#">Theories</a></li>
+                    <li><a href="#">Software</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Paper Street Corps. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="js/theme.js"></script>
+</body>
+</html>
+
+<!-- img -->

@@ -1,0 +1,77 @@
+/* Update Cards - Grid Layout */
+.updates-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    padding: 40px 5%;
+}
+
+/* Suggestion Cards - List Layout */
+.suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 5%;
+}
+
+/* Shared Card Styling */
+.update-card, .suggestion-card {
+    display: flex;
+    border: 1px solid var(--text-color);
+    background: rgba(255,255,255,0.05);
+    overflow: hidden;
+    
+    /* ANIMATION SETTINGS */
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+/* THE HOVER EFFECT */
+.update-card:hover, .suggestion-card:hover {
+    transform: translateY(-8px); /* Moves it up */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Adds depth */
+    border-color: var(--accent); /* Optional: highlights border on hover */
+}
+
+/* Ensuring the image stays crisp during animation */
+.update-card img, .suggestion-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-right: 1px solid var(--text-color);
+    transition: opacity 0.3s ease;
+}
+
+.update-card:hover img {
+    opacity: 0.9; /* Slight dimming effect on the image */
+}
+
+.update-card img, .suggestion-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-right: 1px solid var(--text-color);
+}
+
+.card-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+/* Labels */
+.labels { display: flex; justify-content: flex-end; gap: 8px; }
+.label {
+    font-size: 0.7rem;
+    padding: 4px 12px;
+    border-radius: 50px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    text-transform: uppercase;
+}
+.label-paid { background: var(--accent); color: #fff; }
+
+/* Ethos */
+.ethos { text-align: center; padding: 80px 5%; margin-top: 50px; border-top: 1px dashed var(--tab-color); }
