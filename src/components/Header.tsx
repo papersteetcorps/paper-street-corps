@@ -18,6 +18,7 @@ const NAV_LINKS = [
   { href: "/potentiology", label: "Potentiology" },
   { href: "/theory", label: "Theory" },
   { href: "/resources", label: "Resources" },
+  { href: "/synthesis", label: "Synthesis" },
 ];
 
 export default function Header() {

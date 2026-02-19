@@ -16,6 +16,7 @@ import ConfidenceRanking from "@/components/results/ConfidenceRanking";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ScoreComparison from "@/components/results/ScoreComparison";
 import Badge from "@/components/ui/Badge";
+import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { motion } from "motion/react";
 
@@ -52,6 +53,7 @@ export default function TemperamentsTestPage() {
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [result, setResult] = useState<TemperamentResult | null>(null);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
+  const [localResult, setLocalResult] = useState<Record<string, unknown>>({});
   const [isLLMSource, setIsLLMSource] = useState(false);
 
   useEffect(() => {
@@ -114,6 +116,15 @@ export default function TemperamentsTestPage() {
         scoreMap.serotonin, scoreMap.androgenicity
       );
       setResult(tempResult);
+      setLocalResult({
+        testType: "temperaments",
+        primary: tempResult.primary,
+        secondary: tempResult.secondary,
+        isBlend: tempResult.isBlend,
+        variance: tempResult.variance,
+        variances: tempResult.variances,
+        userScores: tempResult.userScores,
+      });
 
       fetch("/api/score-results", {
         method: "POST",
@@ -143,10 +154,11 @@ export default function TemperamentsTestPage() {
   const handleReset = useCallback(() => {
     setResult(null);
     setInterpretation(null);
+    setLocalResult({});
   }, []);
 
   const resultView = result ? (
-    <TemperamentResults result={result} interpretation={interpretation} />
+    <TemperamentResults result={result} interpretation={interpretation} localResult={localResult} />
   ) : null;
 
   return (
@@ -165,9 +177,11 @@ export default function TemperamentsTestPage() {
 function TemperamentResults({
   result,
   interpretation,
+  localResult,
 }: {
   result: TemperamentResult;
   interpretation: Interpretation;
+  localResult: Record<string, unknown>;
 }) {
   const primaryInfo = TEMPERAMENT_DESCRIPTIONS[result.primary];
   const idealProfile = getIdealProfile(result.primary);
@@ -294,6 +308,8 @@ function TemperamentResults({
         Variance-based classification from biochemical self-ratings. Temperament
         is one lens for understanding personality patterns.
       </p>
+
+      <ResultChat testType="temperaments" result={localResult} accentColor="var(--color-accent-purple)" />
     </ResultsLayout>
   );
 }

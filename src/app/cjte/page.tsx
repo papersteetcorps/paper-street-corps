@@ -6,6 +6,7 @@ import WizardShell from "@/components/wizard/WizardShell";
 import ResultsLayout from "@/components/results/ResultsLayout";
 import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
+import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 
 const FALLBACK_QUESTIONS: WizardQuestion[] = [
@@ -218,6 +219,8 @@ function CJTEResults({ interpretation }: { interpretation: NonNullable<Interpret
       <p className="text-xs text-surface-500 text-center">
         Powered by VRDW CJTE-3 &mdash; Classic Jungian Typology Engine with full cognitive function corpus.
       </p>
+
+      <ResultChat testType="cjte" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-blue)" />
     </ResultsLayout>
   );
 }
