@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         ? (async () => {
             const { interpret: systemPrompt } = getPrompts(testType);
             const model = geminiClient.getGenerativeModel({
-              model: "gemini-1.5-pro",
+              model: "gemini-2.0-flash",
               systemInstruction: systemPrompt,
             });
             const result = await model.generateContent(
