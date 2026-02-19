@@ -5,10 +5,13 @@ export interface Offering {
   title: string;
   category: OfferingCategory;
   description: string;
+  longDescription?: string;
   href: string;
+  icon?: string;
+  color?: string;
+  colorMuted?: string;
 }
 
-// Interactive tests with scoring
 export const tests: Offering[] = [
   {
     id: "mbti",
@@ -16,7 +19,12 @@ export const tests: Offering[] = [
     category: "test",
     description:
       "Neurochemical-based MBTI test using nearest centroid classification.",
+    longDescription:
+      "Estimate your cognitive-emotional profile across 5 neurochemical axes using Mahalanobis distance to 16 type centroids.",
     href: "/mbti",
+    icon: "\u2728",
+    color: "var(--accent-blue)",
+    colorMuted: "var(--accent-blue-muted)",
   },
   {
     id: "temperament",
@@ -24,11 +32,28 @@ export const tests: Offering[] = [
     category: "test",
     description:
       "Variance-based assessment to identify your behavioral temperament patterns.",
+    longDescription:
+      "Rate 5 biochemical markers and discover your primary temperament through variance-based classification.",
     href: "/temperaments",
+    icon: "\u26a1",
+    color: "var(--accent-purple)",
+    colorMuted: "var(--accent-purple-muted)",
+  },
+  {
+    id: "moral-alignment",
+    title: "Moral Alignment",
+    category: "test",
+    description:
+      "Two-axis assessment mapping your ethical tendencies on a 3x3 alignment grid.",
+    longDescription:
+      "Explore your moral orientation across the Structure (Lawful-Chaotic) and Impulse (Good-Evil) axes.",
+    href: "/moral-alignment",
+    icon: "\u2696\ufe0f",
+    color: "var(--accent-teal)",
+    colorMuted: "var(--accent-teal-muted)",
   },
 ];
 
-// Educational theory cards (no interactive tests)
 export const theoryCards: Offering[] = [
   {
     id: "jungian",
@@ -56,5 +81,4 @@ export const theoryCards: Offering[] = [
   },
 ];
 
-// Combined for backwards compatibility
 export const offerings: Offering[] = [...tests, ...theoryCards];

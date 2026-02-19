@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/mbti", label: "MBTI" },
   { href: "/temperaments", label: "Temperaments" },
+  { href: "/moral-alignment", label: "Alignment" },
   { href: "/theory", label: "Theory" },
   { href: "/resources", label: "Resources" },
 ];

@@ -1,30 +1,43 @@
+"use client";
+
 import { theoryCards } from "@/data/offerings";
+import TheoryCard from "@/components/cards/TheoryCard";
+import Container from "@/components/ui/Container";
+import { motion } from "motion/react";
 
 export default function TheoryIndexPage() {
   return (
-    <div className="max-w-3xl space-y-8">
+    <Container className="space-y-8">
       <header>
-        <h1 className="text-3xl font-semibold">Theory & Research</h1>
-        <p className="mt-2 text-neutral-400">
-          Educational resources on personality typology systems. These cards provide context
-          and research background without interactive assessments.
-        </p>
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-3xl font-semibold"
+        >
+          Theory &amp; Research
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="mt-2 text-surface-400"
+        >
+          Educational resources on personality typology systems. These pages
+          provide context and research background.
+        </motion.p>
       </header>
 
       <div className="space-y-4">
-        {theoryCards.map((card) => (
-          <a
+        {theoryCards.map((card, i) => (
+          <TheoryCard
             key={card.id}
+            title={card.title}
+            description={card.description}
             href={card.href}
-            className="block border border-neutral-800 p-5 hover:border-neutral-600 transition-colors"
-          >
-            <div className="text-xs text-neutral-500 uppercase tracking-wide">Theory</div>
-            <h2 className="mt-2 text-lg font-medium">{card.title}</h2>
-            <p className="mt-1 text-sm text-neutral-400">{card.description}</p>
-            <span className="mt-3 inline-block text-sm text-neutral-300">Read More →</span>
-          </a>
+            delay={0.15 + i * 0.08}
+          />
         ))}
       </div>
-    </div>
+    </Container>
   );
 }
