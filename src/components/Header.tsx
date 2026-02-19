@@ -2,14 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/mbti", label: "MBTI" },
   { href: "/temperaments", label: "Temperaments" },
   { href: "/moral-alignment", label: "Alignment" },
+  { href: "/cjte", label: "CJTE" },
+  { href: "/socionics", label: "Socionics" },
+  { href: "/potentiology", label: "Potentiology" },
   { href: "/theory", label: "Theory" },
   { href: "/resources", label: "Resources" },
 ];
@@ -17,6 +22,16 @@ const NAV_LINKS = [
 export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -28,7 +43,8 @@ export default function Header() {
           Paper Street Corps
         </Link>
 
-        <nav className="hidden md:flex gap-6 text-sm">
+        {/* Desktop nav */}
+        <nav className="hidden lg:flex gap-5 text-sm">
           {NAV_LINKS.map(({ href, label }) => (
             <Link
               key={href}
@@ -51,37 +67,73 @@ export default function Header() {
           ))}
         </nav>
 
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-surface-400 hover:text-foreground transition-colors"
-          aria-label="Toggle menu"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {menuOpen ? (
+        {/* Auth actions + hamburger */}
+        <div className="flex items-center gap-3">
+          {/* Auth — desktop */}
+          <div className="hidden md:flex items-center gap-3">
+            {user ? (
               <>
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 text-sm text-surface-300 hover:text-foreground transition-colors"
+                >
+                  <span className="w-7 h-7 rounded-full bg-accent-blue/20 border border-accent-blue/30 flex items-center justify-center text-xs font-semibold text-accent-blue">
+                    {user.email?.[0]?.toUpperCase() ?? "U"}
+                  </span>
+                  <span className="hidden lg:inline">Dashboard</span>
+                </Link>
+                <form action="/auth/logout" method="post">
+                  <button
+                    type="submit"
+                    className="text-sm text-surface-400 hover:text-surface-200 transition-colors"
+                  >
+                    Sign out
+                  </button>
+                </form>
               </>
             ) : (
               <>
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
+                <Link
+                  href="/auth/login"
+                  className="text-sm text-surface-400 hover:text-surface-200 transition-colors"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="text-sm bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue border border-accent-blue/20 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  Sign up
+                </Link>
               </>
             )}
-          </svg>
-        </button>
+          </div>
+
+          {/* Hamburger */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="lg:hidden text-surface-400 hover:text-foreground transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {menuOpen ? (
+                <>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </>
+              ) : (
+                <>
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </>
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
+      {/* Mobile nav */}
       <AnimatePresence>
         {menuOpen && (
           <motion.nav
@@ -89,7 +141,7 @@ export default function Header() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden overflow-hidden"
+            className="lg:hidden overflow-hidden"
           >
             <div className="flex flex-col gap-3 pt-4 pb-2 text-sm">
               {NAV_LINKS.map(({ href, label }) => (
@@ -98,14 +150,29 @@ export default function Header() {
                   href={href}
                   onClick={() => setMenuOpen(false)}
                   className={`transition-colors ${
-                    isActive(href)
-                      ? "text-foreground"
-                      : "text-surface-400 hover:text-surface-200"
+                    isActive(href) ? "text-foreground" : "text-surface-400 hover:text-surface-200"
                   }`}
                 >
                   {label}
                 </Link>
               ))}
+              <div className="pt-2 border-t border-surface-800 flex flex-col gap-2">
+                {user ? (
+                  <>
+                    <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="text-surface-300">
+                      Dashboard ({user.email})
+                    </Link>
+                    <form action="/auth/logout" method="post">
+                      <button type="submit" className="text-surface-400 text-left">Sign out</button>
+                    </form>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/auth/login" onClick={() => setMenuOpen(false)} className="text-surface-400">Sign in</Link>
+                    <Link href="/auth/signup" onClick={() => setMenuOpen(false)} className="text-accent-blue">Sign up</Link>
+                  </>
+                )}
+              </div>
             </div>
           </motion.nav>
         )}
