@@ -91,7 +91,7 @@ export default function WizardShell({
     : null;
 
   const handleAnswer = useCallback(
-    (value: number) => {
+    (value: number | string) => {
       if (!currentQuestion) return;
       dispatch({ type: "ANSWER", questionId: currentQuestion.id, value });
     },
@@ -175,7 +175,11 @@ export default function WizardShell({
             />
             <WizardNavigation
               canGoBack={state.currentIndex > 0}
-              canGoNext={currentAnswer != null}
+              canGoNext={
+                currentAnswer != null &&
+                (typeof currentAnswer.value === "number" ||
+                  (typeof currentAnswer.value === "string" && currentAnswer.value.trim().length > 10))
+              }
               isLast={state.currentIndex === questions.length - 1}
               onBack={handleBack}
               onNext={handleNext}

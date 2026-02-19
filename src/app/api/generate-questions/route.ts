@@ -1,115 +1,70 @@
 import { NextResponse } from "next/server";
-import { getOpenAIClient } from "@/lib/openai/client";
-import { SYSTEM_PROMPTS, type TestType } from "@/lib/openai/prompts";
-import {
-  validateMBTIQuestions,
-  validateTemperamentQuestions,
-  validateMoralAlignmentQuestions,
-} from "@/lib/openai/schemas";
+import { getGeminiClient } from "@/lib/gemini/client";
+import { getPrompts, type TestType } from "@/lib/gemini/prompts";
+import { validateQuestions } from "@/lib/gemini/schemas";
 import type { WizardQuestion } from "@/lib/types/wizard";
 
-export const maxDuration = 15;
+export const maxDuration = 30;
+
+const VALID_TYPES: TestType[] = [
+  "mbti",
+  "temperaments",
+  "moral-alignment",
+  "cjte",
+  "socionics",
+  "potentiology",
+];
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { testType, questionCount = 7 } = body as {
-      testType: TestType;
-      questionCount?: number;
-    };
+    const { testType } = body as { testType: TestType };
 
-    if (!SYSTEM_PROMPTS[testType]) {
-      return NextResponse.json(
-        { error: "Invalid test type" },
-        { status: 400 }
-      );
+    if (!VALID_TYPES.includes(testType)) {
+      return NextResponse.json({ error: "Invalid test type" }, { status: 400 });
     }
 
-    const client = getOpenAIClient();
+    const client = getGeminiClient();
     if (!client) {
       return NextResponse.json({ questions: null, fallback: true });
     }
 
-    const systemPrompt = SYSTEM_PROMPTS[testType].generate;
-
-    const response = await client.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: `Generate exactly ${questionCount} questions.`,
-        },
-      ],
-      temperature: 0.8,
-      max_tokens: 2000,
+    const { generate: systemPrompt } = getPrompts(testType);
+    const model = client.getGenerativeModel({
+      model: "gemini-1.5-pro",
+      systemInstruction: systemPrompt,
     });
 
-    const content = response.choices[0]?.message?.content;
+    const result = await model.generateContent(
+      "Generate the questions now. Return ONLY valid JSON as specified."
+    );
+    const content = result.response.text();
+
     if (!content) {
       return NextResponse.json({ questions: null, fallback: true });
     }
 
-    const questions = transformQuestions(testType, content, questionCount);
-    if (!questions) {
+    const raw = validateQuestions(content);
+    if (!raw) {
       return NextResponse.json({ questions: null, fallback: true });
     }
+
+    // Determine answer type based on test type
+    const isOpenEnded = testType === "cjte" || testType === "socionics" || testType === "potentiology";
+    const answerType = isOpenEnded ? ("text" as const) : ("scale" as const);
+
+    const questions: WizardQuestion[] = raw.map((q, i) => ({
+      id: q.id ?? `${testType}-q${i + 1}`,
+      text: q.text,
+      answerType,
+      labels: answerType === "scale" ? (["Strongly Disagree", "Strongly Agree"] as [string, string]) : undefined,
+      min: answerType === "scale" ? 1 : undefined,
+      max: answerType === "scale" ? 5 : undefined,
+      meta: q.meta ?? {},
+    }));
 
     return NextResponse.json({ questions, fallback: false });
   } catch {
     return NextResponse.json({ questions: null, fallback: true });
-  }
-}
-
-function transformQuestions(
-  testType: TestType,
-  raw: string,
-  count: number
-): WizardQuestion[] | null {
-  switch (testType) {
-    case "mbti": {
-      const validated = validateMBTIQuestions(raw);
-      if (!validated) return null;
-      return validated.slice(0, count).map((q, i) => ({
-        id: `llm-mbti-${i}`,
-        text: q.text,
-        description: `Chemical axis: ${Object.keys(q.weights).join(", ")}`,
-        answerType: "scale" as const,
-        labels: ["Strongly Disagree", "Strongly Agree"] as [string, string],
-        min: 1,
-        max: 5,
-        meta: { weights: q.weights },
-      }));
-    }
-    case "temperaments": {
-      const validated = validateTemperamentQuestions(raw);
-      if (!validated) return null;
-      return validated.slice(0, count).map((q, i) => ({
-        id: `llm-temp-${i}`,
-        text: q.text,
-        description: `Biochemical marker: ${q.chemical}`,
-        answerType: "scale" as const,
-        labels: [q.lowLabel, q.highLabel] as [string, string],
-        min: 1,
-        max: 5,
-        meta: { chemical: q.chemical },
-      }));
-    }
-    case "moral-alignment": {
-      const validated = validateMoralAlignmentQuestions(raw);
-      if (!validated) return null;
-      return validated.slice(0, count).map((q, i) => ({
-        id: `llm-ma-${i}`,
-        text: q.text,
-        description: `Axis: ${q.axis}`,
-        answerType: "scale" as const,
-        labels: [q.lowLabel, q.highLabel] as [string, string],
-        min: 1,
-        max: 5,
-        meta: { axis: q.axis },
-      }));
-    }
-    default:
-      return null;
   }
 }

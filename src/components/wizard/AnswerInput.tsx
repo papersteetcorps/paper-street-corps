@@ -6,8 +6,8 @@ import type { AnswerType } from "@/lib/types/wizard";
 
 interface AnswerInputProps {
   type: AnswerType;
-  value: number | null;
-  onChange: (value: number) => void;
+  value: number | string | null;
+  onChange: (value: number | string) => void;
   labels?: [string, string];
   min?: number;
   max?: number;
@@ -24,12 +24,29 @@ export default function AnswerInput({
   if (type === "slider") {
     return (
       <Slider
-        value={value ?? 3}
-        onChange={onChange}
+        value={typeof value === "number" ? value : 3}
+        onChange={(v) => onChange(v)}
         min={min}
         max={max}
         labels={labels}
       />
+    );
+  }
+
+  if (type === "text") {
+    return (
+      <div className="space-y-3">
+        <textarea
+          value={typeof value === "string" ? value : ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Write your answer here — be specific and honest. There are no right or wrong answers."
+          rows={5}
+          className="w-full bg-surface-800 border border-surface-700 rounded-xl px-4 py-3 text-foreground placeholder-surface-500 text-sm focus:outline-none focus:border-accent-blue/60 focus:ring-1 focus:ring-accent-blue/30 transition-colors resize-none leading-relaxed"
+        />
+        <p className="text-surface-500 text-xs">
+          Aim for at least 2–3 sentences. The more specific you are, the more accurate your result.
+        </p>
+      </div>
     );
   }
 

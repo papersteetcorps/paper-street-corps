@@ -6,8 +6,8 @@ import AnswerInput from "./AnswerInput";
 
 interface QuestionCardProps {
   question: WizardQuestion;
-  value: number | null;
-  onChange: (value: number) => void;
+  value: number | string | null;
+  onChange: (value: number | string) => void;
   direction: number;
 }
 

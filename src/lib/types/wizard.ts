@@ -1,4 +1,4 @@
-export type AnswerType = "scale" | "slider" | "choice";
+export type AnswerType = "scale" | "slider" | "choice" | "text";
 
 export interface WizardQuestion {
   id: string;
@@ -14,11 +14,11 @@ export interface WizardQuestion {
 
 export interface WizardAnswer {
   questionId: string;
-  value: number;
+  value: number | string;
 }
 
 export interface WizardConfig {
-  testType: "mbti" | "temperaments" | "moral-alignment";
+  testType: "mbti" | "temperaments" | "moral-alignment" | "cjte" | "socionics" | "potentiology";
   title: string;
   subtitle: string;
   questionSource: "static" | "llm";
@@ -37,7 +37,7 @@ export interface WizardState {
 
 export type WizardAction =
   | { type: "START" }
-  | { type: "ANSWER"; questionId: string; value: number }
+  | { type: "ANSWER"; questionId: string; value: number | string }
   | { type: "NEXT" }
   | { type: "BACK" }
   | { type: "SUBMIT" }
