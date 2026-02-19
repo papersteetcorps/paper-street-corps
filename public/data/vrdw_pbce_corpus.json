@@ -1,0 +1,347 @@
+{
+    "introduction": {
+        "fact1": "Potentiology is a cognitive framework that describes how a subject perceives, evaluates, and stabilizes reality through distinct modes of perception, referred to as cognitive functions. Rather than focusing on behavior, traits, or personality descriptions, the theory models cognition as a dynamic system of perceptual domains and energy capacities.",
+        "fact2": "The framework is built on two foundational distinctions. First, perception operates across four domains: Experience (X), Abstraction (A), Logic (L), and Morality (M). Second, each domain can be oriented subjectively, referencing internal impressions, or objectively, referencing properties of the external object. The combination of domain and direction produces eight cognitive functions.",
+        "fact3": "Unlike static typology systems, Potentiology introduces an energy-based positioning model, where each function has a finite capacity and depletes with use. The ego defaults to the function with the highest available energy at a given moment, while conscious choice may override this tendency at a cost. This allows the theory to account for burnout, dissatisfaction, stress behavior, and functional shifts over time without invoking pathology.",
+        "fact4": "Potentiology is not a diagnostic or predictive tool. It does not claim to measure intelligence, morality, or mental health. Its purpose is explanatory: to provide a structural language for discussing perceptual bias, evaluative conflict, and environmental fit."
+    },
+    "terminologies": {
+        "function": "Shorter term for cognitive function.",
+        "cognitive_function": "Mode of perception with a direction of focus.",
+        "subject": "Conscious entity which perceives the object.",
+        "object": "Content of consciousness which is being perceived by subject.",
+        "ego": "Center of consciousness which selects, integrates, organizes, and identifies experiences for the subject.",
+        "suppressed": "Consciously holding back something.",
+        "repressed": "Unconsciously blocked from awareness.",
+        "seed": "The point on timeline from where a function starts fresh after previous crash.",
+        "crash": "A temporary shutdown of a function caused by sustained conflict with its opposing function domain, leading to loss of evaluative authority by primary function.",
+        "impression": "A compressed, internally stored representation of repeated perceptions within a domain.",
+        "leakage": "Conscious or unconscious use of a cognitive function at lower position."
+    },
+    "function_domains": {
+        "experience_(X)": "Experience is a domain of cognitive functions in which the subject perceives the object concretely, as an experience.",
+        "abstraction_(A)": "Abstraction is a domain of cognitive functions in which the subject perceives the object in terms of latent patterns.",
+        "logic_(L)": "Logic is a domain of cognitive functions in which the subject perceives the object in terms of logical properties.",
+        "morality_(M)": "Morality is a domain of cognitive functions in which the subject perceives the object in terms of moral values."
+    },
+    "function_directions": {
+        "subject_(Sbj)": "Using subjective functions, the subject evaluates the object with reference to the available impressions of target function domain with the subject. This perception is then merged into existing impressions as a single unit. Also its independent of the object.",
+        "object_(Obj)": "Using objective functions, the subject evaluates the object with reference to the available details of target function domain about the object. This perception pulls the subject towards mentally adapting to those details, thus dependent on object."
+    },
+    "cognitive_functions": {
+        "SbjX": "Using subjective experiencer function, the subject evaluates the object with reference to available concrete impressions with the subject. This experience is then merged into existing impressions about experiences as a single experience. Also its independent of the object.",
+        "ObjX": "Using objective experiencer function, the subject evaluates the object with reference to available concrete details about the object. This experience pulls the subject towards mentally adapting to those experiences, thus dependent on object.",
+        "SbjA": "Using subjective abstraction function, the subject evaluates the object with reference to available abstract impressions with the subject. This abstract is then merged into existing impressions about latent patterns as a single abstract. Also its independent of the object.",
+        "ObjA": "Using objective abstraction function, the subject evaluates the object with reference to available abstract details about the object. This abstraction pulls the subject towards mentally adapting to those patterns, thus dependent on object.",
+        "SbjL": "Using subjective logician function, the subject evaluates the object with reference to available logical impressions with the subject. This logic is then merged into existing impressions about logical properties as a single logic. Also its independent of the object.",
+        "ObjL": "Using objective logician function, the subject evaluates the object with reference to available logical details about the object. This logic pulls the subject towards mentally adapting to those logical properties, thus dependent on object.",
+        "SbjM": "Using subjective moral function, the subject evaluates the object with reference to available moral impressions with the subject. This value is then merged into existing impressions about morality as a single unit. Also its independent of the object.",
+        "ObjM": "Using objective moral function, the subject evaluates the object with reference to available moral details about the object. This morality pulls the subject towards mentally adapting to those morals, thus dependent on object."
+    },
+    "positioning_system": {
+        "fact1": "There are 8 cognitive functions as discussed before, which are arranged in decreasing order of their energy capacity. Meaning, the first function in order (1st function) has the highest energy storage capacity, second in series (2nd function) has the second highest energy capacity, and so on. And finally the last function in series (8th function) has least capacity for storing energy. And the ego tends to default to the function which at a given frame of time has highest energy in them, but after switching a fixed energy cost is paid by the chosen function, or energy in it is less than that cost, it outright crashes to point where no energy is left.",
+        "fact2": "So that way, when all the functions have theoretically full energy as per their respective capacities, the ego defaults to 1st function. And when the energy level for 1st function drops below 2nd function with minimal energy cost paid, the ego will default to using 2nd function as perceiving function. And when energy level of 2nd function falls below the third's level with minimal cost paid, ego switches to using 3rd function for perceiving. Or if 1st function charges to a level more than 3rd function, ego returns to using 1st function.",
+        "fact3": "Cognitive functions deplete energy during use but recover only when disengaged. Recovery is not automatic and occurs under conditions specific to each function’s domain. In general, recovery is slower than depletion, introducing asymmetry that allows burnout, cascade, and delayed stabilization. The model therefore avoids equilibrium assumptions while preserving long-term functional reuse.",
+        "fact4": "What ego chooses by default, and what the subject manually chooses to use aren't same. Ego works as per the defined energy theory, but the subject might choose a function with lower energy level and at any position, by choice. Ego just directs the tendency of subject towards the function with highest energy, not control the subject's decision which they can consciously take against tendency. But its usually unhealthy when subject chooses so, resulting in frequent burnout and dissatisfaction. The tendency of ego towards a particular mode of perception if used at right area of focus, it adds to satisfaction of the subject."
+    },
+    "types": {
+        "SbjXL": {
+            "function_stack": {
+                "1st_function": "SbjX",
+                "2nd_function": "ObjL",
+                "3rd_function": "SbjM",
+                "4th_function": "ObjA",
+                "5th_function": "ObjX",
+                "6th_function": "SbjL",
+                "7th_function": "ObjM",
+                "8th_function": "SbjA"
+            },
+            "additional": {
+                "nickname": "The Maintainer",
+                "group": "",
+                "ideal_behavior": "Mostly prefers being in situation requiring known experiences, often seeks to adapt with logical systems comfortably, prefers being in situation requiring known morality during mild burnout, and seeks to adapt with latent patterns during serious burnout, loop."
+            }
+        },
+        "SbjXM": {
+            "function_stack": {
+                "1st_function": "SbjX",
+                "2nd_function": "ObjM",
+                "3rd_function": "SbjL",
+                "4th_function": "ObjA",
+                "5th_function": "ObjX",
+                "6th_function": "SbjM",
+                "7th_function": "ObjL",
+                "8th_function": "SbjA"
+            },
+            "additional": {
+                "nickname": "The Communitarian",
+                "group": "",
+                "ideal_behavior": "Mostly prefers being in situation requiring known experiences, often seeks to adapt with moral values comfortably, prefers being in situation requiring known logical systems during mild burnout, and seeks to adapt with latent patterns during serious burnout, loop."
+            }
+        },
+        "ObjLX": {
+            "function_stack": {
+                "1st_function": "ObjL",
+                "2nd_function": "SbjX",
+                "3rd_function": "ObjA",
+                "4th_function": "SbjM",
+                "5th_function": "SbjL",
+                "6th_function": "ObjX",
+                "7th_function": "SbjA",
+                "8th_function": "ObjM"
+            },
+            "additional": {
+                "nickname": "The Rebuilder",
+                "group": "",
+                "ideal_behavior": "Mostly seeks to adapt with logical systems comfortably, often prefers to be in situation requiring known experiences, seeks to adapt with latent patterns during mild burnout, and prefers being in situation requiring known moral values during serious burnout."
+            }
+        },
+        "ObjMX": {
+            "function_stack": {
+                "1st_function": "ObjM",
+                "2nd_function": "SbjX",
+                "3rd_function": "ObjA",
+                "4th_function": "SbjL",
+                "5th_function": "SbjM",
+                "6th_function": "ObjX",
+                "7th_function": "SbjA",
+                "8th_function": "ObjL"
+            },
+            "additional": {
+                "nickname": "The Welfarer",
+                "group": "",
+                "ideal_behavior": "Mostly seeks to adapt with moral values comfortably, often prefers to be in situation requiring known experiences, seeks to adapt with latent patterns during mild burnout, and prefers being in situation requiring known logical systems during serious burnout."
+            }
+        },
+        "SbjLX": {
+            "function_stack": {
+                "1st_function": "SbjL",
+                "2nd_function": "ObjX",
+                "3rd_function": "SbjA",
+                "4th_function": "ObjM",
+                "5th_function": "ObjL",
+                "6th_function": "SbjX",
+                "7th_function": "ObjA",
+                "8th_function": "SbjM"
+            },
+            "additional": {
+                "nickname": "The Specialist",
+                "group": "",
+                "ideal_behavior": "Mostly prefers being in situation requiring known logical systems, often seeks to adapt with experiences comfortably, prefers being in situation requiring known logical systems during mild burnout, and seeks to adapt with moral values during serious burnout, loop."
+            }
+        },
+        "SbjMX": {
+            "function_stack": {
+                "1st_function": "SbjM",
+                "2nd_function": "ObjX",
+                "3rd_function": "SbjA",
+                "4th_function": "ObjL",
+                "5th_function": "ObjM",
+                "6th_function": "SbjX",
+                "7th_function": "ObjA",
+                "8th_function": "SbjL"
+            },
+            "additional": {
+                "nickname": "The Crusader",
+                "group": "",
+                "ideal_behavior": "Mostly prefers being in situation requiring known moral values, often seeks to adapt with experiences comfortably, prefers being in situation requiring known latent patterns during mild burnout, and seeks to adapt with logical systems during serious burnout, loop."
+            }
+        },
+        "ObjXL": {
+            "function_stack": {
+                "1st_function": "ObjX",
+                "2nd_function": "SbjL",
+                "3rd_function": "ObjM",
+                "4th_function": "SbjA",
+                "5th_function": "SbjX",
+                "6th_function": "ObjL",
+                "7th_function": "SbjM",
+                "8th_function": "ObjA"
+            },
+            "additional": {
+                "nickname": "The Gambit",
+                "group": "",
+                "ideal_behavior": "Mostly seeks to adapt with experiences comfortably, often prefers to be in situation requiring known logical systems, seeks to adapt with moral values during mild burnout, and prefers being in situation requiring known latent patterns during serious burnout."
+            }
+        },
+        "ObjXM": {
+            "function_stack": {
+                "1st_function": "ObjX",
+                "2nd_function": "SbjM",
+                "3rd_function": "ObjL",
+                "4th_function": "SbjA",
+                "5th_function": "SbjX",
+                "6th_function": "ObjM",
+                "7th_function": "SbjL",
+                "8th_function": "ObjA"
+            },
+            "additional": {
+                "nickname": "The Firebrand",
+                "group": "",
+                "ideal_behavior": "Mostly seeks to adapt with experiences comfortably, often prefers to be in situation requiring known moral values, seeks to adapt with logical systems during mild burnout, and prefers being in situation requiring known latent patterns during serious burnout."
+            }
+        },
+        "SbjAL": {
+            "function_stack": {
+                "1st_function": "SbjA",
+                "2nd_function": "ObjL",
+                "3rd_function": "SbjM",
+                "4th_function": "ObjX",
+                "5th_function": "ObjA",
+                "6th_function": "SbjL",
+                "7th_function": "ObjM",
+                "8th_function": "SbjX"
+            },
+            "additional": {
+                "nickname": "The Visionary",
+                "group": "",
+                "ideal_behavior": "Mostly prefers being in situation requiring known latent patterns, often seeks to adapt with logical systems comfortably, prefers being in situation requiring known moral values during mild burnout, and seeks to adapt with experiences during serious burnout, loop."
+            }
+        },
+        "SbjAM": {
+            "function_stack": {
+                "1st_function": "SbjA",
+                "2nd_function": "ObjM",
+                "3rd_function": "SbjL",
+                "4th_function": "ObjX",
+                "5th_function": "ObjA",
+                "6th_function": "SbjM",
+                "7th_function": "ObjL",
+                "8th_function": "SbjX"
+            },
+            "additional": {
+                "nickname": "The Philosopher",
+                "group": "",
+                "ideal_behavior": "Mostly prefers being in situation requiring known latent patterns, often seeks to adapt with moral values comfortably, prefers being in situation requiring known logical systems during mild burnout, and seeks to adapt with experiences during serious burnout, loop."
+            }
+        },
+        "ObjLA": {
+            "function_stack": {
+                "1st_function": "ObjL",
+                "2nd_function": "SbjA",
+                "3rd_function": "ObjX",
+                "4th_function": "SbjM",
+                "5th_function": "SbjL",
+                "6th_function": "ObjA",
+                "7th_function": "SbjX",
+                "8th_function": "ObjM"
+            },
+            "additional": {
+                "nickname": "The Strategist",
+                "group": "",
+                "ideal_behavior": "Mostly seeks to adapt with logical systems comfortably, often prefers to be in situation requiring known latent patterns, seeks to adapt with experiences during mild burnout, and prefers being in situation requiring known morality during serious burnout."
+            }
+        },
+        "ObjMA": {
+            "function_stack": {
+                "1st_function": "ObjM",
+                "2nd_function": "SbjA",
+                "3rd_function": "ObjX",
+                "4th_function": "SbjL",
+                "5th_function": "SbjM",
+                "6th_function": "ObjA",
+                "7th_function": "SbjX",
+                "8th_function": "ObjL"
+            },
+            "additional": {
+                "nickname": "The Reformer",
+                "group": "",
+                "ideal_behavior": "Mostly seeks to adapt with moral values comfortably, often prefers to be in situation requiring known latent patterns, seeks to adapt with experiences during mild burnout, and prefers being in situation requiring known logical systems during serious burnout."
+            }
+        },
+        "SbjLA": {
+            "function_stack": {
+                "1st_function": "SbjL",
+                "2nd_function": "ObjA",
+                "3rd_function": "SbjX",
+                "4th_function": "ObjM",
+                "5th_function": "ObjL",
+                "6th_function": "SbjA",
+                "7th_function": "ObjX",
+                "8th_function": "SbjM"
+            },
+            "additional": {
+                "nickname": "The Craftsman",
+                "group": "",
+                "ideal_behavior": "Mostly prefers being in situation requiring known logical systems, often seeks to adapt with latent patterns comfortably, prefers being in situation requiring known experiences during mild burnout, and seeks to adapt with moral values during serious burnout, loop."
+            }
+        },
+        "SbjMA": {
+            "function_stack": {
+                "1st_function": "SbjM",
+                "2nd_function": "ObjA",
+                "3rd_function": "SbjX",
+                "4th_function": "ObjL",
+                "5th_function": "ObjM",
+                "6th_function": "SbjA",
+                "7th_function": "ObjX",
+                "8th_function": "SbjL"
+            },
+            "additional": {
+                "nickname": "The Pioneer",
+                "group": "",
+                "ideal_behavior": "Mostly prefers being in situation requiring known moral values, often seeks to adapt with latent patterns comfortably, prefers being in situation requiring known experiences during mild burnout, and seeks to adapt with logical systems during serious burnout, loop."
+            }
+        },
+        "ObjAL": {
+            "function_stack": {
+                "1st_function": "ObjA",
+                "2nd_function": "SbjL",
+                "3rd_function": "ObjM",
+                "4th_function": "SbjX",
+                "5th_function": "SbjA",
+                "6th_function": "ObjL",
+                "7th_function": "SbjM",
+                "8th_function": "ObjX"
+            },
+            "additional": {
+                "nickname": "The Innovator",
+                "group": "",
+                "ideal_behavior": "Mostly seeks to adapt with latent patterns comfortably, often prefers to be in situation requiring known logical systems, seeks to adapt with moral values during mild burnout, and prefers being in situation requiring known experiences during serious burnout."
+            }
+        },
+        "ObjAM": {
+            "function_stack": {
+                "1st_function": "ObjA",
+                "2nd_function": "SbjM",
+                "3rd_function": "ObjL",
+                "4th_function": "SbjX",
+                "5th_function": "SbjA",
+                "6th_function": "ObjM",
+                "7th_function": "SbjL",
+                "8th_function": "ObjX"
+            },
+            "additional": {
+                "nickname": "The Ninja",
+                "group": "",
+                "ideal_behavior": "Mostly seeks to adapt with latent patterns comfortably, often prefers to be in situation requiring known moral values, seeks to adapt with logical systems during mild burnout, and prefers being in situation requiring known experiences during serious burnout."
+            }
+        }
+    },
+    "compatible_groups": {
+        "risk_takers": {
+            "members": ["ObjXL", "ObjXM", "SbjLX", "SbjMX"],
+            "dynamics": "Rarely conflicting on grounds of adapting to experiences (ObjX)."
+        },
+        "ideators": {
+            "members": ["ObjAL", "ObjAM", "SbjLA", "SbjMA"],
+            "dynamics": "Rarely conflicting on grounds of adapting to latent patterns (ObjA)."
+        },
+        "troubleshooters": {
+            "members": ["ObjLA", "ObjLX", "SbjAL", "SbjXL"],
+            "dynamics": "Rarely conflicting on grounds of adapting to logical systems (ObjL)."
+        },
+        "mediators": {
+            "members": ["ObjMA", "ObjMX", "SbjAM", "SbjXM"],
+            "dynamics": "Rarely conflicting on grounds of adapting to moral values (ObjM)."
+        }
+    },
+    "typing": {
+        "step_1": "Detect what the subject is doing most of the time with reasonable degree of free will, knowing which compatibility the subject fits best in might help.",
+        "step_2": "Map all activities in form of time slices of an operating system.",
+        "step_3": "Choose the domain of function for each phase of consciousness, where order must be correct.",
+        "step_4": "Understand which of the two directional balance fits best to stack (Sbj-Obj-Sbj-Obj...) or (Obj-Sbj-Obj-Sbj...).",
+        "step_5": "Make sure that functions are arranged in a way to keep the ordering correct.",
+        "step_6": "Verify the result and look for closer possibilities as per subject descriptions if result seems faulty."
+    }
+}

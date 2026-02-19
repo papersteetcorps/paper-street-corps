@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getOpenAIClient } from "@/lib/openai/client";
 import { SYSTEM_PROMPTS, type TestType } from "@/lib/openai/prompts";
 import { validateInterpretation } from "@/lib/openai/schemas";
+import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 15;
 
@@ -15,41 +16,47 @@ export async function POST(request: Request) {
     };
 
     if (!SYSTEM_PROMPTS[testType]) {
-      return NextResponse.json(
-        { error: "Invalid test type" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid test type" }, { status: 400 });
     }
+
+    // Save to Supabase if user is logged in (fire-and-forget)
+    const saveToHistory = async () => {
+      try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("test_results").insert({
+            user_id: user.id,
+            test_type: testType,
+            result_json: localResult,
+          });
+        }
+      } catch {
+        // Non-fatal — don't block the response
+      }
+    };
 
     const client = getOpenAIClient();
-    if (!client) {
-      return NextResponse.json({ interpretation: null });
-    }
 
-    const systemPrompt = SYSTEM_PROMPTS[testType].interpret;
+    // Run save + LLM in parallel
+    const [interpretation] = await Promise.all([
+      client
+        ? client.chat.completions
+            .create({
+              model: "gpt-4o",
+              messages: [
+                { role: "system", content: SYSTEM_PROMPTS[testType].interpret },
+                { role: "user", content: JSON.stringify({ answers, localResult }) },
+              ],
+              temperature: 0.7,
+              max_tokens: 1500,
+            })
+            .then((r) => validateInterpretation(r.choices[0]?.message?.content ?? ""))
+            .catch(() => null)
+        : Promise.resolve(null),
+      saveToHistory(),
+    ]);
 
-    const response = await client.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: JSON.stringify({
-            answers,
-            localResult,
-          }),
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: 1500,
-    });
-
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      return NextResponse.json({ interpretation: null });
-    }
-
-    const interpretation = validateInterpretation(content);
     return NextResponse.json({ interpretation });
   } catch {
     return NextResponse.json({ interpretation: null });
