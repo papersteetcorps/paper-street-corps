@@ -1,9 +1,11 @@
+import Link from "next/link";
+
 export default function ResourcesPage() {
   return (
-    <div className="max-w-3xl space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8">
       <header>
         <h1 className="text-3xl font-semibold">Resources</h1>
-        <p className="mt-2 text-neutral-400">
+        <p className="mt-2 text-surface-400">
           Source materials, research papers, and documentation for the assessments
           and typology systems used on this site.
         </p>
@@ -11,28 +13,34 @@ export default function ResourcesPage() {
 
       <section className="space-y-4">
         <h2 className="text-xl font-medium">How the Scoring Works</h2>
-        <p className="text-neutral-400">
+        <p className="text-surface-400">
           Our assessments use straightforward methods to match your responses to personality types.
         </p>
         <div className="space-y-3">
-          <div className="border border-neutral-800 p-4">
-            <div className="text-xs text-neutral-500 uppercase tracking-wide">MBTI Test</div>
+          <div className="border border-surface-800 rounded-lg p-4">
+            <div className="text-xs text-surface-500 uppercase tracking-wide">MBTI Test</div>
             <h3 className="mt-2 font-medium">Finding Your Closest Match</h3>
-            <p className="mt-1 text-sm text-neutral-400">
+            <p className="mt-1 text-sm text-surface-400">
               Each of the 16 MBTI types has an ideal profile based on four traits. When you rate yourself
               on these traits, we compare your answers to all 16 profiles and find which one is most
-              similar to yours. Think of it like finding which preset radio station is closest to your
-              preferred frequency.
+              similar to yours.
             </p>
           </div>
-          <div className="border border-neutral-800 p-4">
-            <div className="text-xs text-neutral-500 uppercase tracking-wide">Temperament Test</div>
+          <div className="border border-surface-800 rounded-lg p-4">
+            <div className="text-xs text-surface-500 uppercase tracking-wide">Temperament Test</div>
             <h3 className="mt-2 font-medium">Measuring Consistency</h3>
-            <p className="mt-1 text-sm text-neutral-400">
+            <p className="mt-1 text-sm text-surface-400">
               Each temperament (Choleric, Melancholic, Phlegmatic, Sanguine) has an ideal chemical profile.
               We measure how consistently your answers match each profile. The temperament where your
-              answers are most evenly aligned becomes your result. If two temperaments are very close,
-              we show you as a blend of both.
+              answers are most evenly aligned becomes your result.
+            </p>
+          </div>
+          <div className="border border-surface-800 rounded-lg p-4">
+            <div className="text-xs text-surface-500 uppercase tracking-wide">Moral Alignment</div>
+            <h3 className="mt-2 font-medium">Two-Axis Classification</h3>
+            <p className="mt-1 text-sm text-surface-400">
+              Your responses are averaged across two axes: Structure (Lawful-Chaotic) and Impulse
+              (Good-Evil). Each axis divides into thirds to produce one of 9 alignment cells.
             </p>
           </div>
         </div>
@@ -43,19 +51,19 @@ export default function ResourcesPage() {
         <div className="space-y-3">
           <ResourceLink
             title="Psychological Types (Jung, 1921)"
-            description="Carl Jung's original work on psychological types, the foundation for MBTI and related systems."
+            description="Carl Jung&apos;s original work on psychological types, the foundation for MBTI and related systems."
             href="https://jungiancenter.org/wp-content/uploads/2023/09/Vol-6-psychological-types.pdf"
             type="paper"
           />
           <ResourceLink
             title="Why Him? Why Her? (Fisher, 2009)"
-            description="Helen Fisher's research on neurochemical correlates of personality and relationship compatibility."
+            description="Helen Fisher&apos;s research on neurochemical correlates of personality and relationship compatibility."
             href="https://helenfisher.com/books"
             type="book"
           />
           <ResourceLink
             title="The Four Temperaments (Eysenck)"
-            description="Hans Eysenck's work connecting classical temperaments to biological factors."
+            description="Hans Eysenck&apos;s work connecting classical temperaments to biological factors."
             href="https://www.scribd.com/document/423878777/PERSONALITY-docx"
             type="paper"
           />
@@ -87,8 +95,8 @@ export default function ResourcesPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-medium">Critiques & Limitations</h2>
-        <p className="text-neutral-400">
+        <h2 className="text-xl font-medium">Critiques &amp; Limitations</h2>
+        <p className="text-surface-400">
           We believe in presenting limitations alongside theory. These resources
           offer critical perspectives on typology systems.
         </p>
@@ -108,15 +116,15 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-      <section className="border border-neutral-800 p-5 space-y-3">
+      <section className="border border-surface-800 rounded-lg p-5 space-y-3">
         <h2 className="text-lg font-medium">Disclaimer</h2>
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-surface-400">
           The assessments on this site are educational tools, not clinical instruments.
           Neurochemical correlations are speculative and based on pop-science interpretations
           of complex research. For serious psychological assessment, consult a licensed
           professional.
         </p>
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-surface-400">
           All scoring algorithms are provided as-is with full source code transparency.
           We make no claims about the validity or reliability of these methods for
           individual assessment.
@@ -147,22 +155,22 @@ function ResourceLink({
   const isExternal = href.startsWith("http");
 
   return (
-    <a
+    <Link
       href={href}
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
-      className="block border border-neutral-800 p-4 hover:border-neutral-600 transition-colors"
+      className="block border border-surface-800 rounded-lg p-4 hover:border-surface-600 transition-colors"
     >
       <div className="flex items-center justify-between">
-        <div className="text-xs text-neutral-500 uppercase tracking-wide">
+        <div className="text-xs text-surface-500 uppercase tracking-wide">
           {typeLabels[type]}
         </div>
         {isExternal && (
-          <span className="text-xs text-neutral-600">External ↗</span>
+          <span className="text-xs text-surface-600">External &nearr;</span>
         )}
       </div>
       <h3 className="mt-2 font-medium">{title}</h3>
-      <p className="mt-1 text-sm text-neutral-400">{description}</p>
-    </a>
+      <p className="mt-1 text-sm text-surface-400">{description}</p>
+    </Link>
   );
 }
