@@ -85,7 +85,7 @@ export async function POST(request: Request) {
 
     const systemPrompt = buildSynthesisPrompt(results);
     const model = client.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash-lite",
       systemInstruction: systemPrompt,
     });
 

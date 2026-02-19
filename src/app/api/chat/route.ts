@@ -36,7 +36,7 @@ Rules:
 - Do not repeat the full result unless asked.`;
 
     const model = client.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash-lite",
       systemInstruction,
     });
 
