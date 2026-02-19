@@ -9,6 +9,7 @@ export interface WizardQuestion {
   min?: number;
   max?: number;
   step?: number;
+  meta?: Record<string, unknown>;
 }
 
 export interface WizardAnswer {
