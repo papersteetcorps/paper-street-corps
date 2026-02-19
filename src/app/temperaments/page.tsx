@@ -9,8 +9,15 @@ import {
   type TemperamentResult,
 } from "@/lib/scoring/temperaments";
 import WizardShell from "@/components/wizard/WizardShell";
+import ResultsLayout from "@/components/results/ResultsLayout";
+import TypeCard from "@/components/results/TypeCard";
+import RadarChart from "@/components/results/RadarChart";
+import ConfidenceRanking from "@/components/results/ConfidenceRanking";
+import NarrativeSection from "@/components/results/NarrativeSection";
+import ScoreComparison from "@/components/results/ScoreComparison";
 import Badge from "@/components/ui/Badge";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
+import { motion } from "motion/react";
 
 type Chemical = "cortisol" | "dopamine" | "oxytocin" | "serotonin" | "androgenicity";
 
@@ -21,12 +28,10 @@ type Interpretation = {
 } | null;
 
 const CHEMICALS: Chemical[] = [
-  "cortisol",
-  "dopamine",
-  "oxytocin",
-  "serotonin",
-  "androgenicity",
+  "cortisol", "dopamine", "oxytocin", "serotonin", "androgenicity",
 ];
+
+const CHEMICAL_LABELS = ["Cortisol", "Dopamine", "Oxytocin", "Serotonin", "Androgenicity"];
 
 const staticQuestions: WizardQuestion[] = CHEMICALS.map((chem) => {
   const info = CHEMICAL_DESCRIPTIONS[chem];
@@ -64,7 +69,7 @@ export default function TemperamentsTestPage() {
           setIsLLMSource(true);
         }
       } catch {
-        // fallback to static questions silently
+        // fallback
       } finally {
         if (!cancelled) setLoadingQuestions(false);
       }
@@ -80,9 +85,6 @@ export default function TemperamentsTestPage() {
       };
 
       if (isLLMSource) {
-        // LLM questions carry chemical in meta
-        // For temperaments, each question maps to one chemical.
-        // Average answers per chemical if multiple questions target same one.
         const chemSums: Record<Chemical, number> = { ...scoreMap };
         const chemCounts: Record<Chemical, number> = {
           cortisol: 0, dopamine: 0, oxytocin: 0, serotonin: 0, androgenicity: 0,
@@ -107,15 +109,11 @@ export default function TemperamentsTestPage() {
       }
 
       const tempResult = classifyTemperament(
-        scoreMap.cortisol,
-        scoreMap.dopamine,
-        scoreMap.oxytocin,
-        scoreMap.serotonin,
-        scoreMap.androgenicity
+        scoreMap.cortisol, scoreMap.dopamine, scoreMap.oxytocin,
+        scoreMap.serotonin, scoreMap.androgenicity
       );
       setResult(tempResult);
 
-      // Fire LLM interpretation in parallel
       fetch("/api/score-results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -172,159 +170,129 @@ function TemperamentResults({
 }) {
   const primaryInfo = TEMPERAMENT_DESCRIPTIONS[result.primary];
   const idealProfile = getIdealProfile(result.primary);
-  const chemicalLabels = [
-    "Cortisol",
-    "Dopamine",
-    "Oxytocin",
-    "Serotonin",
-    "Androgenicity",
-  ];
 
   const displayType =
     result.isBlend && result.secondary
       ? `${result.primary}-${result.secondary}`
       : result.primary;
 
-  return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div className="text-center space-y-2">
-        <p className="text-sm text-surface-500 uppercase tracking-wide">
-          Your Result
-        </p>
-        <h2 className="text-5xl font-bold tracking-tight">{displayType}</h2>
-        <p className="text-xl text-surface-400">{primaryInfo.title}</p>
-        {result.isBlend && (
-          <p className="text-sm text-surface-500">
-            Blend detected — variance gap:{" "}
-            {(
-              result.variances[result.secondary!] - result.variance
-            ).toFixed(2)}
-          </p>
-        )}
-      </div>
+  const userValues = Object.values(result.userScores);
 
-      <section className="border border-surface-800 rounded-lg p-5">
+  const varianceItems = (Object.entries(result.variances) as [string, number][])
+    .sort((a, b) => a[1] - b[1])
+    .map(([type, variance]) => ({
+      name: type,
+      value: variance,
+      displayValue: variance.toFixed(2),
+    }));
+
+  const comparisonRows = CHEMICAL_LABELS.map((label, i) => ({
+    label,
+    userScore: userValues[i],
+    idealScore: idealProfile[i],
+  }));
+
+  return (
+    <ResultsLayout>
+      {/* 0ms — Hero */}
+      <TypeCard
+        typeCode={displayType}
+        subtitle={primaryInfo.title}
+        confidence={1 - result.variance / 5}
+        accentColor="var(--accent-purple)"
+        delay={0}
+      />
+
+      {result.isBlend && result.secondary && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-sm text-surface-500 text-center"
+        >
+          Blend detected — variance gap:{" "}
+          {(result.variances[result.secondary] - result.variance).toFixed(2)}
+        </motion.p>
+      )}
+
+      {/* Traits */}
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="border border-surface-800 rounded-lg p-5"
+      >
         <h3 className="text-lg font-medium">Key Traits</h3>
         <div className="mt-3 flex flex-wrap gap-2">
           {primaryInfo.traits.map((trait) => (
-            <Badge key={trait} color="purple">
-              {trait}
-            </Badge>
+            <Badge key={trait} color="purple">{trait}</Badge>
           ))}
         </div>
-      </section>
+      </motion.section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Strengths / Challenges */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         <section className="border border-surface-800 rounded-lg p-5">
-          <h3 className="text-sm font-medium text-surface-500 uppercase tracking-wide">
-            Strengths
-          </h3>
+          <h3 className="text-sm font-medium text-surface-500 uppercase tracking-wide">Strengths</h3>
           <ul className="mt-3 space-y-2 text-sm text-surface-300">
-            {primaryInfo.strengths.map((s) => (
-              <li key={s}>&#8226; {s}</li>
-            ))}
+            {primaryInfo.strengths.map((s) => <li key={s}>&#8226; {s}</li>)}
           </ul>
         </section>
         <section className="border border-surface-800 rounded-lg p-5">
-          <h3 className="text-sm font-medium text-surface-500 uppercase tracking-wide">
-            Challenges
-          </h3>
+          <h3 className="text-sm font-medium text-surface-500 uppercase tracking-wide">Challenges</h3>
           <ul className="mt-3 space-y-2 text-sm text-surface-300">
-            {primaryInfo.challenges.map((c) => (
-              <li key={c}>&#8226; {c}</li>
-            ))}
+            {primaryInfo.challenges.map((c) => <li key={c}>&#8226; {c}</li>)}
           </ul>
         </section>
-      </div>
+      </motion.div>
 
-      <section className="border border-surface-800 rounded-lg p-5 space-y-3">
-        <h3 className="text-lg font-medium">Your Scores vs Ideal Profile</h3>
-        <div className="space-y-3">
-          {chemicalLabels.map((label, i) => {
-            const userScore = Object.values(result.userScores)[i];
-            const idealScore = idealProfile[i];
-            const userPct = ((userScore - 1) / 4) * 100;
-            const idealPct = ((idealScore - 1) / 4) * 100;
-            return (
-              <div key={label} className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span className="text-surface-300">{label}</span>
-                  <span className="text-surface-500">
-                    You: {userScore} | Ideal: {idealScore}
-                  </span>
-                </div>
-                <div className="relative h-1.5 rounded-full bg-surface-800 overflow-hidden">
-                  <div
-                    className="absolute h-full rounded-full bg-accent-purple/40"
-                    style={{ width: `${idealPct}%` }}
-                  />
-                  <div
-                    className="absolute h-full rounded-full bg-accent-purple"
-                    style={{ width: `${userPct}%` }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      {/* 200ms — Radar */}
+      <RadarChart
+        labels={CHEMICAL_LABELS}
+        userValues={userValues}
+        referenceValues={[...idealProfile]}
+        referenceLabel={`${result.primary} Ideal`}
+        userColor="var(--accent-purple)"
+        referenceColor="var(--accent-teal)"
+        delay={0.3}
+      />
 
-      <section className="border border-surface-800 rounded-lg p-5 space-y-3">
-        <h3 className="text-lg font-medium">All Temperament Variances</h3>
-        <p className="text-sm text-surface-500">
-          Lower variance = closer match
-        </p>
-        <div className="space-y-2">
-          {(Object.entries(result.variances) as [string, number][])
-            .sort((a, b) => a[1] - b[1])
-            .map(([type, variance], i) => (
-              <div
-                key={type}
-                className={`flex items-center justify-between text-sm ${
-                  type === result.primary
-                    ? "text-foreground"
-                    : "text-surface-400"
-                }`}
-              >
-                <span>
-                  {i + 1}. {type}
-                </span>
-                <span>{variance.toFixed(2)}</span>
-              </div>
-            ))}
-        </div>
-      </section>
+      {/* 400ms — Variance ranking */}
+      <ConfidenceRanking
+        items={varianceItems}
+        highlightName={result.primary}
+        label="Temperament Variances"
+        accentColor="purple"
+        delay={0.5}
+      />
 
+      {/* 600ms — AI narrative */}
       {interpretation && (
-        <section className="border border-surface-800 rounded-lg p-5 space-y-4">
-          <h3 className="text-lg font-medium">AI Interpretation</h3>
-          <p className="text-sm text-surface-300 leading-relaxed whitespace-pre-line">
-            {interpretation.narrative}
-          </p>
-          {interpretation.insights.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-surface-400">
-                Key Insights
-              </h4>
-              <ul className="space-y-1">
-                {interpretation.insights.map((insight, i) => (
-                  <li key={i} className="text-sm text-surface-300">
-                    &#8226; {insight}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          <p className="text-xs text-surface-500 italic">
-            {interpretation.typeDescription}
-          </p>
-        </section>
+        <NarrativeSection
+          narrative={interpretation.narrative}
+          insights={interpretation.insights}
+          typeDescription={interpretation.typeDescription}
+          delay={0.7}
+        />
       )}
+
+      {/* 800ms — Score comparison */}
+      <ScoreComparison
+        rows={comparisonRows}
+        userColor="var(--accent-purple)"
+        idealColor="var(--accent-teal)"
+        delay={0.9}
+      />
 
       <p className="text-xs text-surface-500 text-center">
         Variance-based classification from biochemical self-ratings. Temperament
         is one lens for understanding personality patterns.
       </p>
-    </div>
+    </ResultsLayout>
   );
 }

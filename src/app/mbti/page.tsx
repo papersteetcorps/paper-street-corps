@@ -9,7 +9,13 @@ import {
   TYPE_CENTROIDS,
 } from "@/lib/scoring/neurochemicalMBTI";
 import WizardShell from "@/components/wizard/WizardShell";
-import Badge from "@/components/ui/Badge";
+import ResultsLayout from "@/components/results/ResultsLayout";
+import TypeCard from "@/components/results/TypeCard";
+import RadarChart from "@/components/results/RadarChart";
+import BarChart from "@/components/results/BarChart";
+import ConfidenceRanking from "@/components/results/ConfidenceRanking";
+import NarrativeSection from "@/components/results/NarrativeSection";
+import ScoreComparison from "@/components/results/ScoreComparison";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 
 type Result = {
@@ -35,6 +41,8 @@ const staticQuestions: WizardQuestion[] = QUESTIONS.map((q, i) => ({
   meta: { weights: q.weights },
 }));
 
+const CHEMICAL_LABELS = ["Dopamine", "Serotonin", "Norepinephrine", "Acetylcholine", "Oxytocin"];
+
 export default function MBTIPage() {
   const [questions, setQuestions] = useState<WizardQuestion[]>(staticQuestions);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
@@ -58,7 +66,7 @@ export default function MBTIPage() {
           setIsLLMSource(true);
         }
       } catch {
-        // fallback to static questions silently
+        // fallback to static
       } finally {
         if (!cancelled) setLoadingQuestions(false);
       }
@@ -69,7 +77,6 @@ export default function MBTIPage() {
 
   const handleComplete = useCallback(
     (answers: WizardAnswer[]) => {
-      // Local scoring: compute chemical scores from answers + question weights
       const totals: Record<Chemical, number> = {
         dopamine: 0, serotonin: 0, norepinephrine: 0, acetylcholine: 0, oxytocin: 0,
       };
@@ -78,7 +85,6 @@ export default function MBTIPage() {
       };
 
       if (isLLMSource) {
-        // LLM questions carry weights in meta
         questions.forEach((q) => {
           const answer = answers.find((a) => a.questionId === q.id);
           const val = answer?.value ?? 3;
@@ -91,7 +97,6 @@ export default function MBTIPage() {
           }
         });
       } else {
-        // Static questions use QUESTIONS data
         QUESTIONS.forEach((q, i) => {
           const answer = answers.find((a) => a.questionId === `mbti-q-${i}`);
           const val = answer?.value ?? 3;
@@ -115,7 +120,6 @@ export default function MBTIPage() {
       setUserScores(scores);
       setResults(classified);
 
-      // Fire LLM interpretation in parallel (non-blocking)
       fetch("/api/score-results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -177,100 +181,85 @@ function MBTIResults({
   interpretation: Interpretation;
 }) {
   const top = results[0];
-  const topThree = results.slice(0, 3);
+  const topCentroid = TYPE_CENTROIDS[top.type];
+  const userValues = CHEMICALS.map((c) => userScores[c]);
+
+  const barData = results
+    .slice(0, 10)
+    .sort((a, b) => a.distance - b.distance)
+    .map((r) => ({
+      name: r.type,
+      value: r.distance,
+    }));
+
+  const rankingItems = results.map((r) => ({
+    name: r.type,
+    value: r.confidence,
+    displayValue: `${(r.confidence * 100).toFixed(1)}%`,
+  }));
+
+  const comparisonRows = CHEMICAL_LABELS.map((label, i) => ({
+    label,
+    userScore: userValues[i],
+    idealScore: topCentroid[i],
+  }));
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div className="text-center space-y-2">
-        <p className="text-sm text-surface-500 uppercase tracking-wide">
-          Your Result
-        </p>
-        <h2 className="text-5xl font-bold tracking-tight">{top.type}</h2>
-        <p className="text-surface-400">
-          {(top.confidence * 100).toFixed(1)}% confidence
-        </p>
-      </div>
+    <ResultsLayout>
+      {/* 0ms — Hero type card */}
+      <TypeCard
+        typeCode={top.type}
+        confidence={top.confidence}
+        delay={0}
+      />
 
-      <section className="border border-surface-800 rounded-lg p-5 space-y-3">
-        <h3 className="text-lg font-medium">Top Matches</h3>
-        <div className="space-y-2">
-          {topThree.map((r, i) => (
-            <div
-              key={r.type}
-              className="flex items-center justify-between text-sm"
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className={
-                    i === 0 ? "text-foreground font-medium" : "text-surface-400"
-                  }
-                >
-                  {i + 1}. {r.type}
-                </span>
-                {i === 0 && <Badge color="blue">Best Match</Badge>}
-              </div>
-              <span className="text-surface-500">
-                {(r.confidence * 100).toFixed(1)}%
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* 200ms — Radar chart */}
+      <RadarChart
+        labels={CHEMICAL_LABELS}
+        userValues={userValues}
+        referenceValues={topCentroid}
+        referenceLabel={`${top.type} Centroid`}
+        delay={0.2}
+      />
 
-      <section className="border border-surface-800 rounded-lg p-5 space-y-3">
-        <h3 className="text-lg font-medium">Your Chemical Profile</h3>
-        <div className="space-y-3">
-          {CHEMICALS.map((chem) => {
-            const score = userScores[chem];
-            const pct = ((score - 1) / 4) * 100;
-            return (
-              <div key={chem} className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span className="text-surface-300 capitalize">{chem}</span>
-                  <span className="text-surface-500">{score.toFixed(2)}</span>
-                </div>
-                <div className="h-1.5 rounded-full bg-surface-800 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-accent-blue transition-all duration-500"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      {/* 400ms — Confidence ranking */}
+      <ConfidenceRanking
+        items={rankingItems}
+        highlightName={top.type}
+        label="Type Rankings"
+        accentColor="blue"
+        delay={0.4}
+      />
 
+      {/* 600ms — AI narrative (if available) */}
       {interpretation && (
-        <section className="border border-surface-800 rounded-lg p-5 space-y-4">
-          <h3 className="text-lg font-medium">AI Interpretation</h3>
-          <p className="text-sm text-surface-300 leading-relaxed whitespace-pre-line">
-            {interpretation.narrative}
-          </p>
-          {interpretation.insights.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-surface-400">
-                Key Insights
-              </h4>
-              <ul className="space-y-1">
-                {interpretation.insights.map((insight, i) => (
-                  <li key={i} className="text-sm text-surface-300">
-                    &#8226; {insight}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          <p className="text-xs text-surface-500 italic">
-            {interpretation.typeDescription}
-          </p>
-        </section>
+        <NarrativeSection
+          narrative={interpretation.narrative}
+          insights={interpretation.insights}
+          typeDescription={interpretation.typeDescription}
+          delay={0.6}
+        />
       )}
+
+      {/* 800ms — Score comparison */}
+      <ScoreComparison
+        rows={comparisonRows}
+        delay={0.8}
+      />
+
+      {/* Distance bar chart */}
+      <BarChart
+        data={barData}
+        highlightName={top.type}
+        label="Distance to Types"
+        valueLabel="Mahalanobis Distance"
+        delay={1.0}
+      />
 
       <p className="text-xs text-surface-500 text-center">
         Classification uses 5-chemical Mahalanobis distance to 16 type
         centroids with softmax confidence.
       </p>
-    </div>
+    </ResultsLayout>
   );
 }
