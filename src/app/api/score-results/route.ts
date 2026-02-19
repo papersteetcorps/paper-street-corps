@@ -1,21 +1,30 @@
 import { NextResponse } from "next/server";
-import { getOpenAIClient } from "@/lib/openai/client";
-import { SYSTEM_PROMPTS, type TestType } from "@/lib/openai/prompts";
-import { validateInterpretation } from "@/lib/openai/schemas";
+import { getGeminiClient } from "@/lib/gemini/client";
+import { getPrompts, type TestType } from "@/lib/gemini/prompts";
+import { validateInterpretation } from "@/lib/gemini/schemas";
 import { createClient } from "@/lib/supabase/server";
 
-export const maxDuration = 15;
+export const maxDuration = 30;
+
+const VALID_TYPES: TestType[] = [
+  "mbti",
+  "temperaments",
+  "moral-alignment",
+  "cjte",
+  "socionics",
+  "potentiology",
+];
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { testType, answers, localResult } = body as {
       testType: TestType;
-      answers: { questionId: string; value: number }[];
+      answers: Array<{ questionId: string; value: number | string }>;
       localResult: Record<string, unknown>;
     };
 
-    if (!SYSTEM_PROMPTS[testType]) {
+    if (!VALID_TYPES.includes(testType)) {
       return NextResponse.json({ error: "Invalid test type" }, { status: 400 });
     }
 
@@ -28,31 +37,29 @@ export async function POST(request: Request) {
           await supabase.from("test_results").insert({
             user_id: user.id,
             test_type: testType,
-            result_json: localResult,
+            result_json: { ...localResult, answers },
           });
         }
       } catch {
-        // Non-fatal — don't block the response
+        // Non-fatal
       }
     };
 
-    const client = getOpenAIClient();
+    const geminiClient = getGeminiClient();
 
-    // Run save + LLM in parallel
     const [interpretation] = await Promise.all([
-      client
-        ? client.chat.completions
-            .create({
-              model: "gpt-4o",
-              messages: [
-                { role: "system", content: SYSTEM_PROMPTS[testType].interpret },
-                { role: "user", content: JSON.stringify({ answers, localResult }) },
-              ],
-              temperature: 0.7,
-              max_tokens: 1500,
-            })
-            .then((r) => validateInterpretation(r.choices[0]?.message?.content ?? ""))
-            .catch(() => null)
+      geminiClient
+        ? (async () => {
+            const { interpret: systemPrompt } = getPrompts(testType);
+            const model = geminiClient.getGenerativeModel({
+              model: "gemini-1.5-pro",
+              systemInstruction: systemPrompt,
+            });
+            const result = await model.generateContent(
+              JSON.stringify({ answers, localResult })
+            );
+            return validateInterpretation(result.response.text());
+          })().catch(() => null)
         : Promise.resolve(null),
       saveToHistory(),
     ]);

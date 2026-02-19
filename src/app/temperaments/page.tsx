@@ -93,8 +93,9 @@ export default function TemperamentsTestPage() {
           const answer = answers.find((a) => a.questionId === q.id);
           const chem = q.meta?.chemical as Chemical | undefined;
           if (answer && chem && chem in chemSums) {
+            const val = typeof answer.value === "number" ? answer.value : 3;
             if (chemCounts[chem] === 0) chemSums[chem] = 0;
-            chemSums[chem] += answer.value;
+            chemSums[chem] += val;
             chemCounts[chem]++;
           }
         });
@@ -104,7 +105,7 @@ export default function TemperamentsTestPage() {
       } else {
         for (const chem of CHEMICALS) {
           const answer = answers.find((a) => a.questionId === `temp-${chem}`);
-          if (answer) scoreMap[chem] = answer.value;
+          if (answer) scoreMap[chem] = typeof answer.value === "number" ? answer.value : 3;
         }
       }
 

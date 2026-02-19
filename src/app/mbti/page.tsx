@@ -87,7 +87,7 @@ export default function MBTIPage() {
       if (isLLMSource) {
         questions.forEach((q) => {
           const answer = answers.find((a) => a.questionId === q.id);
-          const val = answer?.value ?? 3;
+          const val = typeof answer?.value === "number" ? answer.value : 3;
           const weights = (q.meta?.weights ?? {}) as Record<string, number>;
           for (const [chem, w] of Object.entries(weights)) {
             if (chem in totals) {
@@ -99,7 +99,7 @@ export default function MBTIPage() {
       } else {
         QUESTIONS.forEach((q, i) => {
           const answer = answers.find((a) => a.questionId === `mbti-q-${i}`);
-          const val = answer?.value ?? 3;
+          const val = typeof answer?.value === "number" ? answer.value : 3;
           (Object.entries(q.weights) as [Chemical, number][]).forEach(([chem, w]) => {
             totals[chem] += val * w;
             weightSums[chem] += w;

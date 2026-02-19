@@ -112,11 +112,12 @@ export default function MoralAlignmentPage() {
         const answer = answers.find((a) => a.questionId === q.id);
         if (!answer) return;
         const axis = q.meta?.axis as string;
+        const val = typeof answer.value === "number" ? answer.value : 3;
         if (axis === "structure") {
-          structureSum += answer.value;
+          structureSum += val;
           structureCount++;
         } else if (axis === "impulse") {
-          impulseSum += answer.value;
+          impulseSum += val;
           impulseCount++;
         }
       });
