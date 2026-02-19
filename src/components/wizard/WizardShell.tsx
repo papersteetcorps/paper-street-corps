@@ -22,6 +22,7 @@ interface WizardShellProps {
   onComplete: (answers: WizardAnswer[]) => void;
   resultView: React.ReactNode | null;
   isLoading?: boolean;
+  loadingQuestions?: boolean;
   error?: string | null;
   onReset?: () => void;
 }
@@ -78,6 +79,7 @@ export default function WizardShell({
   onComplete,
   resultView,
   isLoading = false,
+  loadingQuestions = false,
   error = null,
   onReset,
 }: WizardShellProps) {
@@ -133,13 +135,22 @@ export default function WizardShell({
           >
             <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
             <p className="text-surface-400 leading-relaxed">{subtitle}</p>
-            <p className="text-sm text-surface-500">
-              {questions.length} questions &middot; Takes about{" "}
-              {Math.max(1, Math.round(questions.length * 0.5))} minutes
-            </p>
-            <Button onClick={() => dispatch({ type: "START" })}>
-              Begin Assessment
-            </Button>
+            {loadingQuestions ? (
+              <div className="flex items-center justify-center gap-2 text-sm text-surface-500">
+                <div className="w-4 h-4 border-2 border-surface-700 border-t-accent-blue rounded-full animate-spin" />
+                Generating personalized questions...
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-surface-500">
+                  {questions.length} questions &middot; Takes about{" "}
+                  {Math.max(1, Math.round(questions.length * 0.5))} minutes
+                </p>
+                <Button onClick={() => dispatch({ type: "START" })}>
+                  Begin Assessment
+                </Button>
+              </>
+            )}
           </motion.div>
         )}
 
