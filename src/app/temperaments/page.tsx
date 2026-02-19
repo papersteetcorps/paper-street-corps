@@ -1,224 +1,180 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   classifyTemperament,
   CHEMICAL_DESCRIPTIONS,
   TEMPERAMENT_DESCRIPTIONS,
-  TemperamentResult,
   getIdealProfile,
+  type TemperamentResult,
 } from "@/lib/scoring/temperaments";
+import WizardShell from "@/components/wizard/WizardShell";
+import Badge from "@/components/ui/Badge";
+import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 
 type Chemical = "cortisol" | "dopamine" | "oxytocin" | "serotonin" | "androgenicity";
 
+const CHEMICALS: Chemical[] = [
+  "cortisol",
+  "dopamine",
+  "oxytocin",
+  "serotonin",
+  "androgenicity",
+];
+
+const wizardQuestions: WizardQuestion[] = CHEMICALS.map((chem) => {
+  const info = CHEMICAL_DESCRIPTIONS[chem];
+  return {
+    id: `temp-${chem}`,
+    text: info.label,
+    description: info.description,
+    answerType: "scale" as const,
+    labels: [info.low, info.high] as [string, string],
+    min: 1,
+    max: 5,
+  };
+});
+
 export default function TemperamentsTestPage() {
-  const [scores, setScores] = useState<Record<Chemical, number | null>>({
-    cortisol: null,
-    dopamine: null,
-    oxytocin: null,
-    serotonin: null,
-    androgenicity: null,
-  });
   const [result, setResult] = useState<TemperamentResult | null>(null);
 
-  const chemicals: Chemical[] = ["cortisol", "dopamine", "oxytocin", "serotonin", "androgenicity"];
+  const handleComplete = useCallback((answers: WizardAnswer[]) => {
+    const scoreMap: Record<Chemical, number> = {
+      cortisol: 3,
+      dopamine: 3,
+      oxytocin: 3,
+      serotonin: 3,
+      androgenicity: 3,
+    };
 
-  const handleScoreChange = (chemical: Chemical, value: number) => {
-    setScores((prev) => ({ ...prev, [chemical]: value }));
-  };
+    for (const chem of CHEMICALS) {
+      const answer = answers.find((a) => a.questionId === `temp-${chem}`);
+      if (answer) scoreMap[chem] = answer.value;
+    }
 
-  const isComplete = chemicals.every((c) => scores[c] !== null);
-
-  const handleSubmit = () => {
-    if (!isComplete) return;
     const tempResult = classifyTemperament(
-      scores.cortisol!,
-      scores.dopamine!,
-      scores.oxytocin!,
-      scores.serotonin!,
-      scores.androgenicity!
+      scoreMap.cortisol,
+      scoreMap.dopamine,
+      scoreMap.oxytocin,
+      scoreMap.serotonin,
+      scoreMap.androgenicity
     );
     setResult(tempResult);
-  };
+  }, []);
 
-  const handleReset = () => {
-    setScores({
-      cortisol: null,
-      dopamine: null,
-      oxytocin: null,
-      serotonin: null,
-      androgenicity: null,
-    });
+  const handleReset = useCallback(() => {
     setResult(null);
-  };
+  }, []);
 
-  if (result) {
-    return <ResultsView result={result} onReset={handleReset} />;
-  }
+  const resultView = result ? (
+    <TemperamentResults result={result} />
+  ) : null;
 
   return (
-    <div className="max-w-2xl space-y-8">
-      <header>
-        <h1 className="text-3xl font-semibold">Temperament Assessment</h1>
-        <p className="mt-2 text-neutral-400">
-          Rate your typical levels of each biochemical marker. This assessment uses
-          variance-based classification to identify your primary temperament.
-        </p>
-      </header>
-
-      <div className="text-sm text-neutral-500 border border-neutral-800 p-4">
-        <strong>Rating Scale:</strong> 1 = Very low, 2 = Slightly low, 3 = Balanced, 4 = Slightly high, 5 = Very high
-        <br />
-        <span className="text-neutral-600 mt-1 block">
-          Note: Androgenicity refers to testosterone (males) or estrogen (females)
-        </span>
-      </div>
-
-      <div className="space-y-8">
-        {chemicals.map((chemical, index) => (
-          <ChemicalQuestion
-            key={chemical}
-            chemical={chemical}
-            index={index + 1}
-            value={scores[chemical]}
-            onChange={(value) => handleScoreChange(chemical, value)}
-          />
-        ))}
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        disabled={!isComplete}
-        className={`w-full py-3 text-sm font-medium ${
-          isComplete
-            ? "bg-white text-black hover:bg-neutral-200"
-            : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
-        }`}
-      >
-        {isComplete ? "Calculate Temperament" : "Answer all questions to continue"}
-      </button>
-    </div>
+    <WizardShell
+      title="Temperament Assessment"
+      subtitle="Rate your typical levels of each biochemical marker. This assessment uses variance-based classification to identify your primary temperament."
+      questions={wizardQuestions}
+      onComplete={handleComplete}
+      resultView={resultView}
+      onReset={handleReset}
+    />
   );
 }
 
-function ChemicalQuestion({
-  chemical,
-  index,
-  value,
-  onChange,
-}: {
-  chemical: Chemical;
-  index: number;
-  value: number | null;
-  onChange: (value: number) => void;
-}) {
-  const info = CHEMICAL_DESCRIPTIONS[chemical];
-
-  return (
-    <div className="border border-neutral-800 p-5">
-      <div className="text-xs text-neutral-500 uppercase tracking-wide">Question {index}</div>
-      <h3 className="mt-2 text-lg font-medium">{info.label}</h3>
-      <p className="mt-1 text-sm text-neutral-400">{info.description}</p>
-
-      <div className="mt-4 flex justify-between text-xs text-neutral-500">
-        <span>{info.low}</span>
-        <span>{info.high}</span>
-      </div>
-
-      <div className="mt-2 flex justify-between">
-        {[1, 2, 3, 4, 5].map((score) => (
-          <button
-            key={score}
-            onClick={() => onChange(score)}
-            className={`w-12 h-12 border ${
-              value === score
-                ? "border-white bg-white text-black"
-                : "border-neutral-700 text-neutral-400 hover:border-neutral-500"
-            }`}
-          >
-            {score}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ResultsView({
-  result,
-  onReset,
-}: {
-  result: TemperamentResult;
-  onReset: () => void;
-}) {
+function TemperamentResults({ result }: { result: TemperamentResult }) {
   const primaryInfo = TEMPERAMENT_DESCRIPTIONS[result.primary];
   const idealProfile = getIdealProfile(result.primary);
-  const chemicalLabels = ["Cortisol", "Dopamine", "Oxytocin", "Serotonin", "Androgenicity"];
+  const chemicalLabels = [
+    "Cortisol",
+    "Dopamine",
+    "Oxytocin",
+    "Serotonin",
+    "Androgenicity",
+  ];
 
-  const displayType = result.isBlend && result.secondary
-    ? `${result.primary}-${result.secondary}`
-    : result.primary;
+  const displayType =
+    result.isBlend && result.secondary
+      ? `${result.primary}-${result.secondary}`
+      : result.primary;
 
   return (
-    <div className="max-w-2xl space-y-8">
-      <header>
-        <div className="text-xs text-neutral-500 uppercase tracking-wide">Your Result</div>
-        <h1 className="mt-2 text-4xl font-bold">{displayType}</h1>
-        <p className="mt-1 text-xl text-neutral-400">{primaryInfo.title}</p>
+    <div className="max-w-2xl mx-auto space-y-8">
+      <div className="text-center space-y-2">
+        <p className="text-sm text-surface-500 uppercase tracking-wide">
+          Your Result
+        </p>
+        <h2 className="text-5xl font-bold tracking-tight">{displayType}</h2>
+        <p className="text-xl text-surface-400">{primaryInfo.title}</p>
         {result.isBlend && (
-          <p className="mt-2 text-sm text-neutral-500">
-            Strong blend detected — variance difference: {(result.variances[result.secondary!] - result.variance).toFixed(2)}
+          <p className="text-sm text-surface-500">
+            Blend detected — variance gap:{" "}
+            {(
+              result.variances[result.secondary!] - result.variance
+            ).toFixed(2)}
           </p>
         )}
-      </header>
+      </div>
 
-      <section className="border border-neutral-800 p-5">
-        <h2 className="text-lg font-medium">Key Traits</h2>
+      <section className="border border-surface-800 rounded-lg p-5">
+        <h3 className="text-lg font-medium">Key Traits</h3>
         <div className="mt-3 flex flex-wrap gap-2">
           {primaryInfo.traits.map((trait) => (
-            <span
-              key={trait}
-              className="px-3 py-1 text-sm border border-neutral-700 text-neutral-300"
-            >
+            <Badge key={trait} color="purple">
               {trait}
-            </span>
+            </Badge>
           ))}
         </div>
       </section>
 
-      <div className="grid grid-cols-2 gap-4">
-        <section className="border border-neutral-800 p-5">
-          <h2 className="text-sm font-medium text-neutral-500 uppercase tracking-wide">Strengths</h2>
-          <ul className="mt-3 space-y-2 text-sm text-neutral-300">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <section className="border border-surface-800 rounded-lg p-5">
+          <h3 className="text-sm font-medium text-surface-500 uppercase tracking-wide">
+            Strengths
+          </h3>
+          <ul className="mt-3 space-y-2 text-sm text-surface-300">
             {primaryInfo.strengths.map((s) => (
-              <li key={s}>• {s}</li>
+              <li key={s}>&#8226; {s}</li>
             ))}
           </ul>
         </section>
-
-        <section className="border border-neutral-800 p-5">
-          <h2 className="text-sm font-medium text-neutral-500 uppercase tracking-wide">Challenges</h2>
-          <ul className="mt-3 space-y-2 text-sm text-neutral-300">
+        <section className="border border-surface-800 rounded-lg p-5">
+          <h3 className="text-sm font-medium text-surface-500 uppercase tracking-wide">
+            Challenges
+          </h3>
+          <ul className="mt-3 space-y-2 text-sm text-surface-300">
             {primaryInfo.challenges.map((c) => (
-              <li key={c}>• {c}</li>
+              <li key={c}>&#8226; {c}</li>
             ))}
           </ul>
         </section>
       </div>
 
-      <section className="border border-neutral-800 p-5">
-        <h2 className="text-lg font-medium">Your Scores vs Ideal Profile</h2>
-        <div className="mt-4 space-y-3">
+      <section className="border border-surface-800 rounded-lg p-5 space-y-3">
+        <h3 className="text-lg font-medium">Your Scores vs Ideal Profile</h3>
+        <div className="space-y-3">
           {chemicalLabels.map((label, i) => {
             const userScore = Object.values(result.userScores)[i];
             const idealScore = idealProfile[i];
+            const userPct = ((userScore - 1) / 4) * 100;
+            const idealPct = ((idealScore - 1) / 4) * 100;
             return (
-              <div key={label} className="flex items-center justify-between text-sm">
-                <span className="text-neutral-400">{label}</span>
-                <div className="flex items-center gap-4">
-                  <span>You: {userScore}</span>
-                  <span className="text-neutral-500">|</span>
-                  <span className="text-neutral-500">Ideal: {idealScore}</span>
+              <div key={label} className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-surface-300">{label}</span>
+                  <span className="text-surface-500">
+                    You: {userScore} | Ideal: {idealScore}
+                  </span>
+                </div>
+                <div className="relative h-1.5 rounded-full bg-surface-800 overflow-hidden">
+                  <div
+                    className="absolute h-full rounded-full bg-accent-purple/40"
+                    style={{ width: `${idealPct}%` }}
+                  />
+                  <div
+                    className="absolute h-full rounded-full bg-accent-purple"
+                    style={{ width: `${userPct}%` }}
+                  />
                 </div>
               </div>
             );
@@ -226,17 +182,21 @@ function ResultsView({
         </div>
       </section>
 
-      <section className="border border-neutral-800 p-5">
-        <h2 className="text-lg font-medium">All Temperament Variances</h2>
-        <p className="mt-1 text-sm text-neutral-500">Lower variance = closer match</p>
-        <div className="mt-4 space-y-2">
+      <section className="border border-surface-800 rounded-lg p-5 space-y-3">
+        <h3 className="text-lg font-medium">All Temperament Variances</h3>
+        <p className="text-sm text-surface-500">
+          Lower variance = closer match
+        </p>
+        <div className="space-y-2">
           {(Object.entries(result.variances) as [string, number][])
             .sort((a, b) => a[1] - b[1])
             .map(([type, variance], i) => (
               <div
                 key={type}
                 className={`flex items-center justify-between text-sm ${
-                  type === result.primary ? "text-white" : "text-neutral-400"
+                  type === result.primary
+                    ? "text-foreground"
+                    : "text-surface-400"
                 }`}
               >
                 <span>
@@ -248,19 +208,10 @@ function ResultsView({
         </div>
       </section>
 
-      <section className="text-sm text-neutral-500">
-        <p>
-          This assessment uses variance-based classification from biochemical self-ratings.
-          Temperament is one lens for understanding personality patterns.
-        </p>
-      </section>
-
-      <button
-        onClick={onReset}
-        className="w-full py-3 text-sm font-medium border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-500"
-      >
-        Take Again
-      </button>
+      <p className="text-xs text-surface-500 text-center">
+        Variance-based classification from biochemical self-ratings. Temperament
+        is one lens for understanding personality patterns.
+      </p>
     </div>
   );
 }
