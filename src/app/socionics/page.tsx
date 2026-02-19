@@ -6,6 +6,7 @@ import WizardShell from "@/components/wizard/WizardShell";
 import ResultsLayout from "@/components/results/ResultsLayout";
 import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
+import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 
 const FALLBACK_QUESTIONS: WizardQuestion[] = [
@@ -199,6 +200,8 @@ function KIMEResults({ interpretation }: { interpretation: NonNullable<Interpret
       <p className="text-xs text-surface-500 text-center">
         Powered by VRDW KIME-3 &mdash; Socionics-primary typing using Model A information metabolism analysis.
       </p>
+
+      <ResultChat testType="socionics" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-amber)" />
     </ResultsLayout>
   );
 }

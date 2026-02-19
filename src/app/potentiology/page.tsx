@@ -6,6 +6,7 @@ import WizardShell from "@/components/wizard/WizardShell";
 import ResultsLayout from "@/components/results/ResultsLayout";
 import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
+import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 
 const FALLBACK_QUESTIONS: WizardQuestion[] = [
@@ -231,6 +232,8 @@ function PBCEResults({ interpretation }: { interpretation: NonNullable<Interpret
       <p className="text-xs text-surface-500 text-center">
         Powered by VRDW PBCE-1 &mdash; Potentiology Burnout Cycle Engine. Energy-based cognitive typing.
       </p>
+
+      <ResultChat testType="potentiology" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-purple)" />
     </ResultsLayout>
   );
 }

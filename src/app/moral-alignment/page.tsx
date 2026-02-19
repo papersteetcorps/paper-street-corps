@@ -12,6 +12,7 @@ import WizardShell from "@/components/wizard/WizardShell";
 import ResultsLayout from "@/components/results/ResultsLayout";
 import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
+import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 
 type Interpretation = {
@@ -76,6 +77,7 @@ export default function MoralAlignmentPage() {
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [result, setResult] = useState<MoralAlignmentResult | null>(null);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
+  const [localResult, setLocalResult] = useState<Record<string, unknown>>({});
   const [isLLMSource, setIsLLMSource] = useState(false);
 
   useEffect(() => {
@@ -127,6 +129,15 @@ export default function MoralAlignmentPage() {
 
       const aligned = classifyMoralAlignment(structureScore, impulseScore);
       setResult(aligned);
+      setLocalResult({
+        testType: "moral-alignment",
+        alignment: aligned.alignment,
+        archetype: aligned.archetype,
+        structureScore,
+        impulseScore,
+        structure: aligned.structure,
+        impulse: aligned.impulse,
+      });
 
       fetch("/api/score-results", {
         method: "POST",
@@ -154,10 +165,11 @@ export default function MoralAlignmentPage() {
   const handleReset = useCallback(() => {
     setResult(null);
     setInterpretation(null);
+    setLocalResult({});
   }, []);
 
   const resultView = result ? (
-    <AlignmentResults result={result} interpretation={interpretation} />
+    <AlignmentResults result={result} interpretation={interpretation} localResult={localResult} />
   ) : null;
 
   return (
@@ -176,9 +188,11 @@ export default function MoralAlignmentPage() {
 function AlignmentResults({
   result,
   interpretation,
+  localResult,
 }: {
   result: MoralAlignmentResult;
   interpretation: Interpretation;
+  localResult: Record<string, unknown>;
 }) {
   const color = ALIGNMENT_COLORS[result.alignment] || "var(--accent-blue)";
 
@@ -312,6 +326,8 @@ function AlignmentResults({
         Two-axis scoring: Structure (Lawful/Neutral/Chaotic) and Impulse
         (Good/Neutral/Evil). Results map to the 3x3 alignment grid.
       </p>
+
+      <ResultChat testType="moral-alignment" result={localResult} accentColor="var(--color-accent-teal)" />
     </ResultsLayout>
   );
 }

@@ -166,6 +166,24 @@ export default async function DashboardPage() {
         )}
       </div>
 
+      {/* Synthesis */}
+      {(results?.length ?? 0) >= 2 && (
+        <div className="border border-surface-700 rounded-2xl p-6 flex items-center justify-between gap-4">
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-foreground">Cross-Framework Synthesis</p>
+            <p className="text-xs text-surface-400">
+              Combine your {testCounts.length} completed framework{testCounts.length !== 1 ? "s" : ""} into one unified psychological profile.
+            </p>
+          </div>
+          <Link
+            href="/synthesis"
+            className="shrink-0 text-sm bg-accent-blue hover:bg-accent-blue/90 text-white px-5 py-2.5 rounded-xl transition-colors"
+          >
+            Synthesize →
+          </Link>
+        </div>
+      )}
+
       {/* Sign out */}
       <div className="pb-8">
         <form action="/auth/logout" method="post">
