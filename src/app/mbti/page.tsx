@@ -25,9 +25,14 @@ type Result = {
 };
 
 type Interpretation = {
-  narrative: string;
-  insights: string[];
-  typeDescription: string;
+  headline?: string;
+  summary?: string;
+  narrative?: string;
+  insights?: string[];
+  strengths?: string[];
+  challenges?: string[];
+  growth?: string;
+  typeDescription?: string;
 } | null;
 
 const staticQuestions: WizardQuestion[] = QUESTIONS.map((q, i) => ({
@@ -234,9 +239,13 @@ function MBTIResults({
       {/* 600ms — AI narrative (if available) */}
       {interpretation && (
         <NarrativeSection
+          headline={interpretation.headline}
+          summary={interpretation.summary}
           narrative={interpretation.narrative}
           insights={interpretation.insights}
-          typeDescription={interpretation.typeDescription}
+          strengths={interpretation.strengths}
+          challenges={interpretation.challenges}
+          growth={interpretation.growth}
           delay={0.6}
         />
       )}
