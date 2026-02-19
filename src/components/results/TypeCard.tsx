@@ -6,7 +6,7 @@ import { useEffect } from "react";
 interface TypeCardProps {
   typeCode: string;
   subtitle?: string;
-  confidence: number;
+  confidence?: number;
   accentColor?: string;
   delay?: number;
 }
@@ -27,36 +27,41 @@ function AnimatedCounter({ target, delay }: { target: number; delay: number }) {
   return <motion.span>{rounded}</motion.span>;
 }
 
+const ACCENT_MAP: Record<string, string> = {
+  blue: "var(--color-accent-blue)",
+  purple: "var(--color-accent-purple)",
+  teal: "var(--color-accent-teal)",
+  amber: "var(--color-accent-amber)",
+};
+
 export default function TypeCard({
   typeCode,
   subtitle,
   confidence,
-  accentColor = "var(--accent-blue)",
+  accentColor = "blue",
   delay = 0,
 }: TypeCardProps) {
+  const color = ACCENT_MAP[accentColor] ?? accentColor;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      className="text-center space-y-3 py-4"
+      className="text-center space-y-3 py-6"
     >
-      <p className="text-sm text-surface-500 uppercase tracking-widest">
-        Your Result
-      </p>
-      <h2
-        className="text-6xl font-bold tracking-tight"
-        style={{ color: accentColor }}
-      >
+      <p className="text-xs text-surface-500 uppercase tracking-widest">Your Result</p>
+      <h2 className="text-6xl md:text-7xl font-bold tracking-tight" style={{ color }}>
         {typeCode}
       </h2>
       {subtitle && (
-        <p className="text-xl text-surface-400">{subtitle}</p>
+        <p className="text-lg text-surface-400">{subtitle}</p>
       )}
-      <p className="text-surface-500">
-        <AnimatedCounter target={confidence * 100} delay={delay + 0.3} />%
-        confidence
-      </p>
+      {confidence !== undefined && (
+        <p className="text-surface-500 text-sm">
+          <AnimatedCounter target={confidence * 100} delay={delay + 0.3} />% confidence
+        </p>
+      )}
     </motion.div>
   );
 }
