@@ -55,6 +55,32 @@
   --border: #27272a;
 }
 
+/* ─── Light mode ──────────────────────────────────────────────────────────── */
+.light {
+  --background: #fafafa;
+  --foreground: #09090b;
+  --surface-50:  #09090b;
+  --surface-100: #18181b;
+  --surface-200: #27272a;
+  --surface-300: #3f3f46;
+  --surface-400: #52525b;
+  --surface-500: #71717a;
+  --surface-600: #a1a1aa;
+  --surface-700: #d4d4d8;
+  --surface-800: #e4e4e7;
+  --surface-900: #f4f4f5;
+  --accent-blue:         #2563eb;
+  --accent-purple:       #9333ea;
+  --accent-teal:         #0d9488;
+  --accent-amber:        #d97706;
+  --accent-blue-muted:   rgba(37, 99, 235, 0.12);
+  --accent-purple-muted: rgba(147, 51, 234, 0.12);
+  --accent-teal-muted:   rgba(13, 148, 136, 0.12);
+  --accent-amber-muted:  rgba(217, 119, 6, 0.12);
+  --muted:  #71717a;
+  --border: #e4e4e7;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
