@@ -1,5 +1,5 @@
-import { getGeminiClient } from "@/lib/gemini/client";
-import { getPrompts, type TestType } from "@/lib/gemini/prompts";
+import { getAnthropicClient, ANTHROPIC_MODEL } from "@/lib/anthropic/client";
+import { getPrompts, type TestType } from "@/lib/anthropic/prompts";
 
 export const maxDuration = 30;
 
@@ -9,20 +9,20 @@ export async function POST(request: Request) {
     const { testType, result, messages } = body as {
       testType: TestType;
       result: Record<string, unknown>;
-      messages: Array<{ role: "user" | "model"; text: string }>;
+      messages: Array<{ role: "user" | "assistant"; text: string }>;
     };
 
-    const client = getGeminiClient();
+    const client = getAnthropicClient();
     if (!client) {
       return new Response(
-        "Gemini API key not configured. Add GEMINI_API_KEY to your environment.",
+        "API key not configured. Add ANTHROPIC_API_KEY to your environment.",
         { status: 200, headers: { "Content-Type": "text/plain" } }
       );
     }
 
     // Build system instruction from the interpret prompt + result context
     const { interpret: basePrompt } = getPrompts(testType);
-    const systemInstruction = `${basePrompt}
+    const systemPrompt = `${basePrompt}
 
 === COMPLETED TEST RESULT (already computed) ===
 ${JSON.stringify(result, null, 2)}
@@ -35,33 +35,32 @@ Rules:
 - Keep answers focused and under 200 words unless the question demands more.
 - Do not repeat the full result unless asked.`;
 
-    const model = client.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
-      systemInstruction,
-    });
-
-    // Build chat history (all messages except the last user message)
-    const history = messages.slice(0, -1).map((m) => ({
-      role: m.role,
-      parts: [{ text: m.text }],
+    // Build chat history for Anthropic format
+    // All messages except the last become history, last is the new user message
+    const anthropicMessages = messages.map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: m.text,
     }));
 
-    const lastMessage = messages[messages.length - 1];
-    if (!lastMessage || lastMessage.role !== "user") {
-      return new Response("Invalid message format", { status: 400 });
-    }
-
-    const chat = model.startChat({ history });
-    const result2 = await chat.sendMessageStream(lastMessage.text);
-
     // Stream the response
-    const stream = new ReadableStream({
+    const stream = client.messages.stream({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: anthropicMessages,
+    });
+
+    const readableStream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
         try {
-          for await (const chunk of result2.stream) {
-            const text = chunk.text();
-            if (text) controller.enqueue(encoder.encode(text));
+          for await (const event of stream) {
+            if (
+              event.type === "content_block_delta" &&
+              event.delta.type === "text_delta"
+            ) {
+              controller.enqueue(encoder.encode(event.delta.text));
+            }
           }
         } finally {
           controller.close();
@@ -69,7 +68,7 @@ Rules:
       },
     });
 
-    return new Response(stream, {
+    return new Response(readableStream, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-cache",

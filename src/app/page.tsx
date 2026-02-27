@@ -8,7 +8,7 @@ import TheoryCard from "@/components/cards/TheoryCard";
 import Container from "@/components/ui/Container";
 
 const STATS = [
-  { value: "6", label: "Frameworks" },
+  { value: "5", label: "Frameworks" },
   { value: "16", label: "Personality types" },
   { value: "0", label: "Data collected" },
   { value: "∞", label: "Self-understanding" },
@@ -28,12 +28,12 @@ const PRINCIPLES = [
   {
     icon: "✦",
     title: "Multi-framework",
-    body: "Six distinct typological frameworks — Neurochemical MBTI, Temperaments, Moral Alignment, Jungian CJTE, Socionics KIME, and Potentiology PBCE.",
+    body: "Five distinct typological frameworks — Classic Jungian CJTE, Socionics KIME, Potentiology PBCE, Temperaments, and Moral Alignment.",
   },
   {
     icon: "◉",
     title: "AI-interpreted",
-    body: "Gemini 1.5 Pro generates contextual questions and interprets your results using the full research corpus as ground truth — not generic personality descriptions.",
+    body: "AI generates contextual questions and interprets your results using the full research corpus as ground truth — not generic personality descriptions.",
   },
 ];
 
@@ -62,7 +62,7 @@ export default function HomePage() {
             transition={{ duration: 0.5, delay: 0.12 }}
             className="text-lg text-surface-400 leading-relaxed max-w-2xl"
           >
-            Six rigorous psychological frameworks. Open-ended qualitative analysis.
+            Five rigorous psychological frameworks. Open-ended qualitative analysis.
             AI interpretation backed by full research corpora. No flattery. No data collection.
           </motion.p>
 
@@ -118,7 +118,7 @@ export default function HomePage() {
             transition={{ delay: 0.35 }}
           >
             <p className="text-xs text-surface-500 uppercase tracking-widest mb-2">Assessments</p>
-            <h2 className="text-3xl font-bold">Six frameworks, one truth.</h2>
+            <h2 className="text-3xl font-bold">Five frameworks, one truth.</h2>
             <p className="mt-2 text-surface-400 max-w-2xl text-sm leading-relaxed">
               Each framework approaches personality from a different axis — neurochemical, cognitive, moral, or energetic.
               Use one or all. They are designed to triangulate, not to repeat each other.
@@ -160,13 +160,13 @@ export default function HomePage() {
               {[
                 {
                   step: "01",
-                  title: "Gemini loads your framework corpus",
-                  body: "Before your test begins, Gemini 1.5 Pro ingests the full research document for your chosen framework — cognitive function definitions, scoring rules, type descriptions — as system context.",
+                  title: "AI loads your framework corpus",
+                  body: "Before your test begins, AI ingests the full research document for your chosen framework — cognitive function definitions, scoring rules, type descriptions — as system context.",
                 },
                 {
                   step: "02",
                   title: "Questions generated for you",
-                  body: "Gemini generates questions tailored to reveal the specific dimensions your framework measures. For qualitative tests (CJTE, KIME, PBCE), these are open-ended and diagnostic.",
+                  body: "AI generates questions tailored to reveal the specific dimensions your framework measures. For qualitative tests (CJTE, KIME, PBCE), these are open-ended and diagnostic.",
                 },
                 {
                   step: "03",
@@ -176,7 +176,7 @@ export default function HomePage() {
                 {
                   step: "04",
                   title: "Corpus-backed interpretation",
-                  body: "Gemini interprets your result against the research corpus: cognitive function evidence, quadra alignment, burnout pattern, or moral axis positioning — specific to your answers, not generic descriptions.",
+                  body: "AI interprets your result against the research corpus: cognitive function evidence, quadra alignment, burnout pattern, or moral axis positioning — specific to your answers, not generic descriptions.",
                 },
               ].map(({ step, title, body }, i) => (
                 <motion.div
@@ -284,12 +284,11 @@ export default function HomePage() {
                 </thead>
                 <tbody className="divide-y divide-surface-800">
                   {[
-                    { name: "Neurochemical MBTI", q: "20", format: "Scale 1–5", for: "Quick type estimation with biochemical basis", href: "/mbti", color: "text-accent-blue" },
-                    { name: "Temperaments", q: "20", format: "Scale 1–5", for: "Behavioral chemistry and social drive patterns", href: "/temperaments", color: "text-accent-purple" },
-                    { name: "Moral Alignment", q: "12", format: "Scale 1–5", for: "Understanding your ethical architecture", href: "/moral-alignment", color: "text-accent-teal" },
                     { name: "Classic Jungian (CJTE)", q: "8", format: "Open-ended", for: "Deep qualitative Jungian typing with function stack", href: "/cjte", color: "text-accent-blue" },
                     { name: "Socionics (KIME)", q: "16", format: "Open-ended", for: "Model A sociotype and information metabolism", href: "/socionics", color: "text-accent-amber" },
                     { name: "Potentiology (PBCE)", q: "16", format: "Open-ended", for: "Burnout cycles and cognitive energy mapping", href: "/potentiology", color: "text-accent-purple" },
+                    { name: "Temperaments", q: "20", format: "Scale 1-5", for: "Behavioral chemistry and social drive patterns", href: "/temperaments", color: "text-accent-purple" },
+                    { name: "Moral Alignment", q: "12", format: "Scale 1-5", for: "Understanding your ethical architecture", href: "/moral-alignment", color: "text-accent-teal" },
                   ].map(({ name, q, format, for: forText, href, color }) => (
                     <tr key={name} className="group hover:bg-surface-900/50 transition-colors">
                       <td className="py-3 pr-4">

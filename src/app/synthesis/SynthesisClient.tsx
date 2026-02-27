@@ -23,7 +23,6 @@ type Synthesis = {
 };
 
 const TEST_HREFS: Record<string, string> = {
-  mbti: "/mbti",
   temperaments: "/temperaments",
   "moral-alignment": "/moral-alignment",
   cjte: "/cjte",
@@ -32,7 +31,6 @@ const TEST_HREFS: Record<string, string> = {
 };
 
 const TEST_COLORS: Record<string, string> = {
-  mbti: "text-accent-blue border-accent-blue/30 bg-accent-blue/5",
   temperaments: "text-accent-purple border-accent-purple/30 bg-accent-purple/5",
   "moral-alignment": "text-accent-teal border-accent-teal/30 bg-accent-teal/5",
   cjte: "text-accent-blue border-accent-blue/30 bg-accent-blue/5",
@@ -72,7 +70,7 @@ export default function SynthesisClient({ availableResults }: { availableResults
       if (data.synthesis) {
         setSynthesis(data.synthesis);
       } else {
-        setError(data.error ?? "Synthesis failed. Check your GEMINI_API_KEY.");
+        setError(data.error ?? "Synthesis failed. Check your ANTHROPIC_API_KEY.");
       }
     } catch {
       setError("Could not reach the synthesis service.");
@@ -302,7 +300,7 @@ export default function SynthesisClient({ availableResults }: { availableResults
             )}
 
             <p className="text-xs text-surface-600 text-center">
-              Synthesis generated from {synthesis.frameworks?.join(", ") ?? selectedResults.map((r) => r.testType).join(", ")} &mdash; Gemini 1.5 Pro
+              Synthesis generated from {synthesis.frameworks?.join(", ") ?? selectedResults.map((r) => r.testType).join(", ")} &mdash; AI-powered analysis
             </p>
           </motion.div>
         )}

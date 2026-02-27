@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { getGeminiClient } from "@/lib/gemini/client";
-import { getPrompts, type TestType } from "@/lib/gemini/prompts";
-import { validateQuestions } from "@/lib/gemini/schemas";
+import { getAnthropicClient, ANTHROPIC_MODEL } from "@/lib/anthropic/client";
+import { getPrompts, type TestType } from "@/lib/anthropic/prompts";
+import { validateQuestions } from "@/lib/anthropic/schemas";
 import type { WizardQuestion } from "@/lib/types/wizard";
 
 export const maxDuration = 30;
 
 const VALID_TYPES: TestType[] = [
-  "mbti",
   "temperaments",
   "moral-alignment",
   "cjte",
@@ -24,21 +23,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid test type" }, { status: 400 });
     }
 
-    const client = getGeminiClient();
+    const client = getAnthropicClient();
     if (!client) {
       return NextResponse.json({ questions: null, fallback: true });
     }
 
     const { generate: systemPrompt } = getPrompts(testType);
-    const model = client.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
-      systemInstruction: systemPrompt,
+
+    const response = await client.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 4096,
+      system: systemPrompt,
+      messages: [
+        { role: "user", content: "Generate the questions now. Return ONLY valid JSON as specified." },
+      ],
     });
 
-    const result = await model.generateContent(
-      "Generate the questions now. Return ONLY valid JSON as specified."
-    );
-    const content = result.response.text();
+    const content =
+      response.content[0]?.type === "text" ? response.content[0].text : null;
 
     if (!content) {
       return NextResponse.json({ questions: null, fallback: true });

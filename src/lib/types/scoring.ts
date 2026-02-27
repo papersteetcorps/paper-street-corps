@@ -4,12 +4,6 @@ export interface ScoringMatch {
   confidence: number;
 }
 
-export interface MBTIScoringResult {
-  testType: "mbti";
-  matches: ScoringMatch[];
-  userScores: Record<string, number>;
-}
-
 export interface TemperamentScoringResult {
   testType: "temperaments";
   primary: string;
@@ -28,6 +22,5 @@ export interface MoralAlignmentScoringResult {
 }
 
 export type ScoringResult =
-  | MBTIScoringResult
   | TemperamentScoringResult
   | MoralAlignmentScoringResult;

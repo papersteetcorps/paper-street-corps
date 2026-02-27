@@ -3,7 +3,6 @@ import Link from "next/link";
 import SynthesisClient from "./SynthesisClient";
 
 const TEST_LABELS: Record<string, string> = {
-  mbti: "Neurochemical MBTI",
   temperaments: "Temperaments",
   "moral-alignment": "Moral Alignment",
   cjte: "Classic Jungian (CJTE)",

@@ -98,7 +98,7 @@ export default function SocionicsPage() {
       setInterpretation(
         data.interpretation ?? {
           headline: "Analysis complete",
-          summary: "Your responses have been recorded. Add GEMINI_API_KEY for full Socionics interpretation.",
+          summary: "Your responses have been recorded. Add ANTHROPIC_API_KEY for full Socionics interpretation.",
         }
       );
     } catch {

@@ -2,20 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "next-themes";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/mbti", label: "MBTI" },
-  { href: "/temperaments", label: "Temperaments" },
-  { href: "/moral-alignment", label: "Alignment" },
+const ASSESSMENT_LINKS = [
   { href: "/cjte", label: "CJTE" },
+  { href: "/temperaments", label: "Temperaments" },
+  { href: "/moral-alignment", label: "Moral Alignment" },
   { href: "/socionics", label: "Socionics" },
   { href: "/potentiology", label: "Potentiology" },
+];
+
+const TOP_LINKS = [
+  { href: "/", label: "Home" },
   { href: "/theory", label: "Theory" },
   { href: "/resources", label: "Resources" },
   { href: "/synthesis", label: "Synthesis" },
@@ -24,9 +26,14 @@ const NAV_LINKS = [
 export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileAssessmentsOpen, setMobileAssessmentsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
@@ -41,6 +48,17 @@ export default function Header() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
+  const isAnyAssessmentActive = ASSESSMENT_LINKS.some((l) => isActive(l.href));
+
+  const openDropdown = () => {
+    if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
+    setDropdownOpen(true);
+  };
+
+  const closeDropdown = () => {
+    closeTimer.current = setTimeout(() => setDropdownOpen(false), 150);
+  };
+
   return (
     <header className="border-b border-surface-800 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -49,15 +67,98 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex gap-5 text-sm">
-          {NAV_LINKS.map(({ href, label }) => (
+        <nav className="hidden lg:flex items-center gap-5 text-sm">
+          {TOP_LINKS.filter((l) => l.href === "/").map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               className={`relative transition-colors ${
-                isActive(href)
-                  ? "text-foreground"
-                  : "text-surface-400 hover:text-surface-200"
+                isActive(href) ? "text-foreground" : "text-surface-400 hover:text-surface-200"
+              }`}
+            >
+              {label}
+              {isActive(href) && (
+                <motion.span
+                  layoutId="nav-underline"
+                  className="absolute -bottom-1 left-0 right-0 h-px bg-accent-blue"
+                  transition={{ duration: 0.25 }}
+                />
+              )}
+            </Link>
+          ))}
+
+          {/* Assessments dropdown */}
+          <div
+            ref={dropdownRef}
+            className="relative"
+            onMouseEnter={openDropdown}
+            onMouseLeave={closeDropdown}
+          >
+            <button
+              className={`relative flex items-center gap-1 transition-colors ${
+                isAnyAssessmentActive ? "text-foreground" : "text-surface-400 hover:text-surface-200"
+              }`}
+              onClick={() => setDropdownOpen((v) => !v)}
+              aria-expanded={dropdownOpen}
+              aria-haspopup="true"
+            >
+              Assessments
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+              {isAnyAssessmentActive && (
+                <motion.span
+                  layoutId="nav-underline"
+                  className="absolute -bottom-1 left-0 right-0 h-px bg-accent-blue"
+                  transition={{ duration: 0.25 }}
+                />
+              )}
+            </button>
+
+            <AnimatePresence>
+              {dropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-48 bg-background border border-surface-800 rounded-xl shadow-lg py-2 z-50"
+                >
+                  {ASSESSMENT_LINKS.map(({ href, label }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setDropdownOpen(false)}
+                      className={`block px-4 py-2 text-sm transition-colors ${
+                        isActive(href)
+                          ? "text-foreground bg-surface-800/50"
+                          : "text-surface-400 hover:text-foreground hover:bg-surface-800/30"
+                      }`}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {TOP_LINKS.filter((l) => l.href !== "/").map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`relative transition-colors ${
+                isActive(href) ? "text-foreground" : "text-surface-400 hover:text-surface-200"
               }`}
             >
               {label}
@@ -176,7 +277,70 @@ export default function Header() {
             className="lg:hidden overflow-hidden"
           >
             <div className="flex flex-col gap-3 pt-4 pb-2 text-sm">
-              {NAV_LINKS.map(({ href, label }) => (
+              {/* Home */}
+              <Link
+                href="/"
+                onClick={() => setMenuOpen(false)}
+                className={`transition-colors ${
+                  isActive("/") ? "text-foreground" : "text-surface-400 hover:text-surface-200"
+                }`}
+              >
+                Home
+              </Link>
+
+              {/* Assessments accordion */}
+              <div>
+                <button
+                  onClick={() => setMobileAssessmentsOpen((v) => !v)}
+                  className={`flex items-center justify-between w-full transition-colors ${
+                    isAnyAssessmentActive ? "text-foreground" : "text-surface-400 hover:text-surface-200"
+                  }`}
+                >
+                  <span>Assessments</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={`transition-transform duration-200 ${mobileAssessmentsOpen ? "rotate-180" : ""}`}
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                <AnimatePresence>
+                  {mobileAssessmentsOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex flex-col gap-2 pl-4 pt-2 border-l border-surface-800 ml-1">
+                        {ASSESSMENT_LINKS.map(({ href, label }) => (
+                          <Link
+                            key={href}
+                            href={href}
+                            onClick={() => { setMenuOpen(false); setMobileAssessmentsOpen(false); }}
+                            className={`transition-colors ${
+                              isActive(href) ? "text-foreground" : "text-surface-400 hover:text-surface-200"
+                            }`}
+                          >
+                            {label}
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Rest of top links */}
+              {TOP_LINKS.filter((l) => l.href !== "/").map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
@@ -188,6 +352,8 @@ export default function Header() {
                   {label}
                 </Link>
               ))}
+
+              {/* Auth — mobile */}
               <div className="pt-2 border-t border-surface-800 flex flex-col gap-2">
                 {user ? (
                   <>

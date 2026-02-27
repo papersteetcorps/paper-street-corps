@@ -15,42 +15,6 @@ export interface Offering {
 
 export const tests: Offering[] = [
   {
-    id: "mbti",
-    title: "Neurochemical MBTI",
-    category: "test",
-    description: "Neurochemical-based MBTI using nearest centroid classification.",
-    longDescription:
-      "Estimate your cognitive-emotional profile across 5 neurochemical axes using Mahalanobis distance to 16 type centroids. Powered by Gemini for personalized question generation and interpretation.",
-    href: "/mbti",
-    icon: "✦",
-    color: "var(--color-accent-blue)",
-    colorMuted: "var(--color-accent-blue-muted)",
-  },
-  {
-    id: "temperament",
-    title: "Temperaments",
-    category: "test",
-    description: "Variance-based assessment to identify your behavioral temperament.",
-    longDescription:
-      "Rate 5 biochemical markers and discover your primary temperament (Choleric, Melancholic, Phlegmatic, or Sanguine) through variance-based classification.",
-    href: "/temperaments",
-    icon: "⬡",
-    color: "var(--color-accent-purple)",
-    colorMuted: "var(--color-accent-purple-muted)",
-  },
-  {
-    id: "moral-alignment",
-    title: "Moral Alignment",
-    category: "test",
-    description: "Two-axis assessment mapping your ethical tendencies on a 3x3 grid.",
-    longDescription:
-      "Explore your moral orientation across the Structure (Lawful–Chaotic) and Impulse (Good–Evil) axes to locate your position in the 9-cell alignment grid.",
-    href: "/moral-alignment",
-    icon: "⚖",
-    color: "var(--color-accent-teal)",
-    colorMuted: "var(--color-accent-teal-muted)",
-  },
-  {
     id: "cjte",
     title: "Classic Jungian",
     category: "test",
@@ -88,6 +52,30 @@ export const tests: Offering[] = [
     color: "var(--color-accent-purple)",
     colorMuted: "var(--color-accent-purple-muted)",
     badge: "PBCE-1",
+  },
+  {
+    id: "temperament",
+    title: "Temperaments",
+    category: "test",
+    description: "Variance-based assessment to identify your behavioral temperament.",
+    longDescription:
+      "Rate 5 biochemical markers and discover your primary temperament (Choleric, Melancholic, Phlegmatic, or Sanguine) through variance-based classification.",
+    href: "/temperaments",
+    icon: "⬡",
+    color: "var(--color-accent-purple)",
+    colorMuted: "var(--color-accent-purple-muted)",
+  },
+  {
+    id: "moral-alignment",
+    title: "Moral Alignment",
+    category: "test",
+    description: "Two-axis assessment mapping your ethical tendencies on a 3x3 grid.",
+    longDescription:
+      "Explore your moral orientation across the Structure (Lawful-Chaotic) and Impulse (Good-Evil) axes to locate your position in the 9-cell alignment grid.",
+    href: "/moral-alignment",
+    icon: "⚖",
+    color: "var(--color-accent-teal)",
+    colorMuted: "var(--color-accent-teal-muted)",
   },
 ];
 
