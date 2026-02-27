@@ -3,7 +3,6 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 const TEST_META: Record<string, { label: string; href: string; color: string; icon: string }> = {
-  mbti: { label: "MBTI", href: "/mbti", color: "text-accent-blue", icon: "🧠" },
   temperaments: { label: "Temperaments", href: "/temperaments", color: "text-accent-purple", icon: "🔥" },
   "moral-alignment": { label: "Moral Alignment", href: "/moral-alignment", color: "text-accent-teal", icon: "⚖️" },
   cjte: { label: "CJTE", href: "/cjte", color: "text-accent-blue", icon: "🔍" },
@@ -22,7 +21,7 @@ function formatDate(iso: string) {
 }
 
 function getResultSummary(result: Record<string, unknown>): string {
-  if (result.testType === "mbti" || result.testType === "cjte") {
+  if (result.testType === "cjte") {
     const matches = result.matches as Array<{ type: string; confidence: number }> | undefined;
     if (matches?.[0]) return `${matches[0].type} — ${(matches[0].confidence * 100).toFixed(0)}% confidence`;
   }

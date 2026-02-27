@@ -1,4 +1,4 @@
-import { getGeminiClient } from "@/lib/gemini/client";
+import { getAnthropicClient, ANTHROPIC_MODEL } from "@/lib/anthropic/client";
 import { readFileSync } from "fs";
 import { join } from "path";
 
@@ -19,13 +19,12 @@ function buildSynthesisPrompt(results: Array<{ testType: string; result: Record<
 
   const frameworks = results.map((r) => r.testType).join(", ");
 
-  return `You are a master personality analyst with deep expertise in all six frameworks used on this platform:
-1. Neurochemical MBTI — 5-chemical model, 16 types
-2. Temperaments — Choleric / Melancholic / Phlegmatic / Sanguine
-3. Moral Alignment — 3x3 grid (Structure × Impulse axes)
-4. Classic Jungian CJTE — 8 cognitive functions, Jungian typology
-5. Socionics KIME — Model A, 16 sociotypes, information elements
-6. Potentiology PBCE — 8 cognitive functions, energy/burnout model
+  return `You are a master personality analyst with deep expertise in all five frameworks used on this platform:
+1. Classic Jungian CJTE — 8 cognitive functions, Jungian typology
+2. Socionics KIME — Model A, 16 sociotypes, information elements
+3. Potentiology PBCE — 8 cognitive functions, energy/burnout model
+4. Temperaments — Choleric / Melancholic / Phlegmatic / Sanguine
+5. Moral Alignment — 3x3 grid (Structure × Impulse axes)
 
 === JUNGIAN CORPUS ===
 ${cjtCorpus}
@@ -54,7 +53,7 @@ Return ONLY valid JSON:
   "title": "A short evocative title for this synthesis (e.g. 'The Structured Lone Architect')",
   "coreProfile": "2-3 sentences identifying the single underlying pattern that runs across ALL results",
   "convergences": [
-    { "frameworks": ["mbti", "cjte"], "insight": "What these two frameworks both confirm about this person" }
+    { "frameworks": ["cjte", "socionics"], "insight": "What these two frameworks both confirm about this person" }
   ],
   "divergences": [
     { "insight": "Where one framework adds nuance or appears to contradict another, and what that means" }
@@ -78,22 +77,24 @@ export async function POST(request: Request) {
       return Response.json({ error: "At least 2 test results required for synthesis" }, { status: 400 });
     }
 
-    const client = getGeminiClient();
+    const client = getAnthropicClient();
     if (!client) {
-      return Response.json({ synthesis: null, error: "GEMINI_API_KEY not configured" });
+      return Response.json({ synthesis: null, error: "ANTHROPIC_API_KEY not configured" });
     }
 
     const systemPrompt = buildSynthesisPrompt(results);
-    const model = client.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
-      systemInstruction: systemPrompt,
+
+    const response = await client.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 4096,
+      system: systemPrompt,
+      messages: [
+        { role: "user", content: "Generate the cross-framework synthesis now. Return ONLY valid JSON." },
+      ],
     });
 
-    const geminiResult = await model.generateContent(
-      "Generate the cross-framework synthesis now. Return ONLY valid JSON."
-    );
-
-    const raw = geminiResult.response.text();
+    const raw =
+      response.content[0]?.type === "text" ? response.content[0].text : "";
     const cleaned = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
 
     try {

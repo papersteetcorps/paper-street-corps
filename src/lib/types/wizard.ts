@@ -18,7 +18,7 @@ export interface WizardAnswer {
 }
 
 export interface WizardConfig {
-  testType: "mbti" | "temperaments" | "moral-alignment" | "cjte" | "socionics" | "potentiology";
+  testType: "temperaments" | "moral-alignment" | "cjte" | "socionics" | "potentiology";
   title: string;
   subtitle: string;
   questionSource: "static" | "llm";

@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { getGeminiClient } from "@/lib/gemini/client";
-import { getPrompts, type TestType } from "@/lib/gemini/prompts";
-import { validateInterpretation } from "@/lib/gemini/schemas";
+import { getAnthropicClient, ANTHROPIC_MODEL } from "@/lib/anthropic/client";
+import { getPrompts, type TestType } from "@/lib/anthropic/prompts";
+import { validateInterpretation } from "@/lib/anthropic/schemas";
 import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 30;
 
 const VALID_TYPES: TestType[] = [
-  "mbti",
   "temperaments",
   "moral-alignment",
   "cjte",
@@ -45,20 +44,23 @@ export async function POST(request: Request) {
       }
     };
 
-    const geminiClient = getGeminiClient();
+    const anthropicClient = getAnthropicClient();
 
     const [interpretation] = await Promise.all([
-      geminiClient
+      anthropicClient
         ? (async () => {
             const { interpret: systemPrompt } = getPrompts(testType);
-            const model = geminiClient.getGenerativeModel({
-              model: "gemini-2.5-flash-lite",
-              systemInstruction: systemPrompt,
+            const response = await anthropicClient.messages.create({
+              model: ANTHROPIC_MODEL,
+              max_tokens: 4096,
+              system: systemPrompt,
+              messages: [
+                { role: "user", content: JSON.stringify({ answers, localResult }) },
+              ],
             });
-            const result = await model.generateContent(
-              JSON.stringify({ answers, localResult })
-            );
-            return validateInterpretation(result.response.text());
+            const text =
+              response.content[0]?.type === "text" ? response.content[0].text : "";
+            return validateInterpretation(text);
           })().catch(() => null)
         : Promise.resolve(null),
       saveToHistory(),

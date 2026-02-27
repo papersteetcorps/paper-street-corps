@@ -101,7 +101,7 @@ export default function PotentiologyPage() {
       setInterpretation(
         data.interpretation ?? {
           headline: "Analysis complete",
-          summary: "Your responses have been recorded. Add GEMINI_API_KEY for full Potentiology type determination.",
+          summary: "Your responses have been recorded. Add ANTHROPIC_API_KEY for full Potentiology type determination.",
         }
       );
     } catch {

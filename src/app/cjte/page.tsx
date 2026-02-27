@@ -125,7 +125,7 @@ export default function CJTEPage() {
       if (data.interpretation) {
         setInterpretation(data.interpretation);
       } else {
-        setInterpretation({ headline: "Analysis complete", summary: "Your responses have been processed. Add GEMINI_API_KEY for full interpretation." });
+        setInterpretation({ headline: "Analysis complete", summary: "Your responses have been processed. Add ANTHROPIC_API_KEY for full interpretation." });
       }
     } catch {
       setInterpretation({ headline: "Analysis complete", summary: "Could not reach the interpretation service." });
