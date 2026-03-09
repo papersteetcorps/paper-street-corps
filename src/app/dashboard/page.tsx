@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 const TEST_META: Record<string, { label: string; href: string; color: string; icon: string }> = {
   temperaments: { label: "Temperaments", href: "/temperaments", color: "text-accent-purple", icon: "🔥" },
   "moral-alignment": { label: "Moral Alignment", href: "/moral-alignment", color: "text-accent-teal", icon: "⚖️" },
-  cjte: { label: "CJTE", href: "/cjte", color: "text-accent-blue", icon: "🔍" },
+  cjte: { label: "MBTI", href: "/cjte", color: "text-accent-blue", icon: "🔍" },
   socionics: { label: "Socionics", href: "/socionics", color: "text-accent-amber", icon: "🌐" },
   potentiology: { label: "Potentiology", href: "/potentiology", color: "text-accent-purple", icon: "⚡" },
 };
