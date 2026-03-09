@@ -85,7 +85,7 @@ export default function TheoryIndexPage() {
               {[
                 { name: "Temperaments", href: "/temperaments", engine: "Variance minimization", scoring: "4 temperament ideal vectors, blend threshold 0.5" },
                 { name: "Moral Alignment", href: "/moral-alignment", engine: "2-axis dual scoring", scoring: "3x3 grid classification (Structure × Impulse)" },
-                { name: "CJTE", href: "/cjte", engine: "VRDW CJTE-3 corpus", scoring: "AI interprets 8 open-ended answers" },
+                { name: "MBTI", href: "/cjte", engine: "VRDW CJTE-3 corpus", scoring: "AI interprets 8 open-ended answers" },
                 { name: "Socionics KIME", href: "/socionics", engine: "VRDW KIME-3 corpus", scoring: "Model A inference from 16 open-ended answers" },
                 { name: "Potentiology PBCE", href: "/potentiology", engine: "VRDW PBCE-1 corpus", scoring: "Energy-domain inference from 16 mentor questions" },
               ].map(({ name, href, engine, scoring }) => (

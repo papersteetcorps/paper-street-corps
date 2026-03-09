@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
 const ASSESSMENT_LINKS = [
-  { href: "/cjte", label: "CJTE" },
+  { href: "/cjte", label: "MBTI" },
   { href: "/temperaments", label: "Temperaments" },
   { href: "/moral-alignment", label: "Moral Alignment" },
   { href: "/socionics", label: "Socionics" },

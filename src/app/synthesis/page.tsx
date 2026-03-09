@@ -5,7 +5,7 @@ import SynthesisClient from "./SynthesisClient";
 const TEST_LABELS: Record<string, string> = {
   temperaments: "Temperaments",
   "moral-alignment": "Moral Alignment",
-  cjte: "Classic Jungian (CJTE)",
+  cjte: "MBTI",
   socionics: "Socionics (KIME)",
   potentiology: "Potentiology (PBCE)",
 };

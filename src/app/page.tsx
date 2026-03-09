@@ -28,7 +28,7 @@ const PRINCIPLES = [
   {
     icon: "✦",
     title: "Multi-framework",
-    body: "Five distinct typological frameworks — Classic Jungian CJTE, Socionics KIME, Potentiology PBCE, Temperaments, and Moral Alignment.",
+    body: "Five distinct typological frameworks — MBTI, Socionics KIME, Potentiology PBCE, Temperaments, and Moral Alignment.",
   },
   {
     icon: "◉",
@@ -76,7 +76,7 @@ export default function HomePage() {
               href="/cjte"
               className="bg-accent-blue hover:bg-accent-blue/90 text-white font-medium px-6 py-3 rounded-xl transition-colors text-sm"
             >
-              Take CJTE &rarr;
+              Take MBTI &rarr;
             </Link>
             <Link
               href="/potentiology"
@@ -166,7 +166,7 @@ export default function HomePage() {
                 {
                   step: "02",
                   title: "Questions generated for you",
-                  body: "AI generates questions tailored to reveal the specific dimensions your framework measures. For qualitative tests (CJTE, KIME, PBCE), these are open-ended and diagnostic.",
+                  body: "AI generates questions tailored to reveal the specific dimensions your framework measures. For qualitative tests (MBTI, KIME, PBCE), these are open-ended and diagnostic.",
                 },
                 {
                   step: "03",
@@ -284,7 +284,7 @@ export default function HomePage() {
                 </thead>
                 <tbody className="divide-y divide-surface-800">
                   {[
-                    { name: "Classic Jungian (CJTE)", q: "8", format: "Open-ended", for: "Deep qualitative Jungian typing with function stack", href: "/cjte", color: "text-accent-blue" },
+                    { name: "MBTI", q: "8", format: "Open-ended", for: "Deep qualitative Jungian typing with function stack", href: "/cjte", color: "text-accent-blue" },
                     { name: "Socionics (KIME)", q: "16", format: "Open-ended", for: "Model A sociotype and information metabolism", href: "/socionics", color: "text-accent-amber" },
                     { name: "Potentiology (PBCE)", q: "16", format: "Open-ended", for: "Burnout cycles and cognitive energy mapping", href: "/potentiology", color: "text-accent-purple" },
                     { name: "Temperaments", q: "20", format: "Scale 1-5", for: "Behavioral chemistry and social drive patterns", href: "/temperaments", color: "text-accent-purple" },
