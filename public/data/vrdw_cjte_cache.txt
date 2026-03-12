@@ -1,0 +1,88 @@
+Scoring logic:
+
+Step 1 — For each answer, ignore tone, self-idealization, emotional intensity, or intellectual complexity. Extract only cognitive process indicators. Identify whether the person is focusing on:-
+• Concrete present reality or abstract possibility
+• Logical structure or value judgment
+• Internal reference point or external adaptation
+• Structured control or exploratory movement
+
+Step 2 — Question Weight Mapping
+Question 1 (Weight 3) – Dominant Thought Content
+Concrete present focus → add 3 to S
+Future trajectory, symbolism, abstraction → add 3 to N
+Structural analysis, system refinement → add 3 to T
+Value rumination, moral reflection → add 3 to F
+Inner conceptual refinement → add 1 to I
+Outer engagement with events → add 1 to E
+Question 2 (Weight 2) – Field of Interest
+Systems, engineering, optimization → add 2 to T
+Symbolism, psychology, meaning → add 2 to N (or F if value-centered)
+Physical mastery, real-world engagement → add 2 to S
+Ethics, harmony, authenticity motives → add 2 to F
+Question 3 (Weight 2) – Dark Impulse
+Compulsion for control over reality → add 2 to inferior Se or Te indicator
+Catastrophic imagination, unseen threats → add 2 to inferior N indicator
+Emotional volatility or suppressed sentiment → add 2 to inferior F indicator
+Fear of emotional exposure or relational chaos → add 2 to inferior Fe indicator
+Question 4 (Weight 3) – Moral Values
+Objective fairness, consistency, impersonal justice → add 3 to T
+Authenticity, loyalty, relational harmony → add 3 to F
+Collective ethics or social alignment → add 1 to E
+Private conviction or inner moral code → add 1 to I
+Question 5 (Weight 2) – Daily Routine
+Structured execution, task control → add 2 to Te
+Exploratory idea wandering → add 2 to Ne or Ni
+Sensory immersion, direct action → add 2 to Se
+Stability, repetition, internal referencing → add 2 to Si
+Question 6 (Weight 3) – Problem Solving
+Stepwise logical decomposition → add 3 to T
+Value-aligned or people-centered resolution → add 3 to F
+Pattern forecasting or long-range modeling → add 3 to N
+Hands-on practical trial and adjustment → add 3 to S
+External structuring → add 1 to E
+Internal modeling → add 1 to I
+Question 7 (Weight 1) – What You Like
+Reinforce whichever function theme dominates the answer by adding 1 to that function.
+Question 8 (Weight 1) – What You Hate
+Often reflects inferior opposition. Add 1 to opposite of dominant candidate if consistent.
+
+Step 3 — Maintain Tallies
+Keep running totals for S, N, T, F.
+Keep running totals for I and E.
+
+Step 4 — Determine Dominant Function
+The highest score among S, N, T, F becomes the dominant candidate.
+Orientation is determined by whether I or E total is higher.
+If tied, use Question 1 and Question 6 as tie-breakers.
+
+Step 5 — Determine Auxiliary
+Auxiliary must:
+• Oppose rationality category (Judging vs Perceiving)
+• Share same orientation as dominant
+Example:
+If dominant is Ni (introverted perceiving), auxiliary must be extraverted judging (Te or Fe). Choose whichever T or F score is higher.
+
+Step 6 — Determine Inferior
+Inferior is the direct opposite of dominant function:
+Ni ↔ Se
+Ne ↔ Si
+Ti ↔ Fe
+Te ↔ Fi
+Fi ↔ Te
+Fe ↔ Ti
+Si ↔ Ne
+Se ↔ Ni
+Confirm using Question 3 dark impulse indicators.
+
+Step 7 — Conflict Resolution
+If S and N difference is 2 points or less, re-evaluate using only Question 1 and Question 6.
+If T and F difference is 2 points or less, Question 4 overrides.
+If I and E difference is 1 point or less, Question 5 determines orientation.
+
+Step 8 — Reliability Check
+Classification is unstable if:
+• Top two functions differ by 2 points or less
+• Orientation difference is 1 point or less
+• Question 1 and Question 6 contradict final result
+
+If unstable, result should be marked Tentative rather than definitive.
