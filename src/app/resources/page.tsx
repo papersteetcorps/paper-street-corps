@@ -166,7 +166,7 @@ function ResourceLink({
           {typeLabels[type]}
         </div>
         {isExternal && (
-          <span className="text-xs text-surface-600">External &nearr;</span>
+          <span className="text-xs text-surface-600">External ↗</span>
         )}
       </div>
       <h3 className="mt-2 font-medium">{title}</h3>
