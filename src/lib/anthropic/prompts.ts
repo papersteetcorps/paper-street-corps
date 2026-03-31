@@ -13,26 +13,10 @@ function loadCorpus(filename: string): string {
 export type TestType = "temperaments" | "moral-alignment" | "cjte" | "socionics" | "potentiology";
 
 export interface PromptPair {
-  generate: string;
   interpret: string;
 }
 
 // ─── Temperaments ────────────────────────────────────────────────────────────
-
-const TEMPERAMENTS_GENERATE = `You are a temperament diagnostician. Generate 20 questions to measure the user's neurochemical temperament profile across 4 types: Choleric, Melancholic, Phlegmatic, Sanguine.
-
-Each question should be scored 1-5 and target one primary chemical: adrenaline (Choleric), norepinephrine (Melancholic), GABA (Phlegmatic), or serotonin (Sanguine).
-
-Return ONLY valid JSON:
-{
-  "questions": [
-    {
-      "id": "q1",
-      "text": "question text",
-      "meta": { "chemical": "adrenaline", "weight": 2 }
-    }
-  ]
-}`;
 
 const TEMPERAMENTS_INTERPRET = `You are a temperament specialist. Interpret the user's temperament blend result with psychological depth.
 
@@ -48,21 +32,6 @@ Return ONLY valid JSON:
 
 // ─── Moral Alignment ─────────────────────────────────────────────────────────
 
-const MORAL_ALIGNMENT_GENERATE = `You are a moral philosophy evaluator. Generate 12 questions to determine where a person falls on the moral alignment 3x3 grid (Structure axis: Lawful/Neutral/Chaotic × Impulse axis: Good/Neutral/Evil).
-
-Half the questions measure Structure (how the person relates to rules/order), half measure Impulse (what motivates their actions). Scored 1-5.
-
-Return ONLY valid JSON:
-{
-  "questions": [
-    {
-      "id": "q1",
-      "text": "question text",
-      "meta": { "axis": "structure", "weight": 2 }
-    }
-  ]
-}`;
-
 const MORAL_ALIGNMENT_INTERPRET = `You are a moral alignment analyst. Interpret the user's alignment result with philosophical depth.
 
 Return ONLY valid JSON:
@@ -76,36 +45,6 @@ Return ONLY valid JSON:
 }`;
 
 // ─── CJTE (Classic Jungian Typology Engine) ──────────────────────────────────
-
-function buildCJTEGeneratePrompt(): string {
-  const corpus = loadCorpus("vrdw_cjte_corpus.txt");
-  const cache = loadCorpus("vrdw_cjte_cache.txt");
-  const instructions = loadCorpus("vrdw_cjte_instructions.txt");
-
-  return `You are the VRDW CJTE-3 (Classic Jungian Typology Engine). Your purpose is to determine the user's Jungian/MBTI type from open-ended qualitative responses.
-
-=== TYPING AUTHORITY DOCUMENT ===
-${corpus}
-
-=== SCORING LOGIC ===
-${cache}
-
-=== ENGINE INSTRUCTIONS ===
-${instructions}
-
-Your task: Generate exactly 8 open-ended diagnostic questions matching the CJTE fixed questionnaire. These are the exact 8 questions from the instructions above.
-
-Return ONLY valid JSON:
-{
-  "questions": [
-    {
-      "id": "q1",
-      "text": "exact question text",
-      "meta": { "questionNumber": 1, "weight": 3 }
-    }
-  ]
-}`;
-}
 
 function buildCJTEInterpretPrompt(): string {
   const corpus = loadCorpus("vrdw_cjte_corpus.txt");
@@ -141,32 +80,6 @@ Return ONLY valid JSON:
 }
 
 // ─── Socionics / KIME ────────────────────────────────────────────────────────
-
-function buildKIMEGeneratePrompt(): string {
-  const corpus = loadCorpus("vrdw_kime_corpus.json");
-  const instructions = loadCorpus("vrdw_kime_instructions.txt");
-
-  return `You are the VRDW KIME-3 (Kepinski Information Metabolism Engine). Your purpose is to determine the user's Socionics sociotype using Model A information metabolism analysis.
-
-=== MODEL A CORPUS ===
-${corpus}
-
-=== ENGINE INSTRUCTIONS ===
-${instructions}
-
-Your task: Generate exactly the 16 fixed questions from the KIME questionnaire (they are listed in the instructions above). These questions are designed to reveal information element preferences.
-
-Return ONLY valid JSON:
-{
-  "questions": [
-    {
-      "id": "q1",
-      "text": "exact question text",
-      "meta": { "questionNumber": 1, "targetElements": ["Ti", "Te"] }
-    }
-  ]
-}`;
-}
 
 function buildKIMEInterpretPrompt(): string {
   const corpus = loadCorpus("vrdw_kime_corpus.json");
@@ -210,34 +123,6 @@ Return ONLY valid JSON:
 
 // ─── Potentiology / PBCE ─────────────────────────────────────────────────────
 
-function buildPBCEGeneratePrompt(): string {
-  const corpus = loadCorpus("vrdw_pbce_corpus.json");
-  const instructions = loadCorpus("vrdw_pbce_instructions.txt");
-
-  return `You are the VRDW PBCE-1 (Potentiology Burnout Cycle Engine). Your purpose is to determine the user's Potentiology type using energy-based cognitive function analysis.
-
-=== POTENTIOLOGY CORPUS ===
-${corpus}
-
-=== ENGINE INSTRUCTIONS ===
-${instructions}
-
-Potentiology has 8 cognitive functions: SbjX (Subjective Experience), ObjX (Objective Experience), SbjA (Subjective Abstraction), ObjA (Objective Abstraction), SbjL (Subjective Logic), ObjL (Objective Logic), SbjM (Subjective Morality), ObjM (Objective Morality).
-
-Generate 16 open-ended questions that probe the user's natural perception tendencies, burnout patterns, and cognitive energy usage. Questions should feel like a caring but direct mentor asking about real experiences.
-
-Return ONLY valid JSON:
-{
-  "questions": [
-    {
-      "id": "q1",
-      "text": "question text as a caring direct mentor",
-      "meta": { "targetFunctions": ["SbjX", "ObjL"], "burnoutRelevant": true }
-    }
-  ]
-}`;
-}
-
 function buildPBCEInterpretPrompt(): string {
   const corpus = loadCorpus("vrdw_pbce_corpus.json");
 
@@ -280,14 +165,14 @@ Return ONLY valid JSON:
 export function getPrompts(testType: TestType): PromptPair {
   switch (testType) {
     case "temperaments":
-      return { generate: TEMPERAMENTS_GENERATE, interpret: TEMPERAMENTS_INTERPRET };
+      return { interpret: TEMPERAMENTS_INTERPRET };
     case "moral-alignment":
-      return { generate: MORAL_ALIGNMENT_GENERATE, interpret: MORAL_ALIGNMENT_INTERPRET };
+      return { interpret: MORAL_ALIGNMENT_INTERPRET };
     case "cjte":
-      return { generate: buildCJTEGeneratePrompt(), interpret: buildCJTEInterpretPrompt() };
+      return { interpret: buildCJTEInterpretPrompt() };
     case "socionics":
-      return { generate: buildKIMEGeneratePrompt(), interpret: buildKIMEInterpretPrompt() };
+      return { interpret: buildKIMEInterpretPrompt() };
     case "potentiology":
-      return { generate: buildPBCEGeneratePrompt(), interpret: buildPBCEInterpretPrompt() };
+      return { interpret: buildPBCEInterpretPrompt() };
   }
 }

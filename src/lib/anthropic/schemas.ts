@@ -1,11 +1,5 @@
 import "server-only";
 
-export interface WizardQuestionRaw {
-  id: string;
-  text: string;
-  meta?: Record<string, unknown>;
-}
-
 export interface InterpretationResult {
   headline: string;
   summary: string;
@@ -33,20 +27,6 @@ export interface InterpretationResult {
 function parseJSON(text: string): unknown {
   const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
   return JSON.parse(cleaned);
-}
-
-export function validateQuestions(raw: string): WizardQuestionRaw[] | null {
-  try {
-    const parsed = parseJSON(raw) as { questions?: WizardQuestionRaw[] };
-    const questions = parsed?.questions;
-    if (!Array.isArray(questions)) return null;
-    const valid = questions.filter(
-      (q) => typeof q.id === "string" && typeof q.text === "string" && q.text.length > 5
-    );
-    return valid.length > 0 ? valid : null;
-  } catch {
-    return null;
-  }
 }
 
 export function validateInterpretation(raw: string): InterpretationResult | null {

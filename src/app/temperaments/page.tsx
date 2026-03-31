@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   classifyTemperament,
   CHEMICAL_DESCRIPTIONS,
@@ -49,36 +49,9 @@ const staticQuestions: WizardQuestion[] = CHEMICALS.map((chem) => {
 });
 
 export default function TemperamentsTestPage() {
-  const [questions, setQuestions] = useState<WizardQuestion[]>(staticQuestions);
-  const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [result, setResult] = useState<TemperamentResult | null>(null);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
   const [localResult, setLocalResult] = useState<Record<string, unknown>>({});
-  const [isLLMSource, setIsLLMSource] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchQuestions() {
-      try {
-        const res = await fetch("/api/generate-questions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ testType: "temperaments", questionCount: 5 }),
-        });
-        const data = await res.json();
-        if (!cancelled && data.questions && !data.fallback) {
-          setQuestions(data.questions);
-          setIsLLMSource(true);
-        }
-      } catch {
-        // fallback
-      } finally {
-        if (!cancelled) setLoadingQuestions(false);
-      }
-    }
-    fetchQuestions();
-    return () => { cancelled = true; };
-  }, []);
 
   const handleComplete = useCallback(
     (answers: WizardAnswer[]) => {
@@ -86,29 +59,9 @@ export default function TemperamentsTestPage() {
         cortisol: 3, dopamine: 3, oxytocin: 3, serotonin: 3, androgenicity: 3,
       };
 
-      if (isLLMSource) {
-        const chemSums: Record<Chemical, number> = { ...scoreMap };
-        const chemCounts: Record<Chemical, number> = {
-          cortisol: 0, dopamine: 0, oxytocin: 0, serotonin: 0, androgenicity: 0,
-        };
-        questions.forEach((q) => {
-          const answer = answers.find((a) => a.questionId === q.id);
-          const chem = q.meta?.chemical as Chemical | undefined;
-          if (answer && chem && chem in chemSums) {
-            const val = typeof answer.value === "number" ? answer.value : 3;
-            if (chemCounts[chem] === 0) chemSums[chem] = 0;
-            chemSums[chem] += val;
-            chemCounts[chem]++;
-          }
-        });
-        for (const c of CHEMICALS) {
-          if (chemCounts[c] > 0) scoreMap[c] = chemSums[c] / chemCounts[c];
-        }
-      } else {
-        for (const chem of CHEMICALS) {
-          const answer = answers.find((a) => a.questionId === `temp-${chem}`);
-          if (answer) scoreMap[chem] = typeof answer.value === "number" ? answer.value : 3;
-        }
+      for (const chem of CHEMICALS) {
+        const answer = answers.find((a) => a.questionId === `temp-${chem}`);
+        if (answer) scoreMap[chem] = typeof answer.value === "number" ? answer.value : 3;
       }
 
       const tempResult = classifyTemperament(
@@ -148,7 +101,7 @@ export default function TemperamentsTestPage() {
         })
         .catch(() => {});
     },
-    [questions, isLLMSource]
+    []
   );
 
   const handleReset = useCallback(() => {
@@ -165,8 +118,8 @@ export default function TemperamentsTestPage() {
     <WizardShell
       title="Temperament Assessment"
       subtitle="Rate your typical levels of each biochemical marker. This assessment uses variance-based classification to identify your primary temperament."
-      questions={questions}
-      loadingQuestions={loadingQuestions}
+      questions={staticQuestions}
+      loadingQuestions={false}
       onComplete={handleComplete}
       resultView={resultView}
       onReset={handleReset}

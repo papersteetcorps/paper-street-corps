@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "motion/react";
 import WizardShell from "@/components/wizard/WizardShell";
 import ResultsLayout from "@/components/results/ResultsLayout";
@@ -81,33 +81,8 @@ type Interpretation = {
 } | null;
 
 export default function CJTEPage() {
-  const [questions, setQuestions] = useState<WizardQuestion[]>(FALLBACK_QUESTIONS);
-  const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchQuestions() {
-      try {
-        const res = await fetch("/api/generate-questions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ testType: "cjte" }),
-        });
-        const data = await res.json();
-        if (!cancelled && data.questions && !data.fallback) {
-          setQuestions(data.questions);
-        }
-      } catch {
-        // fallback to static
-      } finally {
-        if (!cancelled) setLoadingQuestions(false);
-      }
-    }
-    fetchQuestions();
-    return () => { cancelled = true; };
-  }, []);
 
   const handleComplete = useCallback(async (answers: WizardAnswer[]) => {
     setIsLoading(true);
@@ -144,8 +119,8 @@ export default function CJTEPage() {
     <WizardShell
       title="Classic Jungian Typology Engine"
       subtitle="VRDW CJTE-3 — Eight open-ended questions to determine your Jungian type and cognitive function stack. Answer honestly and specifically. Your answers will be analyzed with the full Jungian corpus."
-      questions={questions}
-      loadingQuestions={loadingQuestions}
+      questions={FALLBACK_QUESTIONS}
+      loadingQuestions={false}
       onComplete={handleComplete}
       resultView={resultView}
       isLoading={isLoading}
