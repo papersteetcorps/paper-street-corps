@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "motion/react";
 import {
   classifyMoralAlignment,
@@ -73,44 +73,16 @@ const staticQuestions: WizardQuestion[] = [
 ];
 
 export default function MoralAlignmentPage() {
-  const [questions, setQuestions] = useState<WizardQuestion[]>(staticQuestions);
-  const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [result, setResult] = useState<MoralAlignmentResult | null>(null);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
   const [localResult, setLocalResult] = useState<Record<string, unknown>>({});
-  const [isLLMSource, setIsLLMSource] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchQuestions() {
-      try {
-        const res = await fetch("/api/generate-questions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ testType: "moral-alignment", questionCount: 6 }),
-        });
-        const data = await res.json();
-        if (!cancelled && data.questions && !data.fallback) {
-          setQuestions(data.questions);
-          setIsLLMSource(true);
-        }
-      } catch {
-        // fallback
-      } finally {
-        if (!cancelled) setLoadingQuestions(false);
-      }
-    }
-    fetchQuestions();
-    return () => { cancelled = true; };
-  }, []);
 
   const handleComplete = useCallback(
     (answers: WizardAnswer[]) => {
       let structureSum = 0, structureCount = 0;
       let impulseSum = 0, impulseCount = 0;
 
-      const qs = isLLMSource ? questions : staticQuestions;
-      qs.forEach((q) => {
+      staticQuestions.forEach((q) => {
         const answer = answers.find((a) => a.questionId === q.id);
         if (!answer) return;
         const axis = q.meta?.axis as string;
@@ -159,7 +131,7 @@ export default function MoralAlignmentPage() {
         })
         .catch(() => {});
     },
-    [questions, isLLMSource]
+    []
   );
 
   const handleReset = useCallback(() => {
@@ -176,8 +148,8 @@ export default function MoralAlignmentPage() {
     <WizardShell
       title="Moral Alignment Assessment"
       subtitle="This assessment maps your ethical tendencies across two axes: structure (Lawful-Chaotic) and impulse (Good-Evil). Answer honestly based on your genuine preferences."
-      questions={questions}
-      loadingQuestions={loadingQuestions}
+      questions={staticQuestions}
+      loadingQuestions={false}
       onComplete={handleComplete}
       resultView={resultView}
       onReset={handleReset}

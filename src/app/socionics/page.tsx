@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "motion/react";
 import WizardShell from "@/components/wizard/WizardShell";
 import ResultsLayout from "@/components/results/ResultsLayout";
@@ -54,33 +54,8 @@ type Interpretation = {
 } | null;
 
 export default function SocionicsPage() {
-  const [questions, setQuestions] = useState<WizardQuestion[]>(FALLBACK_QUESTIONS);
-  const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchQuestions() {
-      try {
-        const res = await fetch("/api/generate-questions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ testType: "socionics" }),
-        });
-        const data = await res.json();
-        if (!cancelled && data.questions && !data.fallback) {
-          setQuestions(data.questions);
-        }
-      } catch {
-        // fallback
-      } finally {
-        if (!cancelled) setLoadingQuestions(false);
-      }
-    }
-    fetchQuestions();
-    return () => { cancelled = true; };
-  }, []);
 
   const handleComplete = useCallback(async (answers: WizardAnswer[]) => {
     setIsLoading(true);
@@ -118,8 +93,8 @@ export default function SocionicsPage() {
     <WizardShell
       title="Kepinski Information Metabolism Engine"
       subtitle="VRDW KIME-3 — Sixteen questions to determine your Socionics sociotype using Model A analysis. This test looks at how you metabolize information, not just how you behave."
-      questions={questions}
-      loadingQuestions={loadingQuestions}
+      questions={FALLBACK_QUESTIONS}
+      loadingQuestions={false}
       onComplete={handleComplete}
       resultView={resultView}
       isLoading={isLoading}
