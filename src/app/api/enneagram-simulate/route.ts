@@ -17,6 +17,9 @@ export async function POST(request: Request) {
     if (!phases?.length || !selectedTypes?.length) {
       return NextResponse.json({ error: "Phases and selectedTypes required" }, { status: 400 });
     }
+    if (JSON.stringify(phases).length > 100000) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
     if (selectedTypes.length > 3) {
       return NextResponse.json({ error: "Maximum 3 types" }, { status: 400 });
     }

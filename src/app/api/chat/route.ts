@@ -12,12 +12,15 @@ export async function POST(request: Request) {
       messages: Array<{ role: "user" | "assistant"; text: string }>;
     };
 
+    // Input length limits
+    const bodyStr = JSON.stringify(body);
+    if (bodyStr.length > 50000) {
+      return new Response("Request too large", { status: 413 });
+    }
+
     const client = getAnthropicClient();
     if (!client) {
-      return new Response(
-        "API key not configured. Add ANTHROPIC_API_KEY to your environment.",
-        { status: 200, headers: { "Content-Type": "text/plain" } }
-      );
+      return new Response("Service not configured", { status: 503 });
     }
 
     // Build system instruction from the interpret prompt + result context
@@ -76,9 +79,6 @@ Rules:
       },
     });
   } catch {
-    return new Response("Failed to generate response.", {
-      status: 200,
-      headers: { "Content-Type": "text/plain" },
-    });
+    return new Response("Failed to generate response.", { status: 500 });
   }
 }

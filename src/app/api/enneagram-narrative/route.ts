@@ -16,10 +16,13 @@ export async function POST(request: Request) {
     if (!phases?.length || !type) {
       return new Response("Missing phases or type", { status: 400 });
     }
+    if (JSON.stringify(phases).length > 100000) {
+      return new Response("Request too large", { status: 413 });
+    }
 
     const client = getAnthropicClient();
     if (!client) {
-      return new Response("ANTHROPIC_API_KEY not configured", { status: 200 });
+      return new Response("Service not configured", { status: 503 });
     }
 
     const { interpret: systemPrompt } = getPrompts("enneagram");
@@ -62,6 +65,6 @@ export async function POST(request: Request) {
       },
     });
   } catch {
-    return new Response("Failed to generate narrative.", { status: 200 });
+    return new Response("Failed to generate narrative.", { status: 500 });
   }
 }

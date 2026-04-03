@@ -73,6 +73,9 @@ export async function POST(request: Request) {
       results: Array<{ testType: string; result: Record<string, unknown> }>;
     };
 
+    if (JSON.stringify(body).length > 100000) {
+      return Response.json({ error: "Payload too large" }, { status: 413 });
+    }
     if (!results || results.length < 2) {
       return Response.json({ error: "At least 2 test results required for synthesis" }, { status: 400 });
     }

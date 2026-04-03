@@ -25,6 +25,9 @@ export async function POST(request: Request) {
       localResult: Record<string, unknown>;
     };
 
+    if (JSON.stringify(body).length > 50000) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
     if (!VALID_TYPES.includes(testType)) {
       return NextResponse.json({ error: "Invalid test type" }, { status: 400 });
     }
