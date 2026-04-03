@@ -10,6 +10,9 @@ export async function POST(request: Request) {
     if (!text?.trim()) {
       return NextResponse.json({ error: "Text required" }, { status: 400 });
     }
+    if (text.length > 10000) {
+      return NextResponse.json({ error: "Text too long (max 10000 chars)" }, { status: 413 });
+    }
 
     const client = getAnthropicClient();
     if (!client) {

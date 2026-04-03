@@ -28,6 +28,9 @@ export async function POST(request: Request) {
     if (!phases?.length || !comparedTypes?.length || comparedTypes.length < 2) {
       return NextResponse.json({ error: "Need phases and at least 2 types to compare" }, { status: 400 });
     }
+    if (JSON.stringify(body).length > 100000) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
 
     const client = getAnthropicClient();
     if (!client) {
