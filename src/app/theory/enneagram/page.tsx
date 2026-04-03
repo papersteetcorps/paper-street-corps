@@ -10,6 +10,12 @@ export default function EnneagramPage() {
           Nine personality types defined by their cognitive fixation, emotional passion,
           ego trap, and the Holy Idea that dissolves each pattern.
         </p>
+        <Link
+          href="/enneagram"
+          className="inline-block mt-4 text-sm bg-accent-amber/10 hover:bg-accent-amber/20 text-accent-amber border border-accent-amber/20 px-4 py-2 rounded-lg transition-colors"
+        >
+          Take the Enneagram Assessment &rarr;
+        </Link>
       </header>
 
       {/* Definitions */}

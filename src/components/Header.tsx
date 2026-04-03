@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "next-themes";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { FLAGS } from "@/lib/flags";
 
 const ASSESSMENT_LINKS = [
   { href: "/cjte", label: "MBTI" },
@@ -14,6 +15,7 @@ const ASSESSMENT_LINKS = [
   { href: "/moral-alignment", label: "Moral Alignment" },
   { href: "/socionics", label: "Socionics" },
   { href: "/potentiology", label: "Potentiology" },
+  { href: "/enneagram", label: "Enneagram" },
 ];
 
 const TOP_LINKS = [
@@ -37,6 +39,7 @@ export default function Header() {
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
+    if (!FLAGS.AUTH_ENABLED) return;
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
@@ -176,7 +179,7 @@ export default function Header() {
         {/* Auth actions + theme toggle + hamburger */}
         <div className="flex items-center gap-3">
           {/* Auth — desktop */}
-          <div className="hidden md:flex items-center gap-3">
+          {FLAGS.AUTH_ENABLED && <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
                 <Link
@@ -213,7 +216,7 @@ export default function Header() {
                 </Link>
               </>
             )}
-          </div>
+          </div>}
 
           {/* Theme toggle */}
           {mounted && (
@@ -354,23 +357,25 @@ export default function Header() {
               ))}
 
               {/* Auth — mobile */}
-              <div className="pt-2 border-t border-surface-800 flex flex-col gap-2">
-                {user ? (
-                  <>
-                    <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="text-surface-300">
-                      Dashboard ({user.email})
-                    </Link>
-                    <form action="/auth/logout" method="post">
-                      <button type="submit" className="text-surface-400 text-left">Sign out</button>
-                    </form>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/auth/login" onClick={() => setMenuOpen(false)} className="text-surface-400">Sign in</Link>
-                    <Link href="/auth/signup" onClick={() => setMenuOpen(false)} className="text-accent-blue">Sign up</Link>
-                  </>
-                )}
-              </div>
+              {FLAGS.AUTH_ENABLED && (
+                <div className="pt-2 border-t border-surface-800 flex flex-col gap-2">
+                  {user ? (
+                    <>
+                      <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="text-surface-300">
+                        Dashboard ({user.email})
+                      </Link>
+                      <form action="/auth/logout" method="post">
+                        <button type="submit" className="text-surface-400 text-left">Sign out</button>
+                      </form>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/auth/login" onClick={() => setMenuOpen(false)} className="text-surface-400">Sign in</Link>
+                      <Link href="/auth/signup" onClick={() => setMenuOpen(false)} className="text-accent-blue">Sign up</Link>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </motion.nav>
         )}

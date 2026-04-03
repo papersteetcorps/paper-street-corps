@@ -28,6 +28,7 @@ const TEST_HREFS: Record<string, string> = {
   cjte: "/cjte",
   socionics: "/socionics",
   potentiology: "/potentiology",
+  enneagram: "/enneagram",
 };
 
 const TEST_COLORS: Record<string, string> = {
@@ -36,6 +37,7 @@ const TEST_COLORS: Record<string, string> = {
   cjte: "text-accent-blue border-accent-blue/30 bg-accent-blue/5",
   socionics: "text-accent-amber border-accent-amber/30 bg-accent-amber/5",
   potentiology: "text-accent-purple border-accent-purple/30 bg-accent-purple/5",
+  enneagram: "text-accent-amber border-accent-amber/30 bg-accent-amber/5",
 };
 
 export default function SynthesisClient({ availableResults }: { availableResults: AvailableResult[] }) {

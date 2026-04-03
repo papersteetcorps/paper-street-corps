@@ -1,0 +1,149 @@
+[
+  {
+    "phaseName": "Childhood — Small Town",
+    "map": "Small town in central India",
+    "submaps": [
+      { "name": "Primary school", "slice": "Morning to afternoon", "frequency": "Daily" },
+      { "name": "Neighborhood playground", "slice": "Evenings", "frequency": "Almost daily" }
+    ],
+    "info": {
+      "ageRange": "5-12",
+      "occupation": "Student",
+      "illness": []
+    },
+    "lifestyle": {
+      "routine": [
+        "Woke up early, walked to school, came home for lunch, played outside until dark",
+        "Weekends spent reading comics or exploring the nearby fields"
+      ],
+      "facilities": [
+        "Stable home with both parents present",
+        "Access to a small personal book collection"
+      ],
+      "scarcity": [
+        "No internet or computer at home",
+        "Limited exposure to the world outside the town"
+      ]
+    },
+    "environment": {
+      "locality": "Quiet residential area in a small town",
+      "people": {
+        "guardianRelation": [
+          "Father was strict about academics but distant emotionally",
+          "Mother was warm and protective, handled all household decisions"
+        ],
+        "siblingRelation": [
+          "One older sister who was high-achieving and often held up as the example"
+        ],
+        "friendsRelation": [
+          "Small group of neighborhood kids, mostly surface-level friendships",
+          "One close friend who shared interest in reading and imagining stories"
+        ],
+        "mentorRelation": [
+          "A 4th grade teacher who noticed curiosity and encouraged independent reading"
+        ]
+      },
+      "society": {
+        "elements": [
+          "Middle-class families, government employees and small business owners",
+          "Conservative social norms, emphasis on respect for elders"
+        ],
+        "societalValues": [
+          "Education as the primary path to success",
+          "Community reputation matters more than individual expression"
+        ]
+      }
+    },
+    "moments": [
+      {
+        "situation": "Won a district-level drawing competition unexpectedly",
+        "conclusion": "Felt a strange mix of pride and discomfort with the attention — preferred the act of drawing over being recognized for it"
+      },
+      {
+        "situation": "Father publicly compared academic performance to older sister at a family gathering",
+        "conclusion": "Stopped sharing report cards voluntarily and began keeping achievements private"
+      },
+      {
+        "situation": "Best friend moved to another city at the end of 6th grade",
+        "conclusion": "Did not make an effort to replace the friendship — retreated into books and solitary activities instead"
+      }
+    ]
+  },
+  {
+    "phaseName": "College Years — Big City",
+    "map": "Pune, India",
+    "submaps": [
+      { "name": "Engineering college campus", "slice": "Full day", "frequency": "Daily" },
+      { "name": "Hostel room", "slice": "Evenings and nights", "frequency": "Daily" },
+      { "name": "City cafes and bookstores", "slice": "Weekends", "frequency": "Weekly" }
+    ],
+    "info": {
+      "ageRange": "18-22",
+      "occupation": "Engineering student",
+      "illness": [
+        "Mild anxiety that started in second year, never formally diagnosed"
+      ]
+    },
+    "lifestyle": {
+      "routine": [
+        "Classes in the morning, self-study or projects in the afternoon, late-night reading or coding",
+        "Skipped social events frequently to work on personal projects"
+      ],
+      "facilities": [
+        "Fast internet for the first time",
+        "Access to a large university library",
+        "Freedom to structure own time without parental oversight"
+      ],
+      "scarcity": [
+        "Tight monthly budget from parents, no luxury spending",
+        "No emotional support system — parents were far away and communication was infrequent"
+      ]
+    },
+    "environment": {
+      "locality": "Dense urban college area",
+      "people": {
+        "guardianRelation": [
+          "Minimal contact — monthly phone calls about grades and finances only"
+        ],
+        "siblingRelation": [
+          "Sister was abroad for her own studies, relationship became cordial but distant"
+        ],
+        "friendsRelation": [
+          "A group of 4-5 close friends from the hostel who stayed up late debating ideas",
+          "One friend who constantly pushed boundaries and introduced new music, films, philosophy"
+        ],
+        "mentorRelation": [
+          "A computer science professor who gave hard feedback but genuinely cared about intellectual growth"
+        ]
+      },
+      "society": {
+        "elements": [
+          "Students from across the country with diverse backgrounds",
+          "Competitive academic culture mixed with creative underground scene"
+        ],
+        "societalValues": [
+          "Performance and placement rankings defined social status",
+          "Intellectual curiosity was respected but only if it led to measurable output"
+        ]
+      }
+    },
+    "moments": [
+      {
+        "situation": "Built a side project that got featured on a tech blog during third year",
+        "conclusion": "Felt validated but immediately felt pressure to repeat the success — started three new projects and finished none"
+      },
+      {
+        "situation": "Had a falling out with the closest hostel friend over a misunderstanding that was never resolved",
+        "conclusion": "Realized the pattern of withdrawing instead of confronting — let the friendship die rather than having an uncomfortable conversation"
+      },
+      {
+        "situation": "Failed a subject for the first time in final year due to skipping classes for a personal project",
+        "conclusion": "Parents were upset but the experience taught that external structure was something actively resisted, not just neglected"
+      },
+      {
+        "situation": "Spent an entire semester mostly alone after the friend group dispersed for internships",
+        "conclusion": "Discovered that solitude was not just comfortable but actively preferred — productivity and clarity peaked during this period"
+      }
+    ]
+  }
+]

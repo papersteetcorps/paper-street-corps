@@ -3,12 +3,13 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { tests, theoryCards } from "@/data/offerings";
+import { FLAGS } from "@/lib/flags";
 import TestCard from "@/components/cards/TestCard";
 import TheoryCard from "@/components/cards/TheoryCard";
 import Container from "@/components/ui/Container";
 
 const STATS = [
-  { value: "5", label: "Frameworks" },
+  { value: "6", label: "Frameworks" },
   { value: "16", label: "Personality types" },
   { value: "0", label: "Data collected" },
   { value: "∞", label: "Self-understanding" },
@@ -28,7 +29,7 @@ const PRINCIPLES = [
   {
     icon: "✦",
     title: "Multi-framework",
-    body: "Five distinct typological frameworks — MBTI, Socionics KIME, Potentiology PBCE, Temperaments, and Moral Alignment.",
+    body: "Six distinct typological frameworks — MBTI, Socionics KIME, Potentiology PBCE, Temperaments, Moral Alignment, and Enneagram.",
   },
   {
     icon: "◉",
@@ -62,7 +63,7 @@ export default function HomePage() {
             transition={{ duration: 0.5, delay: 0.12 }}
             className="text-lg text-surface-400 leading-relaxed max-w-2xl"
           >
-            Five rigorous psychological frameworks. Open-ended qualitative analysis.
+            Six rigorous psychological frameworks. Open-ended qualitative analysis.
             AI interpretation backed by full research corpora. No flattery. No data collection.
           </motion.p>
 
@@ -118,9 +119,9 @@ export default function HomePage() {
             transition={{ delay: 0.35 }}
           >
             <p className="text-xs text-surface-500 uppercase tracking-widest mb-2">Assessments</p>
-            <h2 className="text-3xl font-bold">Five frameworks, one truth.</h2>
+            <h2 className="text-3xl font-bold">Six frameworks, one truth.</h2>
             <p className="mt-2 text-surface-400 max-w-2xl text-sm leading-relaxed">
-              Each framework approaches personality from a different axis — neurochemical, cognitive, moral, or energetic.
+              Each framework approaches personality from a different axis — neurochemical, cognitive, moral, energetic, or ego-structural.
               Use one or all. They are designed to triangulate, not to repeat each other.
             </p>
           </motion.div>
@@ -165,8 +166,8 @@ export default function HomePage() {
                 },
                 {
                   step: "02",
-                  title: "Questions generated for you",
-                  body: "AI generates questions tailored to reveal the specific dimensions your framework measures. For qualitative tests (MBTI, KIME, PBCE), these are open-ended and diagnostic.",
+                  title: "Fixed diagnostic questions",
+                  body: "Each framework uses a fixed set of questions designed to reveal the specific dimensions it measures. For qualitative tests (MBTI, KIME, PBCE), these are open-ended and diagnostic.",
                 },
                 {
                   step: "03",
@@ -289,6 +290,7 @@ export default function HomePage() {
                     { name: "Potentiology (PBCE)", q: "16", format: "Open-ended", for: "Burnout cycles and cognitive energy mapping", href: "/potentiology", color: "text-accent-purple" },
                     { name: "Temperaments", q: "20", format: "Scale 1-5", for: "Behavioral chemistry and social drive patterns", href: "/temperaments", color: "text-accent-purple" },
                     { name: "Moral Alignment", q: "12", format: "Scale 1-5", for: "Understanding your ethical architecture", href: "/moral-alignment", color: "text-accent-teal" },
+                    { name: "Enneagram (INEE)", q: "Life phases", format: "Structured form", for: "Ego-structural simulation via fixation, passion, and trap", href: "/enneagram", color: "text-accent-amber" },
                   ].map(({ name, q, format, for: forText, href, color }) => (
                     <tr key={name} className="group hover:bg-surface-900/50 transition-colors">
                       <td className="py-3 pr-4">
@@ -317,16 +319,20 @@ export default function HomePage() {
           <div>
             <p className="font-medium text-foreground">Ready to begin?</p>
             <p className="text-sm text-surface-400 mt-0.5">
-              Create an account to save your results and track your history across all tests.
+              {FLAGS.AUTH_ENABLED
+                ? "Create an account to save your results and track your history across all tests."
+                : "Pick a framework and start your assessment. No account needed."}
             </p>
           </div>
           <div className="flex gap-3 shrink-0">
-            <Link
-              href="/auth/signup"
-              className="bg-accent-blue hover:bg-accent-blue/90 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors"
-            >
-              Create account
-            </Link>
+            {FLAGS.AUTH_ENABLED && (
+              <Link
+                href="/auth/signup"
+                className="bg-accent-blue hover:bg-accent-blue/90 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors"
+              >
+                Create account
+              </Link>
+            )}
             <Link
               href="/resources"
               className="text-sm text-surface-400 hover:text-surface-200 border border-surface-700 hover:border-surface-500 px-5 py-2.5 rounded-xl transition-colors"

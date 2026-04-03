@@ -1,5 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
+"use client";
+
+import { useState, useEffect } from "react";
+import { getAllResults, type StoredResult } from "@/lib/results-store";
 import SynthesisClient from "./SynthesisClient";
 
 const TEST_LABELS: Record<string, string> = {
@@ -8,59 +10,26 @@ const TEST_LABELS: Record<string, string> = {
   cjte: "MBTI",
   socionics: "Socionics (KIME)",
   potentiology: "Potentiology (PBCE)",
+  enneagram: "Enneagram (INEE)",
 };
 
-export default async function SynthesisPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export default function SynthesisPage() {
+  const [results, setResults] = useState<Array<{ testType: string; result: Record<string, unknown>; label: string }>>([]);
+  const [loaded, setLoaded] = useState(false);
 
-  if (!user) {
-    return (
-      <div className="max-w-2xl mx-auto text-center py-24 space-y-6">
-        <p className="text-5xl">🔬</p>
-        <h1 className="text-2xl font-semibold text-foreground">Cross-Framework Synthesis</h1>
-        <p className="text-surface-400 text-sm max-w-md mx-auto">
-          Sign in and complete at least two tests to generate a unified psychological profile across all frameworks.
-        </p>
-        <div className="flex items-center justify-center gap-3">
-          <Link
-            href="/auth/login"
-            className="text-sm bg-accent-blue hover:bg-accent-blue/90 text-white px-5 py-2.5 rounded-xl transition-colors"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/"
-            className="text-sm text-surface-400 hover:text-foreground border border-surface-700 px-5 py-2.5 rounded-xl transition-colors"
-          >
-            Take a test
-          </Link>
-        </div>
-      </div>
+  useEffect(() => {
+    const stored: StoredResult[] = getAllResults();
+    setResults(
+      stored.map((s) => ({
+        testType: s.testType,
+        result: s.result,
+        label: TEST_LABELS[s.testType] ?? s.testType,
+      }))
     );
-  }
+    setLoaded(true);
+  }, []);
 
-  // Fetch one result per test type (most recent)
-  const { data: rows } = await supabase
-    .from("test_results")
-    .select("test_type, result_json, created_at")
-    .order("created_at", { ascending: false })
-    .limit(100);
-
-  const seen = new Set<string>();
-  const latestPerType: Array<{ testType: string; result: Record<string, unknown>; label: string }> = [];
-
-  for (const row of rows ?? []) {
-    const t = row.test_type as string;
-    if (!seen.has(t)) {
-      seen.add(t);
-      latestPerType.push({
-        testType: t,
-        result: row.result_json as Record<string, unknown>,
-        label: TEST_LABELS[t] ?? t,
-      });
-    }
-  }
+  if (!loaded) return null;
 
   return (
     <div className="max-w-3xl mx-auto space-y-10">
@@ -73,7 +42,7 @@ export default async function SynthesisPage() {
         </p>
       </div>
 
-      <SynthesisClient availableResults={latestPerType} />
+      <SynthesisClient availableResults={results} />
     </div>
   );
 }

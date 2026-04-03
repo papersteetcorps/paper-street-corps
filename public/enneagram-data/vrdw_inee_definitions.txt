@@ -1,0 +1,27 @@
+- Phase: A unique name given to any part of life which uniquely isolates itself for lifestyle.
+	- Map: A unique name given to the particular location subject was living at the time of phase.
+	- Submaps: Part of maps, or places where the subject had to be at in a routine.
+		- Submap1: A name given to the particular submap, more could be added with different name.
+			- Slice: Time slice from whole phase timeline when the submap becomes applicable.
+			- Frequency: Frequency in which the subplace had to be visited.
+	- Info: Basic information about subject for relating the phase to maturity level.
+		- Age range: Range of age which the phase covers.
+		- Occupation: Occupation of the subject at the time which phase covers up.
+		- Illness: Any special illness that was for a chronic period of time.
+	- Lifestyle: Captures various lifestyle aspects of the user during runtime of phase.
+		- Routine: General daily routine that subject followed during the phase.
+		- Facilities: Exceptional facilities that the subject had at the time of phase.
+		- Scarcities: Exceptional scarcities that the subject had at the time of phase.
+	- Environment: General social atmosphere around the subject, including living conditions.
+		- Locality: Tells what kind of locality was around subject, in one word or phrase.
+		- People: Information what kind of interaction was occurring between subject and people regularly involved in phases.
+			- Guardian relation: Relationship with whoever was the guardian of the subject at the time of phase.
+			- Sibling relation: Relationship with biological siblings or cousins at the time.
+			- Friends relation: Relationship with friends in general which the subject had at the time.
+			- Mentor relation: Relationship with mentors in general at the time of phase (if any).
+		- Society: Information about how society or general people around worked.
+			- Elements: What the society consisted of, and who were the people involved.
+			- Societal values: Values that the group of people around that formed society possessed.
+	- Moments: Very special and notable moments that subject might remember about from the phase, whether experience was positive or negative.
+		- Situation: Situation that occurred to make the moment notable, positively or negatively.
+		- Conclusion: Conclusion that the situation being discussed reached.

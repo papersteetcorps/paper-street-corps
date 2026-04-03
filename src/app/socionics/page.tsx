@@ -8,6 +8,7 @@ import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
+import { saveResult } from "@/lib/results-store";
 
 const FALLBACK_QUESTIONS: WizardQuestion[] = [
   { id: "kime-q1", text: "When evaluating a claim, what matters more: whether it is logically consistent within its own framework, or whether it produces measurable results in practice? Why?", answerType: "text", meta: { targetElements: ["Ti", "Te"] } },
@@ -70,12 +71,12 @@ export default function SocionicsPage() {
         }),
       });
       const data = await res.json();
-      setInterpretation(
-        data.interpretation ?? {
-          headline: "Analysis complete",
-          summary: "Your responses have been recorded. Add ANTHROPIC_API_KEY for full Socionics interpretation.",
-        }
-      );
+      const interp = data.interpretation ?? {
+        headline: "Analysis complete",
+        summary: "Your responses have been recorded.",
+      };
+      setInterpretation(interp);
+      if (data.interpretation) saveResult("socionics", data.interpretation);
     } catch {
       setInterpretation({ headline: "Analysis complete", summary: "Could not reach the interpretation service." });
     } finally {

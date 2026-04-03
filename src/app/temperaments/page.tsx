@@ -18,6 +18,7 @@ import ScoreComparison from "@/components/results/ScoreComparison";
 import Badge from "@/components/ui/Badge";
 import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
+import { saveResult } from "@/lib/results-store";
 import { motion } from "motion/react";
 
 type Chemical = "cortisol" | "dopamine" | "oxytocin" | "serotonin" | "androgenicity";
@@ -97,7 +98,10 @@ export default function TemperamentsTestPage() {
       })
         .then((r) => r.json())
         .then((data) => {
-          if (data.interpretation) setInterpretation(data.interpretation);
+          if (data.interpretation) {
+            setInterpretation(data.interpretation);
+            saveResult("temperaments", { ...data.interpretation, primary: tempResult.primary, secondary: tempResult.secondary, isBlend: tempResult.isBlend });
+          }
         })
         .catch(() => {});
     },

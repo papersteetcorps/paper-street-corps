@@ -43,4 +43,5 @@ export type WizardAction =
   | { type: "SUBMIT" }
   | { type: "RESULTS_READY" }
   | { type: "ERROR"; message: string }
-  | { type: "RESET" };
+  | { type: "RESET" }
+  | { type: "RESTORE"; answers: WizardAnswer[]; currentIndex: number };
