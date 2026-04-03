@@ -8,6 +8,7 @@ import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
+import { saveResult } from "@/lib/results-store";
 
 const FALLBACK_QUESTIONS: WizardQuestion[] = [
   { id: "pbce-q1", text: "Describe a situation where you felt fully in your element — what were you doing, and why did it feel natural?", answerType: "text", meta: { targetFunctions: ["SbjX", "ObjX"] } },
@@ -73,12 +74,12 @@ export default function PotentiologyPage() {
         }),
       });
       const data = await res.json();
-      setInterpretation(
-        data.interpretation ?? {
-          headline: "Analysis complete",
-          summary: "Your responses have been recorded. Add ANTHROPIC_API_KEY for full Potentiology type determination.",
-        }
-      );
+      const interp = data.interpretation ?? {
+        headline: "Analysis complete",
+        summary: "Your responses have been recorded.",
+      };
+      setInterpretation(interp);
+      if (data.interpretation) saveResult("potentiology", data.interpretation);
     } catch {
       setInterpretation({ headline: "Analysis complete", summary: "Could not reach the interpretation service." });
     } finally {

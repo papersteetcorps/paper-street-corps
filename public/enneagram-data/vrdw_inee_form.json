@@ -1,0 +1,37 @@
+{
+	"phase_name": {
+		"map": "",
+		"submaps": {
+			"submap1": {
+				"slice": "",
+				"frequency": ""
+			}
+		},
+		"info": {
+			"age_range": "",
+			"occupation": "",
+			"illness": [""]
+		},
+		"lifestyle": {
+			"routine": [""],
+			"facilities": [""],
+			"scarcity": [""]
+		},
+		"environment": {
+			"locality": "",
+			"people": {
+				"guardian_relation": [""],
+				"sibling_relation": [""],
+				"friends_relation": [""],
+				"mentor_relation": [""]
+			},
+			"society": {
+				"elements": [""],
+				"societal_values": [""]
+			}
+		},
+		"moments": {
+			"situation1": "conclusion1"
+		}
+	}
+}

@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 let _client: Anthropic | null = null;
 
-export const ANTHROPIC_MODEL = "claude-opus-4-6";
+export const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 export function getAnthropicClient(): Anthropic | null {
   if (!process.env.ANTHROPIC_API_KEY) return null;

@@ -14,6 +14,7 @@ import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
+import { saveResult } from "@/lib/results-store";
 
 type Interpretation = {
   narrative: string;
@@ -127,7 +128,10 @@ export default function MoralAlignmentPage() {
       })
         .then((r) => r.json())
         .then((data) => {
-          if (data.interpretation) setInterpretation(data.interpretation);
+          if (data.interpretation) {
+            setInterpretation(data.interpretation);
+            saveResult("moral-alignment", { ...data.interpretation, alignment: aligned.alignment, archetype: aligned.archetype });
+          }
         })
         .catch(() => {});
     },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useCallback } from "react";
+import { useReducer, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type {
   WizardQuestion,
@@ -11,6 +11,7 @@ import type {
 } from "@/lib/types/wizard";
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
+import LoadingState from "@/components/ui/LoadingState";
 import ProgressHeader from "./ProgressHeader";
 import QuestionCard from "./QuestionCard";
 import WizardNavigation from "./WizardNavigation";
@@ -25,6 +26,7 @@ interface WizardShellProps {
   loadingQuestions?: boolean;
   error?: string | null;
   onReset?: () => void;
+  storageKey?: string;
 }
 
 function reducer(state: WizardState, action: WizardAction): WizardState {
@@ -59,6 +61,8 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
       return { ...state, phase: "error", error: action.message };
     case "RESET":
       return { phase: "intro", currentIndex: 0, answers: [], direction: 1, error: null };
+    case "RESTORE":
+      return { ...state, phase: "questions", answers: action.answers, currentIndex: action.currentIndex, direction: 1 };
     default:
       return state;
   }
@@ -72,6 +76,18 @@ const initialState: WizardState = {
   error: null,
 };
 
+function loadSaved(key: string): { answers: WizardAnswer[]; currentIndex: number } | null {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (Array.isArray(data.answers) && data.answers.length > 0) return data;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export default function WizardShell({
   title,
   subtitle,
@@ -82,8 +98,35 @@ export default function WizardShell({
   loadingQuestions = false,
   error = null,
   onReset,
+  storageKey,
 }: WizardShellProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const hasRestored = useRef(false);
+  const hasSavedDraft = useRef(false);
+
+  // Restore from localStorage on mount
+  useEffect(() => {
+    if (!storageKey || hasRestored.current) return;
+    hasRestored.current = true;
+    const saved = loadSaved(storageKey);
+    if (saved) {
+      hasSavedDraft.current = true;
+    }
+  }, [storageKey]);
+
+  // Check if there's a draft to show resume button
+  const savedDraft = storageKey ? loadSaved(storageKey) : null;
+  const showResume = state.phase === "intro" && savedDraft && !hasRestored.current === false;
+
+  // Persist to localStorage on every answer/navigation change
+  useEffect(() => {
+    if (!storageKey || state.phase !== "questions" || state.answers.length === 0) return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ answers: state.answers, currentIndex: state.currentIndex }));
+    } catch {
+      // quota exceeded — silent
+    }
+  }, [storageKey, state.answers, state.currentIndex, state.phase]);
 
   const currentQuestion = questions[state.currentIndex];
   const currentAnswer = currentQuestion
@@ -110,13 +153,27 @@ export default function WizardShell({
 
   const handleSubmit = useCallback(() => {
     dispatch({ type: "SUBMIT" });
+    if (storageKey) {
+      try { localStorage.removeItem(storageKey); } catch { /* silent */ }
+    }
     onComplete(state.answers);
-  }, [onComplete, state.answers]);
+  }, [onComplete, state.answers, storageKey]);
 
   const handleReset = useCallback(() => {
     dispatch({ type: "RESET" });
+    if (storageKey) {
+      try { localStorage.removeItem(storageKey); } catch { /* silent */ }
+    }
     onReset?.();
-  }, [onReset]);
+  }, [onReset, storageKey]);
+
+  const handleResume = useCallback(() => {
+    if (!storageKey) return;
+    const saved = loadSaved(storageKey);
+    if (saved) {
+      dispatch({ type: "RESTORE", answers: saved.answers, currentIndex: saved.currentIndex });
+    }
+  }, [storageKey]);
 
   const phase: WizardPhase =
     error ? "error" : isLoading ? "loading" : resultView ? "results" : state.phase;
@@ -136,19 +193,23 @@ export default function WizardShell({
             <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
             <p className="text-surface-400 leading-relaxed">{subtitle}</p>
             {loadingQuestions ? (
-              <div className="flex items-center justify-center gap-2 text-sm text-surface-500">
-                <div className="w-4 h-4 border-2 border-surface-700 border-t-accent-blue rounded-full animate-spin" />
-                Generating personalized questions...
-              </div>
+              <LoadingState compact message="Preparing questions..." accent="blue" />
             ) : (
               <>
                 <p className="text-sm text-surface-500">
                   {questions.length} questions &middot; Takes about{" "}
                   {Math.max(1, Math.round(questions.length * 0.5))} minutes
                 </p>
-                <Button onClick={() => dispatch({ type: "START" })}>
-                  Begin Assessment
-                </Button>
+                <div className="flex flex-col items-center gap-3">
+                  <Button onClick={() => dispatch({ type: "START" })}>
+                    Begin Assessment
+                  </Button>
+                  {showResume && savedDraft && (
+                    <Button variant="secondary" onClick={handleResume}>
+                      Resume ({savedDraft.answers.length}/{questions.length} answered)
+                    </Button>
+                  )}
+                </div>
               </>
             )}
           </motion.div>
@@ -189,16 +250,7 @@ export default function WizardShell({
         )}
 
         {phase === "loading" && (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-20 space-y-4"
-          >
-            <div className="w-8 h-8 border-2 border-surface-700 border-t-accent-blue rounded-full animate-spin" />
-            <p className="text-surface-400 text-sm">Calculating results...</p>
-          </motion.div>
+          <LoadingState message="Interpreting your answers" variant="interpret" accent="blue" />
         )}
 
         {phase === "results" && resultView && (

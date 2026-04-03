@@ -30,7 +30,7 @@ export default function TheoryIndexPage() {
           transition={{ delay: 0.1 }}
           className="text-surface-400 max-w-xl leading-relaxed"
         >
-          Five documented typological frameworks with original scoring methodology, terminology, and conceptual foundations. Read before or after taking a test.
+          Six documented typological frameworks with original scoring methodology, terminology, and conceptual foundations. Read before or after taking a test.
         </motion.p>
       </header>
 
@@ -88,6 +88,7 @@ export default function TheoryIndexPage() {
                 { name: "MBTI", href: "/cjte", engine: "VRDW CJTE-3 corpus", scoring: "AI interprets 8 open-ended answers" },
                 { name: "Socionics KIME", href: "/socionics", engine: "VRDW KIME-3 corpus", scoring: "Model A inference from 16 open-ended answers" },
                 { name: "Potentiology PBCE", href: "/potentiology", engine: "VRDW PBCE-1 corpus", scoring: "Energy-domain inference from 16 mentor questions" },
+                { name: "Enneagram INEE", href: "/enneagram", engine: "VRDW INEE-2 corpus", scoring: "Life-phase simulation + personalized quiz" },
               ].map(({ name, href, engine, scoring }) => (
                 <tr key={name} className="hover:bg-surface-900/50 transition-colors">
                   <td className="py-3 pr-4">
@@ -117,18 +118,6 @@ export default function TheoryIndexPage() {
         </Link>
       </motion.section>
 
-      {/* Unused tests notice */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.75 }}
-        className="bg-surface-900 border border-surface-800 rounded-2xl p-5 text-sm text-surface-400 leading-relaxed"
-      >
-        <p className="font-medium text-surface-300 mb-1">Note on Enneagram</p>
-        <p>
-          The Enneagram theory page provides a conceptual overview but no interactive test is implemented. The scoring methodology requires structured clinical interviews which are not suitable for a self-administered format.
-        </p>
-      </motion.div>
     </Container>
   );
 }

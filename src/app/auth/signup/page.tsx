@@ -5,9 +5,15 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { createClient } from "@/lib/supabase/client";
+import { FLAGS } from "@/lib/flags";
 
 export default function SignupPage() {
   const router = useRouter();
+
+  if (!FLAGS.AUTH_ENABLED) {
+    router.replace("/");
+    return null;
+  }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");

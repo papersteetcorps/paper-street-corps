@@ -3,6 +3,7 @@ import { getAnthropicClient, ANTHROPIC_MODEL } from "@/lib/anthropic/client";
 import { getPrompts, type TestType } from "@/lib/anthropic/prompts";
 import { validateInterpretation } from "@/lib/anthropic/schemas";
 import { createClient } from "@/lib/supabase/server";
+import { FLAGS } from "@/lib/flags";
 
 export const maxDuration = 30;
 
@@ -12,6 +13,7 @@ const VALID_TYPES: TestType[] = [
   "cjte",
   "socionics",
   "potentiology",
+  "enneagram",
 ];
 
 export async function POST(request: Request) {
@@ -29,6 +31,7 @@ export async function POST(request: Request) {
 
     // Save to Supabase if user is logged in (fire-and-forget)
     const saveToHistory = async () => {
+      if (!FLAGS.AUTH_ENABLED) return;
       try {
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
@@ -52,7 +55,7 @@ export async function POST(request: Request) {
             const { interpret: systemPrompt } = getPrompts(testType);
             const response = await anthropicClient.messages.create({
               model: ANTHROPIC_MODEL,
-              max_tokens: 4096,
+              max_tokens: 2048,
               system: systemPrompt,
               messages: [
                 { role: "user", content: JSON.stringify({ answers, localResult }) },
@@ -60,8 +63,15 @@ export async function POST(request: Request) {
             });
             const text =
               response.content[0]?.type === "text" ? response.content[0].text : "";
-            return validateInterpretation(text);
-          })().catch(() => null)
+            const parsed = validateInterpretation(text);
+            if (!parsed) {
+              console.error("[score-results] Failed to validate interpretation for", testType, "raw:", text.slice(0, 200));
+            }
+            return parsed;
+          })().catch((err) => {
+            console.error("[score-results] API error for", testType, err);
+            return null;
+          })
         : Promise.resolve(null),
       saveToHistory(),
     ]);

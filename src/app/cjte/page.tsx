@@ -8,6 +8,7 @@ import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
+import { saveResult } from "@/lib/results-store";
 
 const FALLBACK_QUESTIONS: WizardQuestion[] = [
   {
@@ -99,11 +100,12 @@ export default function CJTEPage() {
       const data = await res.json();
       if (data.interpretation) {
         setInterpretation(data.interpretation);
+        saveResult("cjte", data.interpretation);
       } else {
-        setInterpretation({ headline: "Analysis complete", summary: "Your responses have been processed. Add ANTHROPIC_API_KEY for full interpretation." });
+        setInterpretation({ headline: "Analysis incomplete", summary: "The interpretation could not be generated. This may be a temporary issue — try again." });
       }
     } catch {
-      setInterpretation({ headline: "Analysis complete", summary: "Could not reach the interpretation service." });
+      setInterpretation({ headline: "Connection error", summary: "Could not reach the interpretation service. Check your connection and try again." });
     } finally {
       setIsLoading(false);
     }
@@ -125,6 +127,7 @@ export default function CJTEPage() {
       resultView={resultView}
       isLoading={isLoading}
       onReset={handleReset}
+      storageKey="psc-draft-cjte"
     />
   );
 }

@@ -20,6 +20,7 @@ const SUGGESTED: Record<string, string[]> = {
   cjte:         ["Defend this result against my doubts", "What is my inferior function doing?", "How do I develop my auxiliary?"],
   socionics:    ["What is my PoLR and how does it affect me?", "Which sociotypes are most compatible with mine?", "What does my quadra value mean?"],
   potentiology: ["When will I crash and how do I recover?", "What environments drain my 1st function?", "How is my burnout pattern different from stress?"],
+  enneagram:    ["Why this type and not the other one I selected?", "How does my fixation show up in my life phases?", "What is my trap doing to me?"],
 };
 
 export default function ResultChat({ testType, result, accentColor = "var(--color-accent-blue)" }: ResultChatProps) {

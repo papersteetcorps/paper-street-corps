@@ -77,6 +77,19 @@ export const tests: Offering[] = [
     color: "var(--color-accent-teal)",
     colorMuted: "var(--color-accent-teal-muted)",
   },
+  {
+    id: "enneagram",
+    title: "Enneagram",
+    category: "test",
+    description: "Life-phase simulation engine using Ichazo & Naranjo's nine-type model.",
+    longDescription:
+      "VRDW INEE-2 — Fill structured life-phase forms, then watch the engine simulate how each Enneagram type would have processed your concrete experiences. Optional quiz to narrow your type.",
+    href: "/enneagram",
+    icon: "◎",
+    color: "var(--color-accent-amber)",
+    colorMuted: "var(--color-accent-amber-muted)",
+    badge: "INEE-2",
+  },
 ];
 
 export const theoryCards: Offering[] = [

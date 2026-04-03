@@ -2,15 +2,15 @@ import "server-only";
 import { readFileSync } from "fs";
 import { join } from "path";
 
-function loadCorpus(filename: string): string {
+function loadCorpus(filename: string, subdir = "data"): string {
   try {
-    return readFileSync(join(process.cwd(), "public/data", filename), "utf-8");
+    return readFileSync(join(process.cwd(), "public", subdir, filename), "utf-8");
   } catch {
     return "";
   }
 }
 
-export type TestType = "temperaments" | "moral-alignment" | "cjte" | "socionics" | "potentiology";
+export type TestType = "temperaments" | "moral-alignment" | "cjte" | "socionics" | "potentiology" | "enneagram";
 
 export interface PromptPair {
   interpret: string;
@@ -18,30 +18,30 @@ export interface PromptPair {
 
 // ─── Temperaments ────────────────────────────────────────────────────────────
 
-const TEMPERAMENTS_INTERPRET = `You are a temperament specialist. Interpret the user's temperament blend result with psychological depth.
+const TEMPERAMENTS_INTERPRET = `You are a temperament specialist. Interpret the user's result concisely.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (no markdown, no backticks):
 {
-  "headline": "one punchy line about this temperament",
-  "summary": "3-4 sentences about this temperament's core nature",
-  "insights": ["insight 1", "insight 2", "insight 3"],
-  "strengths": ["strength 1", "strength 2", "strength 3"],
-  "challenges": ["challenge 1", "challenge 2"],
-  "growth": "one paragraph on growth path"
+  "headline": "under 10 words",
+  "summary": "2 sentences max on this temperament's core nature",
+  "insights": ["1 sentence each", "max 3 insights"],
+  "strengths": ["short strength 1", "short strength 2", "short strength 3"],
+  "challenges": ["short challenge 1", "short challenge 2"],
+  "growth": "2 sentences max on growth path"
 }`;
 
 // ─── Moral Alignment ─────────────────────────────────────────────────────────
 
-const MORAL_ALIGNMENT_INTERPRET = `You are a moral alignment analyst. Interpret the user's alignment result with philosophical depth.
+const MORAL_ALIGNMENT_INTERPRET = `You are a moral alignment analyst. Interpret the user's result concisely.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (no markdown, no backticks):
 {
-  "headline": "one punchy line about this alignment",
-  "summary": "3-4 sentences describing this alignment's worldview",
-  "insights": ["insight 1", "insight 2", "insight 3"],
-  "strengths": ["strength 1", "strength 2", "strength 3"],
-  "challenges": ["challenge 1", "challenge 2"],
-  "growth": "one paragraph on the growth path"
+  "headline": "under 10 words",
+  "summary": "2 sentences max on this alignment's worldview",
+  "insights": ["1 sentence each", "max 3 insights"],
+  "strengths": ["short strength 1", "short strength 2", "short strength 3"],
+  "challenges": ["short challenge 1", "short challenge 2"],
+  "growth": "2 sentences max on growth path"
 }`;
 
 // ─── CJTE (Classic Jungian Typology Engine) ──────────────────────────────────
@@ -50,7 +50,7 @@ function buildCJTEInterpretPrompt(): string {
   const corpus = loadCorpus("vrdw_cjte_corpus.txt");
   const cache = loadCorpus("vrdw_cjte_cache.txt");
 
-  return `You are the VRDW CJTE-3 (Classic Jungian Typology Engine). Analyze the user's open-ended answers and determine their Jungian/MBTI type with high confidence.
+  return `You are the VRDW CJTE-3 (Classic Jungian Typology Engine). Determine the user's Jungian/MBTI type from their answers.
 
 === TYPING AUTHORITY DOCUMENT ===
 ${corpus}
@@ -58,21 +58,21 @@ ${corpus}
 === SCORING LOGIC ===
 ${cache}
 
-Apply the scoring logic step-by-step to determine the type. Then return your analysis as:
+Apply the scoring logic to determine the type. Be CONCISE — every sentence must earn its place.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (no markdown, no backticks):
 {
-  "headline": "XXXX — [socionics code] — one punchy line",
-  "summary": "3-4 sentences explaining the type with Jung's cognitive function evidence from their answers",
+  "headline": "XXXX (YYY) — under 10 words",
+  "summary": "2 sentences max. What type and why, citing their answers.",
   "insights": [
-    "Dominant function evidence from answers",
-    "Auxiliary function evidence from answers",
-    "Inferior function signature observed",
-    "Fourth insight about this specific person's expression of the type"
+    "1 sentence: dominant function evidence",
+    "1 sentence: auxiliary function evidence",
+    "1 sentence: inferior function signature",
+    "1 sentence: unique expression of this type"
   ],
-  "strengths": ["strength rooted in dominant function", "strength from auxiliary", "strength from type"],
-  "challenges": ["challenge from inferior function", "challenge from tertiary"],
-  "growth": "One paragraph on individuation path for this type using Jungian framework",
+  "strengths": ["short strength 1", "short strength 2", "short strength 3"],
+  "challenges": ["short challenge 1", "short challenge 2"],
+  "growth": "2 sentences max on individuation path.",
   "typeCode": "XXXX",
   "socionicsCode": "YYY",
   "functionStack": ["Dom", "Aux", "Tert", "Inf"]
@@ -85,7 +85,7 @@ function buildKIMEInterpretPrompt(): string {
   const corpus = loadCorpus("vrdw_kime_corpus.json");
   const instructions = loadCorpus("vrdw_kime_instructions.txt");
 
-  return `You are the VRDW KIME-3 (Kepinski Information Metabolism Engine). Analyze the user's answers using Model A Socionics framework to determine their sociotype.
+  return `You are the VRDW KIME-3 (Kepinski Information Metabolism Engine). Determine the user's Socionics sociotype. Be CONCISE.
 
 === MODEL A CORPUS ===
 ${corpus}
@@ -93,26 +93,14 @@ ${corpus}
 === ENGINE INSTRUCTIONS ===
 ${instructions}
 
-Evaluate:
-- Dominant information element (Base function)
-- Valued vs unvalued elements
-- Quadra alignment (Alpha/Beta/Gamma/Delta)
-- PoLR detection from answers
-- Ego block coherence
-
-Return ONLY valid JSON:
+Return ONLY valid JSON (no markdown, no backticks):
 {
-  "headline": "YYY (XXXX) — one punchy line about this sociotype",
-  "summary": "3-4 sentences on this sociotype's information metabolism pattern",
-  "insights": [
-    "Base function evidence from answers",
-    "Creative function evidence",
-    "PoLR/Vulnerable function signature",
-    "Quadra value alignment observed"
-  ],
-  "strengths": ["strength from Ego block", "strength from valued element", "quadra-aligned strength"],
-  "challenges": ["challenge from PoLR", "challenge from SuperEgo block"],
-  "growth": "One paragraph on psychological growth using Model A framework",
+  "headline": "YYY (XXXX) — under 10 words",
+  "summary": "2 sentences max on this sociotype's information metabolism",
+  "insights": ["1 sentence: base function evidence", "1 sentence: creative function", "1 sentence: PoLR signature", "1 sentence: quadra alignment"],
+  "strengths": ["short strength 1", "short strength 2", "short strength 3"],
+  "challenges": ["short challenge 1", "short challenge 2"],
+  "growth": "2 sentences max on growth path",
   "socType": "YYY",
   "mbtiType": "XXXX",
   "quadra": "Alpha|Beta|Gamma|Delta",
@@ -126,37 +114,74 @@ Return ONLY valid JSON:
 function buildPBCEInterpretPrompt(): string {
   const corpus = loadCorpus("vrdw_pbce_corpus.json");
 
-  return `You are the VRDW PBCE-1 (Potentiology Burnout Cycle Engine). Analyze the user's answers to determine their Potentiology type based on energy-based cognitive function patterns.
+  return `You are the VRDW PBCE-1 (Potentiology Burnout Cycle Engine). Determine the user's Potentiology type. Strict but caring mentor tone. Be CONCISE.
 
 === POTENTIOLOGY CORPUS ===
 ${corpus}
 
-Determine:
-- Which domain (X/A/L/M) the user naturally defaults to
-- Whether they are Subjective or Objective in that domain
-- Their full 8-function stack based on the type system
-- Their burnout vulnerability patterns
-
-Write in the tone of a strict but caring mentor — honest, direct, no sugarcoating.
-
-Return ONLY valid JSON:
+Return ONLY valid JSON (no markdown, no backticks):
 {
-  "headline": "PBCE Type [TypeCode] — The [Nickname] — one stark honest line",
-  "summary": "3-4 sentences describing this type's cognitive energy pattern and burnout tendency, in direct mentor tone",
-  "insights": [
-    "What their 1st function dominance looks like in practice",
-    "How their 2nd function supports them",
-    "Where their burnout cycle begins (which function depletes first)",
-    "What recovery looks like for this type"
-  ],
-  "strengths": ["1st-function natural strength", "2nd-function advantage", "type-specific resilience"],
-  "challenges": ["burnout vulnerability", "5th-8th function exhaustion pattern"],
-  "growth": "One paragraph of honest mentor advice about sustainable energy management for this type",
+  "headline": "PBCE [TypeCode] — The [Nickname] — under 10 words",
+  "summary": "2 sentences max on cognitive energy pattern and burnout tendency",
+  "insights": ["1 sentence: 1st function in practice", "1 sentence: 2nd function support", "1 sentence: burnout trigger", "1 sentence: recovery pattern"],
+  "strengths": ["short strength 1", "short strength 2", "short strength 3"],
+  "challenges": ["short challenge 1", "short challenge 2"],
+  "growth": "2 sentences max of honest mentor advice",
   "pbceType": "TypeCode",
   "nickname": "The Nickname",
   "primaryDomain": "X|A|L|M",
   "primaryDirection": "Sbj|Obj",
   "functionStack": ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"]
+}`;
+}
+
+// ─── Enneagram / INEE ────────────────────────────────────────────────────────
+
+function buildINEEInterpretPrompt(): string {
+  const corpus = loadCorpus("vrdw_inee_corpus.json", "enneagram-data");
+  const definitions = loadCorpus("vrdw_inee_definitions.txt", "enneagram-data");
+  const instructions = loadCorpus("vrdw_inee_instructions.txt", "enneagram-data");
+
+  return `You are the VRDW INEE-2 (Ichazo & Naranjo's Enneagram Engine). Your purpose is to simulate how specific Enneagram types would have processed the user's concrete life experiences, then help them identify their type.
+
+=== ENNEAGRAM CORPUS ===
+${corpus}
+
+=== FIELD DEFINITIONS ===
+${definitions}
+
+=== ENGINE INSTRUCTIONS ===
+${instructions}
+
+Simulation rules:
+- Take the concrete information from the user's life phases and simulate how each requested type would have processed those experiences.
+- Focus on fixation, passion, trap, and holy idea for each type.
+- Treat "situations" and "conclusions" under "moments" as concrete conditions to simulate through, not proof of a type.
+- Write in paragraphs, warm mentor tone. No bullet points.
+- Be deep, serious, and psychologically honest.
+
+Return ONLY valid JSON:
+{
+  "headline": "Enneagram Type X — one punchy line",
+  "summary": "3-4 sentences on the core pattern observed across phases",
+  "simulations": [
+    {
+      "type": 1,
+      "narrative": "Multi-paragraph simulation of how this type would have processed the user's life phases"
+    }
+  ],
+  "insights": [
+    "Key fixation pattern observed",
+    "Passion manifestation across phases",
+    "Trap pattern identified",
+    "Holy idea connection"
+  ],
+  "strengths": ["strength 1", "strength 2", "strength 3"],
+  "challenges": ["challenge 1", "challenge 2"],
+  "growth": "One paragraph on growth path using Enneagram framework",
+  "predictedType": 0,
+  "predictedSubtype": "SP|SO|SX",
+  "triad": "gut|heart|head"
 }`;
 }
 
@@ -174,5 +199,7 @@ export function getPrompts(testType: TestType): PromptPair {
       return { interpret: buildKIMEInterpretPrompt() };
     case "potentiology":
       return { interpret: buildPBCEInterpretPrompt() };
+    case "enneagram":
+      return { interpret: buildINEEInterpretPrompt() };
   }
 }
