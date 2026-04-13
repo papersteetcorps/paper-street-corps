@@ -183,7 +183,7 @@ export default function SynthesisClient({ availableResults }: { availableResults
             {/* Title */}
             {synthesis.title && (
               <div className="border border-surface-700 rounded-2xl p-6 text-center space-y-2">
-                <p className="text-xs text-surface-500 uppercase tracking-widest">Unified Profile</p>
+                <p className="text-xs text-surface-500 uppercase tracking-widest">You</p>
                 <h2 className="text-2xl font-bold text-foreground">{synthesis.title}</h2>
                 {synthesis.coreProfile && (
                   <p className="text-surface-300 text-sm leading-relaxed max-w-2xl mx-auto mt-3">
@@ -201,8 +201,7 @@ export default function SynthesisClient({ availableResults }: { availableResults
                 transition={{ delay: 0.1 }}
                 className="border border-surface-800 rounded-2xl p-6 space-y-4"
               >
-                <p className="text-xs text-surface-500 uppercase tracking-widest">Convergences</p>
-                <p className="text-xs text-surface-600">Where multiple frameworks agree</p>
+                <p className="text-xs text-surface-500 uppercase tracking-widest">What's consistent about you</p>
                 <div className="space-y-3">
                   {synthesis.convergences.map((c, i) => (
                     <div key={i} className="rounded-xl bg-accent-blue/5 border border-accent-blue/15 px-4 py-3 space-y-1">
@@ -226,8 +225,7 @@ export default function SynthesisClient({ availableResults }: { availableResults
                 transition={{ delay: 0.2 }}
                 className="border border-surface-800 rounded-2xl p-6 space-y-4"
               >
-                <p className="text-xs text-surface-500 uppercase tracking-widest">Divergences</p>
-                <p className="text-xs text-surface-600">Where frameworks add nuance or appear to contradict</p>
+                <p className="text-xs text-surface-500 uppercase tracking-widest">Where it gets complicated</p>
                 <div className="space-y-3">
                   {synthesis.divergences.map((d, i) => (
                     <div key={i} className="rounded-xl bg-surface-900 border border-surface-700 px-4 py-3">
@@ -248,7 +246,7 @@ export default function SynthesisClient({ availableResults }: { availableResults
               >
                 {synthesis.unifiedStrengths && (
                   <section className="border border-surface-800 rounded-2xl p-5 space-y-3">
-                    <p className="text-xs text-surface-500 uppercase tracking-widest">Unified Strengths</p>
+                    <p className="text-xs text-surface-500 uppercase tracking-widest">What you're built for</p>
                     <ul className="space-y-2">
                       {synthesis.unifiedStrengths.map((s, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-surface-200">
@@ -261,7 +259,7 @@ export default function SynthesisClient({ availableResults }: { availableResults
                 )}
                 {synthesis.unifiedChallenges && (
                   <section className="border border-surface-800 rounded-2xl p-5 space-y-3">
-                    <p className="text-xs text-surface-500 uppercase tracking-widest">Unified Challenges</p>
+                    <p className="text-xs text-surface-500 uppercase tracking-widest">What trips you up</p>
                     <ul className="space-y-2">
                       {synthesis.unifiedChallenges.map((c, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-surface-200">
@@ -283,7 +281,7 @@ export default function SynthesisClient({ availableResults }: { availableResults
                 transition={{ delay: 0.4 }}
                 className="border border-red-500/20 bg-red-500/5 rounded-2xl p-6 space-y-3"
               >
-                <p className="text-xs text-red-400/70 uppercase tracking-widest">Structural Blind Spots</p>
+                <p className="text-xs text-red-400/70 uppercase tracking-widest">What you don't see about yourself</p>
                 <p className="text-sm text-surface-200 leading-relaxed">{synthesis.blindSpots}</p>
               </motion.section>
             )}
@@ -296,13 +294,13 @@ export default function SynthesisClient({ availableResults }: { availableResults
                 transition={{ delay: 0.5 }}
                 className="border border-accent-teal/20 bg-accent-teal/5 rounded-2xl p-6 space-y-3"
               >
-                <p className="text-xs text-accent-teal/70 uppercase tracking-widest">Growth Path</p>
+                <p className="text-xs text-accent-teal/70 uppercase tracking-widest">What to work on</p>
                 <p className="text-sm text-surface-200 leading-relaxed">{synthesis.growthPath}</p>
               </motion.section>
             )}
 
             <p className="text-xs text-surface-600 text-center">
-              Synthesis generated from {synthesis.frameworks?.join(", ") ?? selectedResults.map((r) => r.testType).join(", ")} &mdash; AI-powered analysis
+              Based on {synthesis.frameworks?.join(", ") ?? selectedResults.map((r) => r.testType).join(", ")}
             </p>
           </motion.div>
         )}

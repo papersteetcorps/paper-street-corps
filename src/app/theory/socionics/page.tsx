@@ -48,7 +48,7 @@ export default function SocionicsTheoryPage() {
             href="/socionics"
             className="bg-accent-amber/10 hover:bg-accent-amber/20 text-accent-amber border border-accent-amber/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
           >
-            Take KIME Test &rarr;
+            Take the test &rarr;
           </Link>
         </div>
       </div>
@@ -169,7 +169,7 @@ export default function SocionicsTheoryPage() {
           Socionics defines 14 intertype relations between sociotypes, ranging from &ldquo;Dual&rdquo; (most compatible — provides each other&rsquo;s SuperId needs) to &ldquo;Conflicting&rdquo; (most stressful — Base function of one is PoLR of the other). Relations are symmetric and deterministic based on type alone.
         </p>
         <p className="text-sm text-surface-400">
-          This is a theory page. Full intertype relation computation is not implemented here — take the KIME test to determine your sociotype first.
+          This is a theory page. Full intertype relation computation is not implemented here. Take the Socionics test to determine your sociotype first.
         </p>
       </section>
 
@@ -179,7 +179,7 @@ export default function SocionicsTheoryPage() {
           href="/socionics"
           className="bg-accent-amber hover:bg-accent-amber/90 text-black font-medium px-6 py-3 rounded-xl text-sm transition-colors"
         >
-          Take KIME-3 Test
+          Take the Socionics test
         </Link>
         <Link
           href="/resources"

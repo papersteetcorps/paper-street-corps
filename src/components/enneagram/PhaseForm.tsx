@@ -1,121 +1,9 @@
 "use client";
 
-import { useCallback, useState, useRef, useEffect } from "react";
+import { useCallback, useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { LifePhase, Submap, Moment } from "@/lib/types/enneagram";
 import Button from "@/components/ui/Button";
-import LoadingState from "@/components/ui/LoadingState";
-
-/* ── Voice input hook (AssemblyAI streaming) ───────────────────────────── */
-
-function useVoiceInput() {
-  const [listening, setListening] = useState(false);
-  const [supported, setSupported] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const ctxRef = useRef<AudioContext | null>(null);
-  const cbRef = useRef<((t: string) => void) | null>(null);
-  const transcriptRef = useRef("");
-
-  useEffect(() => {
-    setSupported(!!navigator.mediaDevices?.getUserMedia);
-  }, []);
-
-  const stop = useCallback(() => {
-    // Stop mic
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    // Close audio context
-    ctxRef.current?.close().catch(() => {});
-    ctxRef.current = null;
-    // Close websocket
-    if (wsRef.current && wsRef.current.readyState <= WebSocket.OPEN) {
-      try { wsRef.current.send(JSON.stringify({ type: "Terminate" })); } catch { /* */ }
-      wsRef.current.close();
-    }
-    wsRef.current = null;
-    setListening(false);
-  }, []);
-
-  const start = useCallback(async (onResult: (text: string) => void) => {
-    stop();
-    setError(null);
-    cbRef.current = onResult;
-    transcriptRef.current = "";
-
-    try {
-      // 1. Get temp token from our backend
-      const tokenRes = await fetch("/api/speech-token", { method: "POST" });
-      const tokenData = await tokenRes.json();
-      if (!tokenData.token) { setError("Voice service not configured"); return; }
-
-      // 2. Get mic access
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true } });
-      streamRef.current = stream;
-
-      // 3. Connect to AssemblyAI WebSocket
-      const params = new URLSearchParams({ token: tokenData.token, sample_rate: "16000", speech_model: "u3-rt-pro" });
-      const ws = new WebSocket(`wss://streaming.assemblyai.com/v3/ws?${params}`);
-      wsRef.current = ws;
-
-      ws.onopen = () => {
-        setListening(true);
-
-        // 4. Set up audio processing: mic → PCM16 → WebSocket
-        const audioCtx = new AudioContext({ sampleRate: 16000 });
-        ctxRef.current = audioCtx;
-        const source = audioCtx.createMediaStreamSource(stream);
-        const processor = audioCtx.createScriptProcessor(4096, 1, 1);
-
-        processor.onaudioprocess = (e) => {
-          if (ws.readyState !== WebSocket.OPEN) return;
-          const float32 = e.inputBuffer.getChannelData(0);
-          // Convert Float32 to Int16
-          const int16 = new Int16Array(float32.length);
-          for (let i = 0; i < float32.length; i++) {
-            const s = Math.max(-1, Math.min(1, float32[i]));
-            int16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-          }
-          ws.send(int16.buffer);
-        };
-
-        source.connect(processor);
-        processor.connect(audioCtx.destination);
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data);
-          if (msg.type === "Turn" && msg.transcript) {
-            if (msg.end_of_turn) {
-              transcriptRef.current += (transcriptRef.current ? " " : "") + msg.transcript;
-              cbRef.current?.(transcriptRef.current);
-            } else {
-              // Show partial (current finals + this partial)
-              cbRef.current?.(transcriptRef.current + (transcriptRef.current ? " " : "") + msg.transcript);
-            }
-          }
-        } catch { /* */ }
-      };
-
-      ws.onerror = () => {
-        setError("Voice connection error");
-        stop();
-      };
-
-      ws.onclose = () => {
-        setListening(false);
-      };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Microphone access denied";
-      setError(msg);
-      stop();
-    }
-  }, [stop]);
-
-  return { listening, supported, start, stop, error };
-}
 
 interface PhaseFormProps {
   phase: LifePhase;
@@ -135,7 +23,7 @@ function Input({ value, onChange, placeholder }: { value: string; onChange: (v: 
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-surface-600 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all"
+      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-base text-foreground placeholder:text-surface-400 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all"
     />
   );
 }
@@ -147,19 +35,103 @@ function TextArea({ value, onChange, placeholder, rows = 2 }: { value: string; o
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-surface-600 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
+      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-base text-foreground placeholder:text-surface-400 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
     />
+  );
+}
+
+function MicTextArea({ value, onChange, placeholder, rows = 2 }: { value: string; onChange: (v: string) => void; placeholder?: string; rows?: number }) {
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const baseRef = useRef(value);
+
+  const supported =
+    typeof window !== "undefined" &&
+    ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
+
+  const toggleMic = useCallback(() => {
+    if (!supported) return;
+    if (recognitionRef.current && listening) {
+      recognitionRef.current.stop();
+      return;
+    }
+    const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition;
+    if (!SR) return;
+    const recognition = new SR();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+    recognition.onresult = (e: SpeechRecognitionEvent) => {
+      let finalText = "";
+      for (let i = 0; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalText += e.results[i][0].transcript;
+      }
+      if (finalText) {
+        const base = baseRef.current;
+        const sep = base && !base.endsWith(" ") ? " " : "";
+        const updated = base + sep + finalText;
+        baseRef.current = updated;
+        onChange(updated);
+      }
+    };
+    recognition.onend = () => { setListening(false); recognitionRef.current = null; };
+    recognition.onerror = () => { setListening(false); recognitionRef.current = null; };
+    recognitionRef.current = recognition;
+    recognition.start();
+    setListening(true);
+  }, [supported, listening, onChange]);
+
+  // Keep baseRef in sync when user types manually
+  if (!listening && value !== baseRef.current) {
+    baseRef.current = value;
+  }
+
+  return (
+    <div className="relative">
+      <textarea
+        value={value}
+        onChange={(e) => { baseRef.current = e.target.value; onChange(e.target.value); }}
+        placeholder={placeholder}
+        rows={rows}
+        className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 pr-12 text-base text-foreground placeholder:text-surface-400 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
+      />
+      {supported && (
+        <button
+          type="button"
+          onClick={toggleMic}
+          className={`absolute top-2.5 right-2.5 w-7 h-7 flex items-center justify-center rounded-md transition-all ${
+            listening
+              ? "bg-red-500/20 text-red-400 animate-pulse"
+              : "bg-surface-800 text-surface-500 hover:text-surface-300 hover:bg-surface-700"
+          }`}
+          aria-label={listening ? "Stop recording" : "Start voice input"}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {listening ? (
+              <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
+            ) : (
+              <>
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </>
+            )}
+          </svg>
+        </button>
+      )}
+    </div>
   );
 }
 
 function FieldLabel({ children, hint, required }: { children: React.ReactNode; hint?: string; required?: boolean }) {
   return (
     <div className="mb-1.5">
-      <span className="text-xs font-medium text-surface-300">
+      <span className="text-sm font-medium text-surface-200">
         {children}
         {required && <span className="text-accent-amber ml-0.5">*</span>}
       </span>
-      {hint && <p className="text-xs text-surface-600 mt-0.5">{hint}</p>}
+      {hint && <p className="text-sm text-surface-400 mt-0.5">{hint}</p>}
     </div>
   );
 }
@@ -325,12 +297,7 @@ type SectionId = typeof SECTIONS[number];
 
 export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseIndex, previousPhase }: PhaseFormProps) {
   const [openSection, setOpenSection] = useState<SectionId>("basics");
-  const [freeText, setFreeText] = useState("");
-  const [extracting, setExtracting] = useState(false);
-  const [inputOpen, setInputOpen] = useState<"none" | "text" | "voice">("none");
   const [showGuide, setShowGuide] = useState(false);
-  const [extracted, setExtracted] = useState(false);
-  const speech = useVoiceInput();
 
   const toggle = (id: SectionId) => setOpenSection((prev) => (prev === id ? prev : id));
 
@@ -372,55 +339,6 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
     },
     [phase.moments, update]
   );
-
-  const handleExtract = useCallback(async () => {
-    if (!freeText.trim()) return;
-    setExtracting(true);
-    try {
-      const res = await fetch("/api/enneagram-extract", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: freeText }),
-      });
-      const data = await res.json();
-      if (data.extracted) {
-        const e = data.extracted;
-        onChange({
-          ...phase,
-          phaseName: e.phaseName || phase.phaseName,
-          map: e.map || phase.map,
-          submaps: e.submaps?.length ? e.submaps : phase.submaps,
-          info: {
-            ageRange: e.info?.ageRange || phase.info.ageRange,
-            occupation: e.info?.occupation || phase.info.occupation,
-            illness: e.info?.illness?.length ? e.info.illness : phase.info.illness,
-          },
-          lifestyle: {
-            routine: e.lifestyle?.routine?.length ? e.lifestyle.routine : phase.lifestyle.routine,
-            facilities: e.lifestyle?.facilities?.length ? e.lifestyle.facilities : phase.lifestyle.facilities,
-            scarcity: e.lifestyle?.scarcity?.length ? e.lifestyle.scarcity : phase.lifestyle.scarcity,
-          },
-          environment: {
-            locality: e.environment?.locality || phase.environment.locality,
-            people: {
-              guardianRelation: e.environment?.people?.guardianRelation?.length ? e.environment.people.guardianRelation : phase.environment.people.guardianRelation,
-              siblingRelation: e.environment?.people?.siblingRelation?.length ? e.environment.people.siblingRelation : phase.environment.people.siblingRelation,
-              friendsRelation: e.environment?.people?.friendsRelation?.length ? e.environment.people.friendsRelation : phase.environment.people.friendsRelation,
-              mentorRelation: e.environment?.people?.mentorRelation?.length ? e.environment.people.mentorRelation : phase.environment.people.mentorRelation,
-            },
-            society: {
-              elements: e.environment?.society?.elements?.length ? e.environment.society.elements : phase.environment.society.elements,
-              societalValues: e.environment?.society?.societalValues?.length ? e.environment.society.societalValues : phase.environment.society.societalValues,
-            },
-          },
-          moments: e.moments?.length ? e.moments : phase.moments,
-        });
-        setExtracted(true);
-        setInputOpen("none");
-      }
-    } catch { /* silent */ }
-    finally { setExtracting(false); }
-  }, [freeText, phase, onChange]);
 
   const handleCarryForward = useCallback(() => {
     if (!previousPhase) return;
@@ -469,42 +387,23 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
     >
       {/* Header */}
       <div className="text-center space-y-2">
-        <p className="text-xs text-surface-500 uppercase tracking-widest">Phase {phaseIndex + 1}</p>
+        <p className="text-sm text-surface-400 uppercase tracking-widest font-medium">Phase {phaseIndex + 1}</p>
         <h2 className="text-2xl font-semibold tracking-tight">Describe this period of your life</h2>
       </div>
 
-      {/* ── Quick input: action buttons + expandable cards ───── */}
+      {/* ── Quick input: guide toggle ────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-        {/* Action buttons row */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setInputOpen(inputOpen === "text" ? "none" : "text")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all cursor-pointer ${
-              inputOpen === "text" ? "border-accent-amber/40 bg-accent-amber/5 text-accent-amber" : "border-surface-800 text-surface-400 hover:border-surface-600 hover:text-surface-300"
-            }`}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-            Write
-          </button>
-          {speech.supported && (
-            <button
-              onClick={() => setInputOpen(inputOpen === "voice" ? "none" : "voice")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all cursor-pointer ${
-                inputOpen === "voice" ? "border-accent-amber/40 bg-accent-amber/5 text-accent-amber" : "border-surface-800 text-surface-400 hover:border-surface-600 hover:text-surface-300"
-              }`}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-              Speak
-            </button>
-          )}
+        {/* Guide toggle */}
+        <div className="flex justify-end">
           <button
             onClick={() => setShowGuide(!showGuide)}
-            className={`px-4 py-3 rounded-xl border text-sm font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all cursor-pointer ${
               showGuide ? "border-surface-600 bg-surface-800/50 text-surface-300" : "border-surface-800 text-surface-500 hover:border-surface-600 hover:text-surface-300"
             }`}
-            title="What should I talk about?"
+            title="What should I include?"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            What to include
           </button>
         </div>
 
@@ -519,7 +418,7 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
               className="overflow-hidden"
             >
               <div className="border border-surface-800 rounded-2xl p-4 space-y-3">
-                <p className="text-xs font-medium text-surface-300">What to include in your description:</p>
+                <p className="text-sm font-medium text-surface-200">What to include in your description:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {[
                     { q: "Where were you?", eg: "London, a quiet suburb, college campus" },
@@ -529,11 +428,11 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
                     { q: "Any key moments that stuck?", eg: "Won a competition but felt empty, lost a friend" },
                     { q: "What was the social atmosphere?", eg: "Conservative, status-driven, close community" },
                   ].map(({ q, eg }) => (
-                    <div key={q} className="flex gap-2 text-xs">
+                    <div key={q} className="flex gap-2 text-sm">
                       <span className="text-accent-amber/60 mt-0.5 shrink-0">&#8250;</span>
                       <div>
                         <span className="text-surface-300">{q}</span>
-                        <span className="text-surface-600 ml-1">e.g. {eg}</span>
+                        <span className="text-surface-400 ml-1">e.g. {eg}</span>
                       </div>
                     </div>
                   ))}
@@ -543,129 +442,7 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
           )}
         </AnimatePresence>
 
-        {/* Write card */}
-        <AnimatePresence>
-          {inputOpen === "text" && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="border border-accent-amber/20 bg-accent-amber/5 rounded-2xl p-5 space-y-3">
-                {extracting ? (
-                  <div className="py-6">
-                    <LoadingState compact message="Extracting details from your text..." accent="amber" />
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-xs text-surface-500">Describe this phase in your own words. We&rsquo;ll fill the form automatically.</p>
-                    <textarea
-                      value={freeText}
-                      onChange={(e) => setFreeText(e.target.value)}
-                      placeholder={"I was 14-18, living in London with my mum. Dad had left when I was 10. Went to a school in Hackney, mostly hung out with 2-3 close mates. Mum worked long hours so I was alone a lot. Biggest memory: getting into a fight and realising nobody came to help. Another: spending an entire summer reading alone and feeling more alive than I had all year."}
-                      rows={5}
-                      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-surface-600 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
-                      autoFocus
-                    />
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-surface-600">You can edit everything after.</p>
-                      <Button onClick={handleExtract} disabled={!freeText.trim()}>Extract &amp; Fill Form</Button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* Voice card */}
-        <AnimatePresence>
-          {inputOpen === "voice" && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="border border-accent-amber/20 bg-accent-amber/5 rounded-2xl p-5 space-y-4">
-                <p className="text-xs text-surface-500">Talk naturally about this phase — where you lived, who was around, your routine, and moments that stuck with you.</p>
-
-                {/* Mic + transcript */}
-                <div className="flex gap-4 items-start">
-                  <button
-                    onClick={() => {
-                      if (speech.listening) { speech.stop(); } else { speech.start((text) => setFreeText(text)); }
-                    }}
-                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all cursor-pointer shrink-0 ${
-                      speech.listening
-                        ? "bg-red-500/20 border-2 border-red-500"
-                        : "bg-surface-800 border-2 border-surface-700 hover:border-accent-amber/50"
-                    }`}
-                  >
-                    {speech.listening ? (
-                      <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1, repeat: Infinity }}>
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="6" y="6" width="12" height="12" rx="2" />
-                        </svg>
-                      </motion.div>
-                    ) : (
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-                      </svg>
-                    )}
-                  </button>
-                  <div className="flex-1 min-h-[56px]">
-                    {freeText ? (
-                      <div className="border border-surface-800 rounded-lg p-3 max-h-32 overflow-y-auto bg-surface-900">
-                        <p className="text-sm text-surface-300 leading-relaxed">{freeText}</p>
-                      </div>
-                    ) : (
-                      <div className="flex items-center h-14 text-xs text-surface-500">
-                        {speech.listening ? (
-                          <span className="flex items-center gap-2">
-                            <motion.span className="w-2 h-2 rounded-full bg-red-400" animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1, repeat: Infinity }} />
-                            Listening... speak naturally
-                          </span>
-                        ) : "Tap the mic to start recording"}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Voice error */}
-                {speech.error && (
-                  <p className="text-xs text-red-400">{speech.error}</p>
-                )}
-
-                {/* Extract button (after stopping) */}
-                {freeText && !speech.listening && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between">
-                    <p className="text-xs text-surface-600">Review above, then extract.</p>
-                    {extracting ? (
-                      <LoadingState compact message="Extracting..." accent="amber" />
-                    ) : (
-                      <Button onClick={handleExtract} disabled={!freeText.trim()}>Extract &amp; Fill Form</Button>
-                    )}
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* After extraction — reopen */}
-        {extracted && (
-          <button
-            onClick={() => { setExtracted(false); setInputOpen("text"); }}
-            className="text-xs text-accent-amber/70 hover:text-accent-amber transition-colors cursor-pointer flex items-center gap-1"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-            Describe more or re-extract
-          </button>
-        )}
       </motion.div>
 
       {/* Carry forward from previous phase */}
@@ -845,8 +622,8 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
                     </button>
                   )}
                 </div>
-                <TextArea value={m.situation} onChange={(v) => updateMoment(i, { situation: v })} placeholder="What happened?" rows={2} />
-                <TextArea value={m.conclusion} onChange={(v) => updateMoment(i, { conclusion: v })} placeholder="What conclusion did it reach?" rows={2} />
+                <MicTextArea value={m.situation} onChange={(v) => updateMoment(i, { situation: v })} placeholder="What happened?" rows={2} />
+                <MicTextArea value={m.conclusion} onChange={(v) => updateMoment(i, { conclusion: v })} placeholder="What conclusion did it reach?" rows={2} />
               </div>
             ))}
             <button

@@ -15,9 +15,9 @@ export default function ProgressHeader({
 }: ProgressHeaderProps) {
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-surface-400">{title}</span>
-        <span className="text-surface-500">
+      <div className="flex items-center justify-between text-sm font-medium">
+        <span className="text-surface-300">{title}</span>
+        <span className="text-surface-400">
           {current} of {total}
         </span>
       </div>

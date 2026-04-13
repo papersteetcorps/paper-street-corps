@@ -11,22 +11,22 @@ import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
 
 const FALLBACK_QUESTIONS: WizardQuestion[] = [
-  { id: "pbce-q1", text: "Describe a situation where you felt fully in your element — what were you doing, and why did it feel natural?", answerType: "text", meta: { targetFunctions: ["SbjX", "ObjX"] } },
-  { id: "pbce-q2", text: "When you're at your most energized, what kind of activity or environment is responsible for that?", answerType: "text", meta: { targetFunctions: ["SbjX", "ObjX", "SbjA"] } },
-  { id: "pbce-q3", text: "Describe a time when you burned out. What were the signs, and what caused the collapse?", answerType: "text", meta: { burnoutRelevant: true } },
-  { id: "pbce-q4", text: "When you analyze a problem, do you prefer a gut-level experiential read or building a logical system from scratch? Describe this with a recent example.", answerType: "text", meta: { targetFunctions: ["SbjX", "SbjL"] } },
-  { id: "pbce-q5", text: "How do you relate to abstract theory — do you find it energizing or draining? What happens when you're forced to work in abstractions for a long time?", answerType: "text", meta: { targetFunctions: ["SbjA", "ObjA"] } },
-  { id: "pbce-q6", text: "In your relationships, what role do your moral values play? Do they feel like a deep engine driving you, or more like a framework you consciously apply?", answerType: "text", meta: { targetFunctions: ["SbjM", "ObjM"] } },
-  { id: "pbce-q7", text: "When you're forced to work purely on logic — systems, rules, efficiency — how long before it becomes exhausting? What happens to you mentally?", answerType: "text", meta: { targetFunctions: ["ObjL", "SbjL"], burnoutRelevant: true } },
-  { id: "pbce-q8", text: "What does your recovery look like? What activities restore your cognitive energy after depletion?", answerType: "text", meta: { burnoutRelevant: true } },
-  { id: "pbce-q9", text: "Do you prefer to generate new frameworks and ideas, or refine and stabilize existing ones? Give an example from your work or life.", answerType: "text", meta: { targetFunctions: ["SbjA", "ObjA", "ObjL"] } },
-  { id: "pbce-q10", text: "When your values and logic directly contradict each other in a decision, how do you resolve it? Which wins, and what is the cost?", answerType: "text", meta: { targetFunctions: ["SbjM", "SbjL"], burnoutRelevant: true } },
-  { id: "pbce-q11", text: "Describe a work environment where you thrive vs. one where you deteriorate. Be specific about the structure, people, and demands.", answerType: "text", meta: { burnoutRelevant: true } },
-  { id: "pbce-q12", text: "What is something you are deeply competent at but find quietly draining every time you do it?", answerType: "text", meta: { burnoutRelevant: true } },
-  { id: "pbce-q13", text: "If you had to define your primary mode of engaging with the world — through direct experience, abstract patterns, logical structure, or moral/relational meaning — which resonates most?", answerType: "text", meta: { targetFunctions: ["SbjX", "SbjA", "SbjL", "SbjM"] } },
-  { id: "pbce-q14", text: "What happens to your performance and self-image when you are working outside your preferred domain for an extended period?", answerType: "text", meta: { burnoutRelevant: true } },
-  { id: "pbce-q15", text: "When a project ends, what do you feel — relief, emptiness, or an immediate need to start something new? What does this tell you?", answerType: "text", meta: { burnoutRelevant: true } },
-  { id: "pbce-q16", text: "What is the thing that, if you had to do it every day, would slowly erode who you are?", answerType: "text", meta: { burnoutRelevant: true } },
+  { id: "pbce-q1", text: "When do you feel most like yourself? What are you doing?", answerType: "text", meta: { targetFunctions: ["SbjX", "ObjX"] } },
+  { id: "pbce-q2", text: "What activities or environments give you the most energy?", answerType: "text", meta: { targetFunctions: ["SbjX", "ObjX", "SbjA"] } },
+  { id: "pbce-q3", text: "Tell me about a time you burned out. What caused it and what were the warning signs?", answerType: "text", meta: { burnoutRelevant: true } },
+  { id: "pbce-q4", text: "When solving a problem, do you go with your gut or build a system? Give a recent example.", answerType: "text", meta: { targetFunctions: ["SbjX", "SbjL"] } },
+  { id: "pbce-q5", text: "Does abstract thinking energize you or drain you? What happens when you have to do it for hours?", answerType: "text", meta: { targetFunctions: ["SbjA", "ObjA"] } },
+  { id: "pbce-q6", text: "How much do your personal values drive your decisions? Are they automatic or something you consciously check?", answerType: "text", meta: { targetFunctions: ["SbjM", "ObjM"] } },
+  { id: "pbce-q7", text: "How long can you work on pure logic, rules, and systems before it starts wearing you down?", answerType: "text", meta: { targetFunctions: ["ObjL", "SbjL"], burnoutRelevant: true } },
+  { id: "pbce-q8", text: "What do you do to recharge after a mentally draining period?", answerType: "text", meta: { burnoutRelevant: true } },
+  { id: "pbce-q9", text: "Do you prefer creating new ideas or improving existing ones? Give an example.", answerType: "text", meta: { targetFunctions: ["SbjA", "ObjA", "ObjL"] } },
+  { id: "pbce-q10", text: "When your values and your logic disagree, which one wins? What does that cost you?", answerType: "text", meta: { targetFunctions: ["SbjM", "SbjL"], burnoutRelevant: true } },
+  { id: "pbce-q11", text: "Describe a work environment where you thrive vs. one where you fall apart.", answerType: "text", meta: { burnoutRelevant: true } },
+  { id: "pbce-q12", text: "What's something you're good at but find quietly draining every time you do it?", answerType: "text", meta: { burnoutRelevant: true } },
+  { id: "pbce-q13", text: "How do you engage with the world most naturally: hands-on experience, abstract patterns, logical structure, or through relationships and values?", answerType: "text", meta: { targetFunctions: ["SbjX", "SbjA", "SbjL", "SbjM"] } },
+  { id: "pbce-q14", text: "What happens to you when you're stuck doing work outside your comfort zone for a long time?", answerType: "text", meta: { burnoutRelevant: true } },
+  { id: "pbce-q15", text: "When a project ends, what do you feel? Relief, emptiness, or the urge to start something new?", answerType: "text", meta: { burnoutRelevant: true } },
+  { id: "pbce-q16", text: "What's the one thing that, if you had to do it every day, would slowly destroy you?", answerType: "text", meta: { burnoutRelevant: true } },
 ];
 
 const DOMAIN_LABELS: Record<string, string> = {
@@ -95,8 +95,8 @@ export default function PotentiologyPage() {
 
   return (
     <WizardShell
-      title="Potentiology Burnout Cycle Engine"
-      subtitle="VRDW PBCE-1 — An energy-based cognitive framework. 16 questions from a strict but caring mentor. Honesty is required. This test identifies your cognitive domain, burnout pattern, and sustainable capacity."
+      title="Energy Profile"
+      subtitle="16 honest questions about what energizes you and what drains you. You'll get your cognitive domain, energy stack, and the burnout patterns you keep falling into."
       questions={FALLBACK_QUESTIONS}
       loadingQuestions={false}
       onComplete={handleComplete}
@@ -122,7 +122,7 @@ function PBCEResults({ interpretation }: { interpretation: NonNullable<Interpret
       {/* Type hero */}
       <TypeCard
         typeCode={pbceType}
-        subtitle={nickname ?? "Potentiology Type"}
+        subtitle={nickname ?? "Energy Profile Type"}
         confidence={undefined}
         accentColor="purple"
         delay={0}
@@ -148,7 +148,7 @@ function PBCEResults({ interpretation }: { interpretation: NonNullable<Interpret
               <p className="text-xs text-surface-500 uppercase tracking-widest mb-2">Orientation</p>
               <p className="text-3xl font-bold text-foreground">{primaryDirection}</p>
               <p className="text-sm text-surface-400 mt-1">
-                {primaryDirection === "Sbj" ? "Subjective — internally referenced" : "Objective — externally referenced"}
+                {primaryDirection === "Sbj" ? "Subjective, internally referenced" : "Objective, externally referenced"}
               </p>
             </div>
           )}
@@ -206,7 +206,7 @@ function PBCEResults({ interpretation }: { interpretation: NonNullable<Interpret
       />
 
       <p className="text-xs text-surface-500 text-center">
-        Powered by VRDW PBCE-1 &mdash; Potentiology Burnout Cycle Engine. Energy-based cognitive typing.
+        Based on PBCE-1. Energy-based cognitive typing.
       </p>
 
       <ResultChat testType="potentiology" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-purple)" />

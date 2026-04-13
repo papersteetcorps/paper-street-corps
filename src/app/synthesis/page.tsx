@@ -8,9 +8,9 @@ const TEST_LABELS: Record<string, string> = {
   temperaments: "Temperaments",
   "moral-alignment": "Moral Alignment",
   cjte: "MBTI",
-  socionics: "Socionics (KIME)",
-  potentiology: "Potentiology (PBCE)",
-  enneagram: "Enneagram (INEE)",
+  socionics: "Socionics",
+  potentiology: "Energy Profile",
+  enneagram: "Enneagram",
 };
 
 export default function SynthesisPage() {
@@ -34,11 +34,10 @@ export default function SynthesisPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-10">
       <div className="pt-4">
-        <p className="text-xs text-surface-500 uppercase tracking-widest mb-2">Cross-Framework Analysis</p>
-        <h1 className="text-2xl font-semibold text-foreground">Profile Synthesis</h1>
+        <p className="text-xs text-surface-500 uppercase tracking-widest mb-2">Your full picture</p>
+        <h1 className="text-2xl font-semibold text-foreground">Who You Are</h1>
         <p className="text-surface-400 text-sm mt-2 max-w-xl">
-          Combines all your completed test results into one unified psychological profile.
-          Identifies convergences, divergences, and the pattern that runs beneath all frameworks.
+          Your test results combined into one profile. The patterns, the contradictions, and what it all means for you.
         </p>
       </div>
 
