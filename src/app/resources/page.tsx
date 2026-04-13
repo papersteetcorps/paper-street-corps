@@ -67,6 +67,12 @@ export default function ResourcesPage() {
             href="https://www.scribd.com/document/423878777/PERSONALITY-docx"
             type="paper"
           />
+          <ResourceLink
+            title="Temporal Reference Cognition (Mallick, 2025)"
+            description="A generative framework for modeling cognition by decomposing cognitive functions into orthogonal primitives — domains, modes, and hierarchical function stacks."
+            href="/data/temporal_reference_cognition.pdf"
+            type="paper"
+          />
         </div>
       </section>
 
