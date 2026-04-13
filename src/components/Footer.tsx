@@ -12,6 +12,7 @@ const LINKS = {
   Resources: [
     { label: "Theory", href: "/theory" },
     { label: "Research Papers", href: "/resources" },
+    { label: "Privacy Policy", href: "/privacy" },
   ],
 };
 
