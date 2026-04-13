@@ -96,9 +96,14 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-surface-700/50 max-w-5xl mx-auto px-6 py-5 flex justify-between items-center">
-          <p className="text-xs text-surface-600">
-            &copy; {new Date().getFullYear()} Forge
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs text-surface-600">
+              &copy; {new Date().getFullYear()} Forge
+            </p>
+            <Link href="/privacy" className="text-xs text-surface-600 hover:text-foreground transition-colors">
+              Privacy Notice
+            </Link>
+          </div>
           <p className="text-xs text-surface-600">
             Built for people who want to get better.
           </p>
