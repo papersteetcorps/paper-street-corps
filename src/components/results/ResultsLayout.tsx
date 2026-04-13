@@ -14,6 +14,7 @@ export default function ResultsLayout({ children }: ResultsLayoutProps) {
       transition={{ duration: 0.3 }}
       className="max-w-3xl mx-auto space-y-8"
     >
+      <div className="aurora-line" />
       {children}
     </motion.div>
   );

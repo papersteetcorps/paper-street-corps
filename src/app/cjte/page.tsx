@@ -119,8 +119,8 @@ export default function CJTEPage() {
 
   return (
     <WizardShell
-      title="Classic Jungian Typology Engine"
-      subtitle="VRDW CJTE-3 — Eight open-ended questions to determine your Jungian type and cognitive function stack. Answer honestly and specifically. Your answers will be analyzed with the full Jungian corpus."
+      title="Jungian Type"
+      subtitle="8 open-ended questions to find your cognitive type and function stack. Be honest and specific."
       questions={FALLBACK_QUESTIONS}
       loadingQuestions={false}
       onComplete={handleComplete}
@@ -195,7 +195,7 @@ function CJTEResults({ interpretation }: { interpretation: NonNullable<Interpret
       />
 
       <p className="text-xs text-surface-500 text-center">
-        Powered by VRDW CJTE-3 &mdash; Classic Jungian Typology Engine with full cognitive function corpus.
+        Jungian cognitive function analysis.
       </p>
 
       <ResultChat testType="cjte" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-blue)" />

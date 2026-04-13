@@ -4,32 +4,32 @@ import { motion } from "motion/react";
 
 const STEPS_SETS: Record<string, string[]> = {
   simulate: [
-    "Reading your life phases",
-    "Loading enneagram corpus",
-    "Simulating type patterns",
-    "Analyzing fixation signatures",
-    "Compiling results",
+    "Reading your life story",
+    "Finding the patterns",
+    "Matching your signatures",
+    "Tracing the fixations",
+    "Pulling it together",
   ],
   quiz: [
-    "Analyzing your phase data",
-    "Constructing scenarios",
-    "Mapping type responses",
-    "Generating options",
+    "Reading your answers",
+    "Building the scenarios",
+    "Mapping your responses",
+    "Shaping the options",
   ],
   interpret: [
-    "Loading research corpus",
-    "Analyzing your answers",
-    "Mapping cognitive patterns",
-    "Generating interpretation",
+    "Reviewing the research",
+    "Reading between the lines",
+    "Tracing your patterns",
+    "Building your picture",
   ],
   narrative: [
-    "Building simulation context",
-    "Writing phase-by-phase analysis",
+    "Setting the context",
+    "Writing your analysis",
   ],
   default: [
-    "Processing",
-    "Analyzing",
-    "Generating results",
+    "Reading you",
+    "Building your profile",
+    "Putting it together",
   ],
 };
 
@@ -63,7 +63,7 @@ export default function LoadingState({
             />
           ))}
         </span>
-        {message ?? "Loading..."}
+        {message ?? "Working on it..."}
       </span>
     );
   }

@@ -85,10 +85,10 @@ export default function TheoryIndexPage() {
               {[
                 { name: "Temperaments", href: "/temperaments", engine: "Variance minimization", scoring: "4 temperament ideal vectors, blend threshold 0.5" },
                 { name: "Moral Alignment", href: "/moral-alignment", engine: "2-axis dual scoring", scoring: "3x3 grid classification (Structure × Impulse)" },
-                { name: "MBTI", href: "/cjte", engine: "VRDW CJTE-3 corpus", scoring: "AI interprets 8 open-ended answers" },
-                { name: "Socionics KIME", href: "/socionics", engine: "VRDW KIME-3 corpus", scoring: "Model A inference from 16 open-ended answers" },
-                { name: "Potentiology PBCE", href: "/potentiology", engine: "VRDW PBCE-1 corpus", scoring: "Energy-domain inference from 16 mentor questions" },
-                { name: "Enneagram INEE", href: "/enneagram", engine: "VRDW INEE-2 corpus", scoring: "Life-phase simulation + personalized quiz" },
+                { name: "MBTI", href: "/cjte", engine: "Jungian corpus", scoring: "8 open-ended answers, research-scored" },
+                { name: "Socionics", href: "/socionics", engine: "Socionics corpus", scoring: "Model A inference from 16 open-ended answers" },
+                { name: "Energy Profile", href: "/potentiology", engine: "Energy profile corpus", scoring: "Energy-domain inference from 16 questions" },
+                { name: "Enneagram", href: "/enneagram", engine: "Enneagram corpus", scoring: "Life-phase simulation + personalized quiz" },
               ].map(({ name, href, engine, scoring }) => (
                 <tr key={name} className="hover:bg-surface-900/50 transition-colors">
                   <td className="py-3 pr-4">
