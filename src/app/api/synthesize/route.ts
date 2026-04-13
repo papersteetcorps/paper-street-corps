@@ -19,50 +19,51 @@ function buildSynthesisPrompt(results: Array<{ testType: string; result: Record<
 
   const frameworks = results.map((r) => r.testType).join(", ");
 
-  return `You are a master personality analyst with deep expertise in all five frameworks used on this platform:
-1. Classic Jungian CJTE — 8 cognitive functions, Jungian typology
-2. Socionics KIME — Model A, 16 sociotypes, information elements
-3. Potentiology PBCE — 8 cognitive functions, energy/burnout model
-4. Temperaments — Choleric / Melancholic / Phlegmatic / Sanguine
-5. Moral Alignment — 3x3 grid (Structure × Impulse axes)
+  return `You are writing a personal profile for someone who just took multiple personality assessments. Your job is to combine their results into one honest, clear picture of who they are.
 
-=== JUNGIAN CORPUS ===
+Reference material:
+
+=== JUNGIAN ===
 ${cjtCorpus}
 
-=== SOCIONICS CORPUS ===
+=== SOCIONICS ===
 ${kimeCorpus}
 
-=== POTENTIOLOGY CORPUS ===
+=== ENERGY PROFILE ===
 ${pbceCorpus}
 
-=== USER'S COMPLETED TEST RESULTS ===
-Frameworks taken: ${frameworks}
+=== THIS PERSON'S RESULTS ===
+Frameworks: ${frameworks}
 ${results.map((r) => `\n--- ${r.testType.toUpperCase()} ---\n${JSON.stringify(r.result, null, 2)}`).join("\n")}
 
-Your task: Synthesize ALL provided results into one unified psychological profile.
-
-Instructions:
-- Find the common thread across all results — what single underlying pattern explains them all?
-- Identify where frameworks converge (confirming the same underlying trait) and where they diverge (adding nuance or revealing internal conflict).
-- Do not just summarize each test separately — create something NEW by combining them.
-- Be specific: cite the actual types/scores from the results.
-- Write with psychological depth, not pop-psychology optimism.
+WRITING RULES (follow these exactly):
+- Write like you're talking directly to this person. Use "you" and "your."
+- Keep every sentence short. No sentence over 20 words.
+- Never use em dashes. Use periods or commas instead.
+- No filler phrases like "it is worth noting" or "this suggests that" or "in essence."
+- Be warm but honest. Don't sugarcoat, but don't be cold either.
+- Be specific. Reference their actual types and scores, not vague generalizations.
+- Don't summarize each test separately. Find what connects them.
+- Strengths and challenges should be 5-8 words each, not full sentences.
+- The core profile should feel like someone who really gets them wrote it.
+- blindSpots: be direct. Tell them the thing they probably don't want to hear. 2-3 sentences max.
+- growthPath: be concrete. Tell them what to actually do, not abstract advice. 2-3 sentences max.
 
 Return ONLY valid JSON:
 {
-  "title": "A short evocative title for this synthesis (e.g. 'The Structured Lone Architect')",
-  "coreProfile": "2-3 sentences identifying the single underlying pattern that runs across ALL results",
+  "title": "3-5 word title that captures who they are (e.g. 'The Quiet Strategist')",
+  "coreProfile": "2-3 short sentences. The thread that connects all their results. Write it like you know them.",
   "convergences": [
-    { "frameworks": ["cjte", "socionics"], "insight": "What these two frameworks both confirm about this person" }
+    { "frameworks": ["cjte", "socionics"], "insight": "One sentence. What both frameworks see in this person." }
   ],
   "divergences": [
-    { "insight": "Where one framework adds nuance or appears to contradict another, and what that means" }
+    { "insight": "One sentence. Where frameworks disagree and what that actually means for them." }
   ],
-  "unifiedStrengths": ["strength 1", "strength 2", "strength 3", "strength 4"],
-  "unifiedChallenges": ["challenge 1", "challenge 2", "challenge 3"],
-  "blindSpots": "One paragraph on the structural blind spots revealed by combining all frameworks — the things multiple frameworks flag simultaneously",
-  "growthPath": "One paragraph on the growth trajectory suggested by the full profile — where this person is being pulled developmentally",
-  "frameworks": ["list of frameworks included in this synthesis"]
+  "unifiedStrengths": ["short phrase", "short phrase", "short phrase", "short phrase"],
+  "unifiedChallenges": ["short phrase", "short phrase", "short phrase"],
+  "blindSpots": "2-3 direct sentences about what they consistently miss about themselves.",
+  "growthPath": "2-3 concrete sentences about what they should actually work on.",
+  "frameworks": ["list of frameworks used"]
 }`;
 }
 

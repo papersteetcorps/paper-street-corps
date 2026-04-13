@@ -92,8 +92,8 @@ export default function SocionicsPage() {
 
   return (
     <WizardShell
-      title="Kepinski Information Metabolism Engine"
-      subtitle="VRDW KIME-3 — Sixteen questions to determine your Socionics sociotype using Model A analysis. This test looks at how you metabolize information, not just how you behave."
+      title="Socionics"
+      subtitle="16 questions to find your sociotype. This looks at how you process information, not just how you behave."
       questions={FALLBACK_QUESTIONS}
       loadingQuestions={false}
       onComplete={handleComplete}
@@ -174,7 +174,7 @@ function KIMEResults({ interpretation }: { interpretation: NonNullable<Interpret
       />
 
       <p className="text-xs text-surface-500 text-center">
-        Powered by VRDW KIME-3 &mdash; Socionics-primary typing using Model A information metabolism analysis.
+        Socionics typing via Model A analysis.
       </p>
 
       <ResultChat testType="socionics" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-amber)" />
