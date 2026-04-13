@@ -9,10 +9,9 @@ const LINKS = {
     { label: "Moral Alignment", href: "/moral-alignment" },
     { label: "Enneagram", href: "/enneagram" },
   ],
-  Resources: [
+  Research: [
     { label: "Theory", href: "/theory" },
     { label: "Research Papers", href: "/resources" },
-    { label: "Privacy Policy", href: "/privacy" },
   ],
 };
 
@@ -44,6 +43,12 @@ export default function Footer() {
             <p className="text-sm text-surface-400 leading-relaxed max-w-xs">
               Figure yourself out. Then do something about it.
             </p>
+            <Link
+              href="/privacy"
+              className="block text-sm text-surface-400 hover:text-foreground transition-colors"
+            >
+              Privacy Policy
+            </Link>
           </div>
 
           {/* Link columns */}
