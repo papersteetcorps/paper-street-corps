@@ -158,7 +158,7 @@ function ResourceLink({
     website: "Website",
   };
 
-  const isExternal = href.startsWith("http");
+  const isExternal = href.startsWith("http") || href.endsWith(".pdf");
 
   return (
     <Link
