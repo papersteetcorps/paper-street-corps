@@ -12,6 +12,7 @@ import type {
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
 import LoadingState from "@/components/ui/LoadingState";
+import AnalysisLoader from "@/components/wizard/AnalysisLoader";
 import ProgressHeader from "./ProgressHeader";
 import QuestionCard from "./QuestionCard";
 import WizardNavigation from "./WizardNavigation";
@@ -27,6 +28,7 @@ interface WizardShellProps {
   error?: string | null;
   onReset?: () => void;
   storageKey?: string;
+  autoStart?: boolean;
 }
 
 function reducer(state: WizardState, action: WizardAction): WizardState {
@@ -99,8 +101,23 @@ export default function WizardShell({
   error = null,
   onReset,
   storageKey,
+  autoStart = false,
 }: WizardShellProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  // Auto-start: skip intro phase when launched from a parent mode picker
+  useEffect(() => {
+    if (autoStart && state.phase === "intro" && !loadingQuestions && questions.length > 0) {
+      // Restore saved draft if available, else just start
+      const draft = storageKey ? loadSaved(storageKey) : null;
+      if (draft) {
+        dispatch({ type: "RESTORE", answers: draft.answers, currentIndex: draft.currentIndex });
+      } else {
+        dispatch({ type: "START" });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart, loadingQuestions, questions.length]);
   const hasRestored = useRef(false);
   const hasSavedDraft = useRef(false);
 
@@ -249,9 +266,7 @@ export default function WizardShell({
           </motion.div>
         )}
 
-        {phase === "loading" && (
-          <LoadingState message="Reading you..." variant="interpret" accent="blue" />
-        )}
+        {phase === "loading" && <AnalysisLoader title={`Building your ${title.toLowerCase()} profile`} />}
 
         {phase === "results" && resultView && (
           <motion.div

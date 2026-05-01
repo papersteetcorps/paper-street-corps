@@ -3,10 +3,16 @@
 import { useState, useCallback } from "react";
 import { motion } from "motion/react";
 import WizardShell from "@/components/wizard/WizardShell";
+import ModeSelector, { type TestMode } from "@/components/wizard/ModeSelector";
+import TestChat from "@/components/wizard/TestChat";
+import TestVoice from "@/components/wizard/TestVoice";
+import AnalysisLoader from "@/components/wizard/AnalysisLoader";
+import { logEvent } from "@/lib/logger";
 import ResultsLayout from "@/components/results/ResultsLayout";
 import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
+import ResultVoiceCoach from "@/components/results/ResultVoiceCoach";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
 
@@ -82,6 +88,7 @@ type Interpretation = {
 } | null;
 
 export default function CJTEPage() {
+  const [mode, setMode] = useState<TestMode | null>(null);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -101,6 +108,11 @@ export default function CJTEPage() {
       if (data.interpretation) {
         setInterpretation(data.interpretation);
         saveResult("cjte", data.interpretation);
+        logEvent("test_completed", {
+          testType: "cjte",
+          mode: mode ?? undefined,
+          payload: { answers, result: data.interpretation },
+        });
       } else {
         setInterpretation({ headline: "Analysis incomplete", summary: "The interpretation could not be generated. This may be a temporary issue — try again." });
       }
@@ -109,13 +121,59 @@ export default function CJTEPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [mode]);
 
-  const handleReset = useCallback(() => setInterpretation(null), []);
+  const handleReset = useCallback(() => {
+    setInterpretation(null);
+    setMode(null);
+  }, []);
 
   const resultView = interpretation ? (
     <CJTEResults interpretation={interpretation} />
   ) : null;
+
+  if (!mode && !interpretation) {
+    return (
+      <ModeSelector
+        title="Jungian Type"
+        framework="Jungian cognitive typology"
+        subtitle="Eight open-ended questions to find your cognitive type and function stack. The most popular starting point."
+        onSelect={setMode}
+        questionCount={FALLBACK_QUESTIONS.length}
+        estimateClassic="~5 mins"
+        estimateChat="~10 mins"
+        estimateVoice="~10 mins"
+      />
+    );
+  }
+
+  if (mode === "chat" && !interpretation && !isLoading) {
+    return (
+      <TestChat
+        title="Jungian Type"
+        questions={FALLBACK_QUESTIONS}
+        onComplete={handleComplete}
+        onSwitchToClassic={() => setMode("classic")}
+        storageKey="psc-chat-cjte"
+      />
+    );
+  }
+
+  if (mode === "voice" && !interpretation && !isLoading) {
+    return (
+      <TestVoice
+        title="Jungian Type"
+        questions={FALLBACK_QUESTIONS}
+        onComplete={handleComplete}
+        onSwitchMode={(m) => setMode(m === "chat" ? "chat" : "classic")}
+        domain="Jungian cognitive typology"
+      />
+    );
+  }
+
+  if ((mode === "chat" || mode === "voice") && isLoading) {
+    return <AnalysisLoader title="Building your Jungian profile" />;
+  }
 
   return (
     <WizardShell
@@ -128,6 +186,7 @@ export default function CJTEPage() {
       isLoading={isLoading}
       onReset={handleReset}
       storageKey="psc-draft-cjte"
+      autoStart
     />
   );
 }
@@ -199,6 +258,7 @@ function CJTEResults({ interpretation }: { interpretation: NonNullable<Interpret
       </p>
 
       <ResultChat testType="cjte" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-blue)" />
+      <ResultVoiceCoach testType="cjte" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-blue)" />
     </ResultsLayout>
   );
 }

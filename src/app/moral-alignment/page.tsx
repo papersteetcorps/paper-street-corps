@@ -13,6 +13,8 @@ import ResultsLayout from "@/components/results/ResultsLayout";
 import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
+import ResultVoiceCoach from "@/components/results/ResultVoiceCoach";
+import { logEvent } from "@/lib/logger";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
 
@@ -131,6 +133,11 @@ export default function MoralAlignmentPage() {
           if (data.interpretation) {
             setInterpretation(data.interpretation);
             saveResult("moral-alignment", { ...data.interpretation, alignment: aligned.alignment, archetype: aligned.archetype });
+            logEvent("test_completed", {
+              testType: "moral-alignment",
+              mode: "classic",
+              payload: { answers, localResult: aligned, result: data.interpretation },
+            });
           }
         })
         .catch(() => {});
@@ -304,6 +311,7 @@ function AlignmentResults({
       </p>
 
       <ResultChat testType="moral-alignment" result={localResult} accentColor="var(--color-accent-teal)" />
+      <ResultVoiceCoach testType="moral-alignment" result={localResult} accentColor="var(--color-accent-teal)" />
     </ResultsLayout>
   );
 }
