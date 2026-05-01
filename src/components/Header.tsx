@@ -14,15 +14,14 @@ const ASSESSMENT_LINKS = [
   { href: "/temperaments", label: "Temperaments" },
   { href: "/moral-alignment", label: "Moral Alignment" },
   { href: "/socionics", label: "Socionics" },
-  { href: "/potentiology", label: "Potentiology" },
+  { href: "/potentiology", label: "Energy Profile" },
   { href: "/enneagram", label: "Enneagram" },
 ];
 
 const TOP_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/theory", label: "Theory" },
-  { href: "/resources", label: "Resources" },
-  { href: "/synthesis", label: "Synthesis" },
+  { href: "/synthesis", label: "My Results" },
+  { href: "/resources", label: "Research" },
 ];
 
 export default function Header() {
@@ -63,10 +62,10 @@ export default function Header() {
   };
 
   return (
-    <header className="border-b border-surface-800 px-6 py-4">
+    <header className="border-b border-surface-700 px-6 py-4 backdrop-blur-sm bg-background/80 sticky top-0 z-50 relative">
       <div className="flex items-center justify-between">
-        <Link href="/" className="font-semibold tracking-wide text-foreground">
-          Paper Street Corps
+        <Link href="/" className="font-brand font-semibold text-foreground text-xl" style={{ letterSpacing: "-0.03em" }}>
+          Forge
         </Link>
 
         {/* Desktop nav */}
@@ -380,6 +379,7 @@ export default function Header() {
           </motion.nav>
         )}
       </AnimatePresence>
+      <div className="aurora-line absolute bottom-0 left-0 right-0" />
     </header>
   );
 }

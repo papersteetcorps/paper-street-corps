@@ -3,10 +3,16 @@
 import { useState, useCallback } from "react";
 import { motion } from "motion/react";
 import WizardShell from "@/components/wizard/WizardShell";
+import ModeSelector, { type TestMode } from "@/components/wizard/ModeSelector";
+import TestChat from "@/components/wizard/TestChat";
+import TestVoice from "@/components/wizard/TestVoice";
+import AnalysisLoader from "@/components/wizard/AnalysisLoader";
+import { logEvent } from "@/lib/logger";
 import ResultsLayout from "@/components/results/ResultsLayout";
 import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
+import ResultVoiceCoach from "@/components/results/ResultVoiceCoach";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
 
@@ -55,6 +61,7 @@ type Interpretation = {
 } | null;
 
 export default function SocionicsPage() {
+  const [mode, setMode] = useState<TestMode | null>(null);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,30 +83,84 @@ export default function SocionicsPage() {
         summary: "Your responses have been recorded.",
       };
       setInterpretation(interp);
-      if (data.interpretation) saveResult("socionics", data.interpretation);
+      if (data.interpretation) {
+        saveResult("socionics", data.interpretation);
+        logEvent("test_completed", {
+          testType: "socionics",
+          mode: mode ?? undefined,
+          payload: { answers, result: data.interpretation },
+        });
+      }
     } catch {
       setInterpretation({ headline: "Analysis complete", summary: "Could not reach the interpretation service." });
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [mode]);
 
-  const handleReset = useCallback(() => setInterpretation(null), []);
+  const handleReset = useCallback(() => {
+    setInterpretation(null);
+    setMode(null);
+  }, []);
 
   const resultView = interpretation ? (
     <KIMEResults interpretation={interpretation} />
   ) : null;
 
+  if (!mode && !interpretation) {
+    return (
+      <ModeSelector
+        title="Socionics"
+        framework="Socionics & information metabolism"
+        subtitle="Sixteen questions to find your sociotype. Reveals how you process information and interact with others."
+        onSelect={setMode}
+        questionCount={FALLBACK_QUESTIONS.length}
+        estimateClassic="~8 mins"
+        estimateChat="~15 mins"
+        estimateVoice="~15 mins"
+      />
+    );
+  }
+
+  if (mode === "chat" && !interpretation && !isLoading) {
+    return (
+      <TestChat
+        title="Socionics"
+        questions={FALLBACK_QUESTIONS}
+        onComplete={handleComplete}
+        onSwitchToClassic={() => setMode("classic")}
+        storageKey="psc-chat-socionics"
+      />
+    );
+  }
+
+  if (mode === "voice" && !interpretation && !isLoading) {
+    return (
+      <TestVoice
+        title="Socionics"
+        questions={FALLBACK_QUESTIONS}
+        onComplete={handleComplete}
+        onSwitchMode={(m) => setMode(m === "chat" ? "chat" : "classic")}
+        domain="Socionics and information metabolism"
+      />
+    );
+  }
+
+  if ((mode === "chat" || mode === "voice") && isLoading) {
+    return <AnalysisLoader title="Building your sociotype profile" />;
+  }
+
   return (
     <WizardShell
-      title="Kepinski Information Metabolism Engine"
-      subtitle="VRDW KIME-3 — Sixteen questions to determine your Socionics sociotype using Model A analysis. This test looks at how you metabolize information, not just how you behave."
+      title="Socionics"
+      subtitle="16 questions to find your sociotype. This looks at how you process information, not just how you behave."
       questions={FALLBACK_QUESTIONS}
       loadingQuestions={false}
       onComplete={handleComplete}
       resultView={resultView}
       isLoading={isLoading}
       onReset={handleReset}
+      autoStart
     />
   );
 }
@@ -174,10 +235,11 @@ function KIMEResults({ interpretation }: { interpretation: NonNullable<Interpret
       />
 
       <p className="text-xs text-surface-500 text-center">
-        Powered by VRDW KIME-3 &mdash; Socionics-primary typing using Model A information metabolism analysis.
+        Socionics typing via Model A analysis.
       </p>
 
       <ResultChat testType="socionics" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-amber)" />
+      <ResultVoiceCoach testType="socionics" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-amber)" />
     </ResultsLayout>
   );
 }

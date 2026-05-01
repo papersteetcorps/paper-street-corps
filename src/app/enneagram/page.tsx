@@ -32,18 +32,18 @@ async function loadSamplePhases(): Promise<LifePhase[]> {
 type ViewPhase = "intro" | "form" | "review" | "type-select" | "simulation" | "quiz" | "result";
 
 const RULES = [
-  "Your answers must be concrete and factual — things an external observer could confirm.",
-  "Trying to skew answers toward a specific type will destroy the accuracy of the entire process.",
-  "You can add, modify, or remove form fields to capture your experience precisely.",
-  "Bad language is allowed in your answers — it will be filtered for factual content only.",
-  "Blank fields are skipped automatically. Fill what you can.",
+  "Be specific. Answers must describe things an outside observer could confirm.",
+  "Skip fields you can't answer. Blank fields are ignored automatically.",
+  "Add, remove, or rename form fields to fit your experience.",
+  "Strong language is fine. Only factual content is used.",
+  "Don't steer toward a type. It breaks the results.",
 ];
 
 const STEPS = [
-  { num: "01", title: "Fill life phases", desc: "Describe distinct periods of your life using structured forms — location, people, routine, and notable moments." },
-  { num: "02", title: "Choose types to simulate", desc: "Pick 1-3 Enneagram types you suspect or are curious about." },
-  { num: "03", title: "Watch the simulation", desc: "The engine simulates how each type would have processed your concrete life experiences." },
-  { num: "04", title: "Take the quiz (optional)", desc: "If confused, a personalized quiz built from your own life data narrows it down." },
+  { num: "01", title: "Fill life phases", desc: "Write about distinct periods of your life: where you were, who was around, your routine, what stuck with you." },
+  { num: "02", title: "Choose types to test", desc: "Pick 1 to 3 Enneagram types you suspect or want to rule out." },
+  { num: "03", title: "See how each type fits", desc: "Each type is run against your actual experiences. You see where it fits and where it breaks down." },
+  { num: "04", title: "Take the quiz if still unsure", desc: "A short quiz built from your own life data helps narrow it down. Optional, but useful when two types are close." },
 ];
 
 export default function EnneagramPage() {
@@ -200,19 +200,19 @@ export default function EnneagramPage() {
             className="max-w-2xl mx-auto space-y-10"
           >
             <div className="text-center space-y-4">
-              <p className="text-xs text-surface-500 uppercase tracking-widest">VRDW INEE-2</p>
-              <h1 className="text-3xl font-semibold tracking-tight">
-                Enneagram Simulation Engine
+              <p className="text-sm text-surface-400 uppercase tracking-widest font-medium">Enneagram</p>
+              <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
+                Enneagram
               </h1>
-              <p className="text-surface-400 leading-relaxed">
-                This is not a questionnaire. You will describe real phases of your life in structured detail.
-                The engine then simulates how each Enneagram type would have processed your concrete experiences —
-                revealing patterns in your fixation, passion, and trap.
+              <p className="text-surface-300 text-base leading-relaxed">
+                Describe real phases of your life. Each Enneagram type is then tested against your actual
+                experiences, showing you where the pattern fits and where it doesn&rsquo;t. No multiple choice.
+                No self-report bias.
               </p>
             </div>
 
             <section className="space-y-4">
-              <h2 className="text-sm font-medium text-surface-500 uppercase tracking-widest">How it works</h2>
+              <h2 className="text-sm font-semibold text-surface-300 uppercase tracking-widest">How it works</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {STEPS.map(({ num, title, desc }, i) => (
                   <motion.div
@@ -222,10 +222,10 @@ export default function EnneagramPage() {
                     transition={{ delay: 0.1 + i * 0.07 }}
                     className="flex gap-4"
                   >
-                    <span className="text-3xl font-bold text-surface-800 shrink-0 leading-tight">{num}</span>
+                    <span className="text-3xl font-bold text-surface-600 shrink-0 leading-tight">{num}</span>
                     <div>
                       <h3 className="font-medium text-foreground text-sm">{title}</h3>
-                      <p className="text-xs text-surface-400 leading-relaxed mt-0.5">{desc}</p>
+                      <p className="text-sm text-surface-300 leading-relaxed mt-0.5">{desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -233,7 +233,7 @@ export default function EnneagramPage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-sm font-medium text-surface-500 uppercase tracking-widest">Rules</h2>
+              <h2 className="text-sm font-semibold text-surface-300 uppercase tracking-widest">Rules</h2>
               <div className="border border-surface-800 rounded-2xl p-5 space-y-3">
                 {RULES.map((rule, i) => (
                   <motion.div
@@ -257,30 +257,29 @@ export default function EnneagramPage() {
               className="border border-amber-500/20 bg-amber-500/5 rounded-2xl px-5 py-4"
             >
               <p className="text-sm text-amber-400/90 font-medium mb-1">Important</p>
-              <p className="text-xs text-surface-400 leading-relaxed">
-                This engine works by simulating types against your real experiences. If you fabricate or
-                skew your answers toward a type you want to be, the simulation will produce incoherent
-                results and the entire process becomes unreliable. Be honest — the goal is accuracy, not flattery.
+              <p className="text-sm text-surface-300 leading-relaxed">
+                Be honest. Write what actually happened, not what sounds meaningful.
+                Fabricated or shaped answers produce incoherent results. Accuracy is the point, not flattery.
               </p>
             </motion.div>
 
             <section className="space-y-3">
-              <h2 className="text-sm font-medium text-surface-500 uppercase tracking-widest">What is a &ldquo;phase&rdquo;?</h2>
-              <p className="text-sm text-surface-400 leading-relaxed">
-                A phase is any distinct period of your life that had its own lifestyle, environment, and rhythm.
-                Examples: childhood at home, college years, first job, a period of illness, life abroad.
-                Each phase captures where you were, who was around you, your routine, and the notable moments that stuck with you.
+              <h2 className="text-sm font-semibold text-surface-300 uppercase tracking-widest">What is a &ldquo;phase&rdquo;?</h2>
+              <p className="text-sm text-surface-300 leading-relaxed">
+                A phase is any stretch of your life with its own distinct rhythm. Childhood, college, first job,
+                a period of illness, time abroad. You describe where you were, who was around you, your daily
+                routine, and the moments that left a mark.
               </p>
-              <p className="text-sm text-surface-400 leading-relaxed">
-                You need at least <span className="text-foreground font-medium">one phase</span> to begin.
-                More phases give the engine more material to simulate through, producing deeper and more accurate results.
+              <p className="text-sm text-surface-300 leading-relaxed">
+                Start with <span className="text-foreground font-medium">one phase.</span> Add more for better
+                results. More material means more to test each type against.
               </p>
             </section>
 
             <div className="text-center space-y-3 pt-2">
               <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <Button onClick={handleStartNewPhase}>
-                  Begin — Fill Your First Phase
+                  Begin: Fill Your First Phase
                 </Button>
                 {FLAGS.DEV_MODE && (
                   <Button variant="secondary" onClick={handleLoadDemo}>
@@ -288,8 +287,8 @@ export default function EnneagramPage() {
                   </Button>
                 )}
               </div>
-              <p className="text-xs text-surface-500">
-                Minimum 1 phase required. You can add more after.
+              <p className="text-sm text-surface-400">
+                Start with one phase. Add more once you&rsquo;re in.
               </p>
             </div>
           </motion.div>
@@ -326,10 +325,10 @@ export default function EnneagramPage() {
             className="max-w-2xl mx-auto space-y-8"
           >
             <div className="text-center space-y-2">
-              <p className="text-xs text-surface-500 uppercase tracking-widest">VRDW INEE-2</p>
+              <p className="text-xs text-surface-500 uppercase tracking-widest">Enneagram</p>
               <h2 className="text-2xl font-semibold tracking-tight">Your Life Phases</h2>
               <p className="text-sm text-surface-400">
-                {savedPhases.length} phase{savedPhases.length !== 1 ? "s" : ""} added. Add more for deeper simulation, or proceed.
+                {savedPhases.length} phase{savedPhases.length !== 1 ? "s" : ""} added. Add more for better results, or continue.
               </p>
             </div>
 
@@ -351,12 +350,12 @@ export default function EnneagramPage() {
                 + Add Another Phase
               </Button>
               <Button onClick={() => setViewPhase("type-select")} disabled={savedPhases.length === 0}>
-                Continue — Select Types
+                Continue: Select Types
               </Button>
             </div>
 
             <p className="text-xs text-surface-500 text-center">
-              More phases = more simulation material = more accurate results.
+              More phases give each type more to work with. Results improve with depth.
             </p>
           </motion.div>
         )}

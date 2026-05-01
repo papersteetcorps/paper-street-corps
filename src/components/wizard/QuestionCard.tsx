@@ -29,11 +29,11 @@ export default function QuestionCard({
         className="space-y-6"
       >
         <div className="space-y-2">
-          <h2 className="text-xl font-medium text-foreground">
+          <h2 className="text-xl md:text-2xl font-semibold text-foreground leading-snug">
             {question.text}
           </h2>
           {question.description && (
-            <p className="text-sm text-surface-400">{question.description}</p>
+            <p className="text-base text-surface-300">{question.description}</p>
           )}
         </div>
 
