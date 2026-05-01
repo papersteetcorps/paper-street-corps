@@ -7,7 +7,7 @@ const TEST_META: Record<string, { label: string; href: string; color: string; ic
   "moral-alignment": { label: "Moral Alignment", href: "/moral-alignment", color: "text-accent-teal", icon: "⚖️" },
   cjte: { label: "MBTI", href: "/cjte", color: "text-accent-blue", icon: "🔍" },
   socionics: { label: "Socionics", href: "/socionics", color: "text-accent-amber", icon: "🌐" },
-  potentiology: { label: "Potentiology", href: "/potentiology", color: "text-accent-purple", icon: "⚡" },
+  potentiology: { label: "Energy Profile", href: "/potentiology", color: "text-accent-purple", icon: "⚡" },
 };
 
 function formatDate(iso: string) {

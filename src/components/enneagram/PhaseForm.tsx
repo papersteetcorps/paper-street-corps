@@ -1,121 +1,11 @@
 "use client";
 
-import { useCallback, useState, useRef, useEffect } from "react";
+import { useCallback, useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { LifePhase, Submap, Moment } from "@/lib/types/enneagram";
 import Button from "@/components/ui/Button";
 import LoadingState from "@/components/ui/LoadingState";
-
-/* ── Voice input hook (AssemblyAI streaming) ───────────────────────────── */
-
-function useVoiceInput() {
-  const [listening, setListening] = useState(false);
-  const [supported, setSupported] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const ctxRef = useRef<AudioContext | null>(null);
-  const cbRef = useRef<((t: string) => void) | null>(null);
-  const transcriptRef = useRef("");
-
-  useEffect(() => {
-    setSupported(!!navigator.mediaDevices?.getUserMedia);
-  }, []);
-
-  const stop = useCallback(() => {
-    // Stop mic
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    // Close audio context
-    ctxRef.current?.close().catch(() => {});
-    ctxRef.current = null;
-    // Close websocket
-    if (wsRef.current && wsRef.current.readyState <= WebSocket.OPEN) {
-      try { wsRef.current.send(JSON.stringify({ type: "Terminate" })); } catch { /* */ }
-      wsRef.current.close();
-    }
-    wsRef.current = null;
-    setListening(false);
-  }, []);
-
-  const start = useCallback(async (onResult: (text: string) => void) => {
-    stop();
-    setError(null);
-    cbRef.current = onResult;
-    transcriptRef.current = "";
-
-    try {
-      // 1. Get temp token from our backend
-      const tokenRes = await fetch("/api/speech-token", { method: "POST" });
-      const tokenData = await tokenRes.json();
-      if (!tokenData.token) { setError("Voice service not configured"); return; }
-
-      // 2. Get mic access
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true } });
-      streamRef.current = stream;
-
-      // 3. Connect to AssemblyAI WebSocket
-      const params = new URLSearchParams({ token: tokenData.token, sample_rate: "16000", speech_model: "u3-rt-pro" });
-      const ws = new WebSocket(`wss://streaming.assemblyai.com/v3/ws?${params}`);
-      wsRef.current = ws;
-
-      ws.onopen = () => {
-        setListening(true);
-
-        // 4. Set up audio processing: mic → PCM16 → WebSocket
-        const audioCtx = new AudioContext({ sampleRate: 16000 });
-        ctxRef.current = audioCtx;
-        const source = audioCtx.createMediaStreamSource(stream);
-        const processor = audioCtx.createScriptProcessor(4096, 1, 1);
-
-        processor.onaudioprocess = (e) => {
-          if (ws.readyState !== WebSocket.OPEN) return;
-          const float32 = e.inputBuffer.getChannelData(0);
-          // Convert Float32 to Int16
-          const int16 = new Int16Array(float32.length);
-          for (let i = 0; i < float32.length; i++) {
-            const s = Math.max(-1, Math.min(1, float32[i]));
-            int16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-          }
-          ws.send(int16.buffer);
-        };
-
-        source.connect(processor);
-        processor.connect(audioCtx.destination);
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data);
-          if (msg.type === "Turn" && msg.transcript) {
-            if (msg.end_of_turn) {
-              transcriptRef.current += (transcriptRef.current ? " " : "") + msg.transcript;
-              cbRef.current?.(transcriptRef.current);
-            } else {
-              // Show partial (current finals + this partial)
-              cbRef.current?.(transcriptRef.current + (transcriptRef.current ? " " : "") + msg.transcript);
-            }
-          }
-        } catch { /* */ }
-      };
-
-      ws.onerror = () => {
-        setError("Voice connection error");
-        stop();
-      };
-
-      ws.onclose = () => {
-        setListening(false);
-      };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Microphone access denied";
-      setError(msg);
-      stop();
-    }
-  }, [stop]);
-
-  return { listening, supported, start, stop, error };
-}
+import { useVoiceInput } from "@/lib/hooks/useVoiceInput";
 
 interface PhaseFormProps {
   phase: LifePhase;
@@ -135,7 +25,7 @@ function Input({ value, onChange, placeholder }: { value: string; onChange: (v: 
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-surface-600 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all"
+      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-base text-foreground placeholder:text-surface-400 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all"
     />
   );
 }
@@ -147,19 +37,79 @@ function TextArea({ value, onChange, placeholder, rows = 2 }: { value: string; o
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-surface-600 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
+      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-base text-foreground placeholder:text-surface-400 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
     />
+  );
+}
+
+function MicTextArea({ value, onChange, placeholder, rows = 2 }: { value: string; onChange: (v: string) => void; placeholder?: string; rows?: number }) {
+  const baseRef = useRef(value);
+  const { listening, supported, start, stop } = useVoiceInput();
+
+  const toggleMic = useCallback(() => {
+    if (listening) {
+      stop();
+      return;
+    }
+    baseRef.current = value;
+    start((transcript) => {
+      const base = baseRef.current;
+      const sep = base && !base.endsWith(" ") ? " " : "";
+      onChange(base + sep + transcript);
+    });
+  }, [listening, value, start, stop, onChange]);
+
+  // Keep baseRef in sync when user types manually
+  if (!listening && value !== baseRef.current) {
+    baseRef.current = value;
+  }
+
+  return (
+    <div className="relative">
+      <textarea
+        value={value}
+        onChange={(e) => { baseRef.current = e.target.value; onChange(e.target.value); }}
+        placeholder={placeholder}
+        rows={rows}
+        className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 pr-12 text-base text-foreground placeholder:text-surface-400 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
+      />
+      {supported && (
+        <button
+          type="button"
+          onClick={toggleMic}
+          className={`absolute top-2.5 right-2.5 w-7 h-7 flex items-center justify-center rounded-md transition-all ${
+            listening
+              ? "bg-red-500/20 text-red-400 animate-pulse"
+              : "bg-surface-800 text-surface-500 hover:text-surface-300 hover:bg-surface-700"
+          }`}
+          aria-label={listening ? "Stop recording" : "Start voice input"}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {listening ? (
+              <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
+            ) : (
+              <>
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </>
+            )}
+          </svg>
+        </button>
+      )}
+    </div>
   );
 }
 
 function FieldLabel({ children, hint, required }: { children: React.ReactNode; hint?: string; required?: boolean }) {
   return (
     <div className="mb-1.5">
-      <span className="text-xs font-medium text-surface-300">
+      <span className="text-sm font-medium text-surface-200">
         {children}
         {required && <span className="text-accent-amber ml-0.5">*</span>}
       </span>
-      {hint && <p className="text-xs text-surface-600 mt-0.5">{hint}</p>}
+      {hint && <p className="text-sm text-surface-400 mt-0.5">{hint}</p>}
     </div>
   );
 }
@@ -469,7 +419,7 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
     >
       {/* Header */}
       <div className="text-center space-y-2">
-        <p className="text-xs text-surface-500 uppercase tracking-widest">Phase {phaseIndex + 1}</p>
+        <p className="text-sm text-surface-400 uppercase tracking-widest font-medium">Phase {phaseIndex + 1}</p>
         <h2 className="text-2xl font-semibold tracking-tight">Describe this period of your life</h2>
       </div>
 
@@ -519,7 +469,7 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
               className="overflow-hidden"
             >
               <div className="border border-surface-800 rounded-2xl p-4 space-y-3">
-                <p className="text-xs font-medium text-surface-300">What to include in your description:</p>
+                <p className="text-sm font-medium text-surface-200">What to include in your description:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {[
                     { q: "Where were you?", eg: "London, a quiet suburb, college campus" },
@@ -529,11 +479,11 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
                     { q: "Any key moments that stuck?", eg: "Won a competition but felt empty, lost a friend" },
                     { q: "What was the social atmosphere?", eg: "Conservative, status-driven, close community" },
                   ].map(({ q, eg }) => (
-                    <div key={q} className="flex gap-2 text-xs">
+                    <div key={q} className="flex gap-2 text-sm">
                       <span className="text-accent-amber/60 mt-0.5 shrink-0">&#8250;</span>
                       <div>
                         <span className="text-surface-300">{q}</span>
-                        <span className="text-surface-600 ml-1">e.g. {eg}</span>
+                        <span className="text-surface-400 ml-1">e.g. {eg}</span>
                       </div>
                     </div>
                   ))}
@@ -560,17 +510,17 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
                   </div>
                 ) : (
                   <>
-                    <p className="text-xs text-surface-500">Describe this phase in your own words. We&rsquo;ll fill the form automatically.</p>
+                    <p className="text-sm text-surface-400">Describe this phase in your own words. We&rsquo;ll fill the form automatically.</p>
                     <textarea
                       value={freeText}
                       onChange={(e) => setFreeText(e.target.value)}
                       placeholder={"I was 14-18, living in London with my mum. Dad had left when I was 10. Went to a school in Hackney, mostly hung out with 2-3 close mates. Mum worked long hours so I was alone a lot. Biggest memory: getting into a fight and realising nobody came to help. Another: spending an entire summer reading alone and feeling more alive than I had all year."}
                       rows={5}
-                      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-surface-600 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
+                      className="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2.5 text-base text-foreground placeholder:text-surface-400 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
                       autoFocus
                     />
                     <div className="flex items-center justify-between">
-                      <p className="text-xs text-surface-600">You can edit everything after.</p>
+                      <p className="text-sm text-surface-400">You can edit everything after.</p>
                       <Button onClick={handleExtract} disabled={!freeText.trim()}>Extract &amp; Fill Form</Button>
                     </div>
                   </>
@@ -591,7 +541,7 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
               className="overflow-hidden"
             >
               <div className="border border-accent-amber/20 bg-accent-amber/5 rounded-2xl p-5 space-y-4">
-                <p className="text-xs text-surface-500">Talk naturally about this phase — where you lived, who was around, your routine, and moments that stuck with you.</p>
+                <p className="text-sm text-surface-400">Talk naturally about this phase — where you lived, who was around, your routine, and moments that stuck with you.</p>
 
                 {/* Mic + transcript */}
                 <div className="flex gap-4 items-start">
@@ -619,11 +569,20 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
                   </button>
                   <div className="flex-1 min-h-[56px]">
                     {freeText ? (
-                      <div className="border border-surface-800 rounded-lg p-3 max-h-32 overflow-y-auto bg-surface-900">
-                        <p className="text-sm text-surface-300 leading-relaxed">{freeText}</p>
-                      </div>
+                      speech.listening ? (
+                        <div className="border border-surface-800 rounded-lg p-3 max-h-32 overflow-y-auto bg-surface-900">
+                          <p className="text-sm text-surface-300 leading-relaxed">{freeText}</p>
+                        </div>
+                      ) : (
+                        <textarea
+                          value={freeText}
+                          onChange={(e) => setFreeText(e.target.value)}
+                          rows={4}
+                          className="w-full bg-surface-900 border border-surface-700 rounded-lg p-3 text-sm text-surface-200 leading-relaxed focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 transition-all resize-y"
+                        />
+                      )
                     ) : (
-                      <div className="flex items-center h-14 text-xs text-surface-500">
+                      <div className="flex items-center h-14 text-sm text-surface-400">
                         {speech.listening ? (
                           <span className="flex items-center gap-2">
                             <motion.span className="w-2 h-2 rounded-full bg-red-400" animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1, repeat: Infinity }} />
@@ -637,13 +596,13 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
 
                 {/* Voice error */}
                 {speech.error && (
-                  <p className="text-xs text-red-400">{speech.error}</p>
+                  <p className="text-sm text-red-400">{speech.error}</p>
                 )}
 
                 {/* Extract button (after stopping) */}
                 {freeText && !speech.listening && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between">
-                    <p className="text-xs text-surface-600">Review above, then extract.</p>
+                    <p className="text-sm text-surface-400">Review above, then extract.</p>
                     {extracting ? (
                       <LoadingState compact message="Extracting..." accent="amber" />
                     ) : (
@@ -660,7 +619,7 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
         {extracted && (
           <button
             onClick={() => { setExtracted(false); setInputOpen("text"); }}
-            className="text-xs text-accent-amber/70 hover:text-accent-amber transition-colors cursor-pointer flex items-center gap-1"
+            className="text-sm text-accent-amber/70 hover:text-accent-amber transition-colors cursor-pointer flex items-center gap-1"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
             Describe more or re-extract
@@ -845,8 +804,8 @@ export default function PhaseForm({ phase, onChange, onSave, onCancel, phaseInde
                     </button>
                   )}
                 </div>
-                <TextArea value={m.situation} onChange={(v) => updateMoment(i, { situation: v })} placeholder="What happened?" rows={2} />
-                <TextArea value={m.conclusion} onChange={(v) => updateMoment(i, { conclusion: v })} placeholder="What conclusion did it reach?" rows={2} />
+                <MicTextArea value={m.situation} onChange={(v) => updateMoment(i, { situation: v })} placeholder="What happened?" rows={2} />
+                <MicTextArea value={m.conclusion} onChange={(v) => updateMoment(i, { conclusion: v })} placeholder="What conclusion did it reach?" rows={2} />
               </div>
             ))}
             <button

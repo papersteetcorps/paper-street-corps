@@ -54,7 +54,7 @@ export default function NarrativeSection({
   delay = 0.6,
 }: NarrativeSectionProps) {
   const mainText = summary ?? narrative ?? "";
-  const displayHeadline = headline ?? typeDescription ?? "Analysis";
+  const displayHeadline = headline ?? typeDescription ?? "The Breakdown";
 
   return (
     <motion.section
@@ -64,7 +64,7 @@ export default function NarrativeSection({
       className="border border-surface-800 rounded-2xl p-6 space-y-6"
     >
       <div>
-        <p className="text-xs text-surface-500 uppercase tracking-widest mb-2">AI Interpretation</p>
+        <p className="text-xs text-surface-500 uppercase tracking-widest mb-2">What Forge sees</p>
         <h3 className="text-xl font-semibold text-foreground">{displayHeadline}</h3>
       </div>
 
@@ -76,7 +76,7 @@ export default function NarrativeSection({
 
       {insights.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-surface-400 uppercase tracking-widest">Key Insights</h4>
+          <h4 className="text-sm font-medium text-surface-400 uppercase tracking-widest">What stands out</h4>
           <ul className="space-y-2">
             {insights.map((insight, i) => (
               <motion.li
@@ -98,7 +98,7 @@ export default function NarrativeSection({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {strengths.length > 0 && (
             <div className="space-y-2">
-              <h4 className="text-xs font-medium text-green-400 uppercase tracking-widest">Strengths</h4>
+              <h4 className="text-xs font-medium text-green-400 uppercase tracking-widest">Working for you</h4>
               <ul className="space-y-1.5">
                 {strengths.map((s, i) => (
                   <motion.li
@@ -117,7 +117,7 @@ export default function NarrativeSection({
           )}
           {challenges.length > 0 && (
             <div className="space-y-2">
-              <h4 className="text-xs font-medium text-amber-400 uppercase tracking-widest">Challenges</h4>
+              <h4 className="text-xs font-medium text-amber-400 uppercase tracking-widest">Where to push</h4>
               <ul className="space-y-1.5">
                 {challenges.map((c, i) => (
                   <motion.li
@@ -139,7 +139,7 @@ export default function NarrativeSection({
 
       {growth && (
         <div className="border-t border-surface-800 pt-4 space-y-2">
-          <h4 className="text-xs font-medium text-accent-purple uppercase tracking-widest">Growth Path</h4>
+          <h4 className="text-xs font-medium text-accent-purple uppercase tracking-widest">Next move</h4>
           <p className="text-sm text-surface-400 leading-relaxed italic">{growth}</p>
         </div>
       )}

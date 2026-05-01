@@ -12,6 +12,7 @@ import type {
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
 import LoadingState from "@/components/ui/LoadingState";
+import AnalysisLoader from "@/components/wizard/AnalysisLoader";
 import ProgressHeader from "./ProgressHeader";
 import QuestionCard from "./QuestionCard";
 import WizardNavigation from "./WizardNavigation";
@@ -27,6 +28,7 @@ interface WizardShellProps {
   error?: string | null;
   onReset?: () => void;
   storageKey?: string;
+  autoStart?: boolean;
 }
 
 function reducer(state: WizardState, action: WizardAction): WizardState {
@@ -99,8 +101,23 @@ export default function WizardShell({
   error = null,
   onReset,
   storageKey,
+  autoStart = false,
 }: WizardShellProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  // Auto-start: skip intro phase when launched from a parent mode picker
+  useEffect(() => {
+    if (autoStart && state.phase === "intro" && !loadingQuestions && questions.length > 0) {
+      // Restore saved draft if available, else just start
+      const draft = storageKey ? loadSaved(storageKey) : null;
+      if (draft) {
+        dispatch({ type: "RESTORE", answers: draft.answers, currentIndex: draft.currentIndex });
+      } else {
+        dispatch({ type: "START" });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart, loadingQuestions, questions.length]);
   const hasRestored = useRef(false);
   const hasSavedDraft = useRef(false);
 
@@ -190,23 +207,23 @@ export default function WizardShell({
             transition={{ duration: 0.3 }}
             className="space-y-6 text-center max-w-xl mx-auto"
           >
-            <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
-            <p className="text-surface-400 leading-relaxed">{subtitle}</p>
+            <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">{title}</h1>
+            <p className="text-surface-300 text-base leading-relaxed">{subtitle}</p>
             {loadingQuestions ? (
-              <LoadingState compact message="Preparing questions..." accent="blue" />
+              <LoadingState compact message="Getting ready..." accent="blue" />
             ) : (
               <>
-                <p className="text-sm text-surface-500">
-                  {questions.length} questions &middot; Takes about{" "}
-                  {Math.max(1, Math.round(questions.length * 0.5))} minutes
+                <p className="text-sm text-surface-400 font-medium">
+                  {questions.length} questions &middot; About{" "}
+                  {Math.max(1, Math.round(questions.length * 0.5))} minutes &middot; Be honest.
                 </p>
                 <div className="flex flex-col items-center gap-3">
                   <Button onClick={() => dispatch({ type: "START" })}>
-                    Begin Assessment
+                    Let&apos;s Go
                   </Button>
                   {showResume && savedDraft && (
                     <Button variant="secondary" onClick={handleResume}>
-                      Resume ({savedDraft.answers.length}/{questions.length} answered)
+                      Pick up where you left off ({savedDraft.answers.length}/{questions.length})
                     </Button>
                   )}
                 </div>
@@ -249,9 +266,7 @@ export default function WizardShell({
           </motion.div>
         )}
 
-        {phase === "loading" && (
-          <LoadingState message="Interpreting your answers" variant="interpret" accent="blue" />
-        )}
+        {phase === "loading" && <AnalysisLoader title={`Building your ${title.toLowerCase()} profile`} />}
 
         {phase === "results" && resultView && (
           <motion.div
@@ -264,7 +279,7 @@ export default function WizardShell({
             {resultView}
             <div className="text-center pt-4">
               <Button variant="secondary" onClick={handleReset}>
-                Take Again
+                Start Over
               </Button>
             </div>
           </motion.div>
@@ -278,10 +293,10 @@ export default function WizardShell({
             className="text-center py-20 space-y-4"
           >
             <p className="text-red-400">
-              {error || state.error || "Something went wrong"}
+              {error || state.error || "Something went wrong. Not your fault."}
             </p>
             <Button variant="secondary" onClick={handleReset}>
-              Try Again
+              Try again
             </Button>
           </motion.div>
         )}

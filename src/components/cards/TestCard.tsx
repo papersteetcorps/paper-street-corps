@@ -31,7 +31,7 @@ export default function TestCard({
       transition={{ duration: 0.4, delay }}
     >
       <Link href={href} className="group block h-full">
-        <div className="relative h-full border border-surface-800 rounded-2xl p-6 transition-all duration-300 group-hover:border-surface-600 group-hover:shadow-xl overflow-hidden flex flex-col">
+        <div className="card-glow gradient-border relative h-full border border-surface-700 rounded-2xl p-6 transition-all duration-300 group-hover:border-transparent overflow-hidden flex flex-col bg-surface-900/40">
           {/* Hover glow */}
           <div
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -59,7 +59,7 @@ export default function TestCard({
 
             {/* Content */}
             <div className="flex-1">
-              <h3 className="text-base font-semibold group-hover:text-foreground transition-colors">
+              <h3 className="font-display text-base font-semibold group-hover:text-foreground transition-colors">
                 {title}
               </h3>
               <p className="mt-2 text-sm text-surface-400 leading-relaxed">
@@ -69,12 +69,16 @@ export default function TestCard({
 
             {/* CTA */}
             <span
-              className="inline-block text-sm font-medium transition-colors"
+              className="inline-block text-sm font-medium transition-all group-hover:translate-x-1"
               style={{ color: accentColor }}
             >
               Take Test &rarr;
             </span>
           </div>
+          <div
+            className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(234, 88, 12, 0.6), rgba(124, 58, 237, 0.6), transparent)" }}
+          />
         </div>
       </Link>
     </motion.div>

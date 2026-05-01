@@ -9,7 +9,7 @@ export default function PotentiologyTheoryPage() {
           &larr; Theory
         </Link>
         <p className="text-xs text-surface-500 uppercase tracking-widest">Framework</p>
-        <h1 className="text-4xl font-bold">Potentiology</h1>
+        <h1 className="text-4xl font-bold">Energy Profile</h1>
         <p className="text-surface-400 leading-relaxed max-w-2xl">
           A cognitive energy framework that models perception as a structured system of domains, directions, and energy capacities. Defines four fundamental perceptual domains &mdash; Experience, Abstraction, Logic, and Morality &mdash; each operating in subjective or objective orientation, yielding eight distinct cognitive functions.
         </p>
@@ -21,7 +21,7 @@ export default function PotentiologyTheoryPage() {
             href="/potentiology"
             className="bg-accent-purple/10 hover:bg-accent-purple/20 text-accent-purple border border-accent-purple/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
           >
-            Take PBCE Test &rarr;
+            Take the test &rarr;
           </Link>
         </div>
       </div>
@@ -163,7 +163,7 @@ export default function PotentiologyTheoryPage() {
       {/* Types Table */}
       <section className="space-y-5">
         <div>
-          <h2 className="text-2xl font-bold">The 16 Potentiology Types</h2>
+          <h2 className="text-2xl font-bold">The 16 Energy Profile Types</h2>
           <p className="text-surface-400 text-sm mt-1">Each type with its 8-function stack ordered from most capacitive (1st) to least capacitive (8th).</p>
         </div>
         <div className="overflow-x-auto">
@@ -209,7 +209,7 @@ export default function PotentiologyTheoryPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-surface-800">
-                <th className="text-left py-3 pr-4 text-surface-500 font-medium">Potentiology</th>
+                <th className="text-left py-3 pr-4 text-surface-500 font-medium">Energy Profile</th>
                 <th className="text-left py-3 pr-4 text-surface-500 font-medium">Classic Jungian</th>
                 <th className="text-left py-3 pr-4 text-surface-500 font-medium">MBTI</th>
                 <th className="text-left py-3 text-surface-500 font-medium">Socionics</th>
@@ -326,7 +326,7 @@ export default function PotentiologyTheoryPage() {
           href="/potentiology"
           className="bg-accent-purple hover:bg-accent-purple/90 text-white font-medium px-6 py-3 rounded-xl text-sm transition-colors"
         >
-          Take PBCE-1 Test
+          Take the Energy Profile test
         </Link>
         <Link
           href="/resources"

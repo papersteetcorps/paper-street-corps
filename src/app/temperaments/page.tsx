@@ -17,6 +17,8 @@ import NarrativeSection from "@/components/results/NarrativeSection";
 import ScoreComparison from "@/components/results/ScoreComparison";
 import Badge from "@/components/ui/Badge";
 import ResultChat from "@/components/results/ResultChat";
+import ResultVoiceCoach from "@/components/results/ResultVoiceCoach";
+import { logEvent } from "@/lib/logger";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
 import { motion } from "motion/react";
@@ -101,6 +103,11 @@ export default function TemperamentsTestPage() {
           if (data.interpretation) {
             setInterpretation(data.interpretation);
             saveResult("temperaments", { ...data.interpretation, primary: tempResult.primary, secondary: tempResult.secondary, isBlend: tempResult.isBlend });
+            logEvent("test_completed", {
+              testType: "temperaments",
+              mode: "classic",
+              payload: { answers, localResult: tempResult, result: data.interpretation },
+            });
           }
         })
         .catch(() => {});
@@ -267,6 +274,7 @@ function TemperamentResults({
       </p>
 
       <ResultChat testType="temperaments" result={localResult} accentColor="var(--color-accent-purple)" />
+      <ResultVoiceCoach testType="temperaments" result={localResult} accentColor="var(--color-accent-purple)" />
     </ResultsLayout>
   );
 }

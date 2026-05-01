@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ForgeSelf — Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Instrument+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --background: #0d0d14;
+  --foreground: #f5f5f7;
+  --surface-400: #9999a8;
+  --surface-500: #8e8e99;
+  --surface-600: #5a5a6a;
+  --surface-700: #2a2a3a;
+  --surface-800: #16161f;
+  --surface-900: #101018;
+  --accent-blue: #7c5cfc;
+  --accent-purple: #a855f7;
+  --accent-teal: #2dd4bf;
+  --accent-amber: #e8622a;
+  --accent-highlight: #f0b429;
+  --font-body: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-brand: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.deck {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 80px;
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.slide-inner {
+  width: 100%;
+  max-width: 1100px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Aurora background */
+.aurora {
+  position: absolute;
+  inset: -20%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(90px) saturate(1.3);
+}
+
+.aurora .orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.55;
+}
+
+.aurora .orb-a {
+  width: 60vw;
+  height: 60vw;
+  max-width: 800px;
+  max-height: 800px;
+  top: -10%;
+  left: -10%;
+  background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+  animation: drift-a 18s ease-in-out infinite alternate;
+}
+
+.aurora .orb-b {
+  width: 55vw;
+  height: 55vw;
+  max-width: 700px;
+  max-height: 700px;
+  bottom: -15%;
+  right: -10%;
+  background: radial-gradient(circle, var(--accent-amber) 0%, transparent 70%);
+  animation: drift-b 22s ease-in-out infinite alternate;
+}
+
+.aurora .orb-c {
+  width: 40vw;
+  height: 40vw;
+  max-width: 500px;
+  max-height: 500px;
+  top: 40%;
+  left: 50%;
+  background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+  animation: drift-c 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift-a {
+  from { transform: translate(0, 0); }
+  to { transform: translate(15%, 10%); }
+}
+@keyframes drift-b {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-12%, -8%); }
+}
+@keyframes drift-c {
+  from { transform: translate(-50%, -50%); }
+  to { transform: translate(-30%, -60%); }
+}
+
+/* Typography */
+.eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--surface-500);
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.h1 {
+  font-size: clamp(48px, 7vw, 92px);
+  line-height: 1;
+  margin-bottom: 24px;
+}
+
+.h2 {
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+
+.h3 {
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.lead {
+  font-size: clamp(18px, 1.4vw, 22px);
+  color: var(--surface-400);
+  max-width: 760px;
+  line-height: 1.5;
+}
+
+.tag {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(232, 98, 42, 0.12);
+  border: 1px solid rgba(232, 98, 42, 0.3);
+  color: var(--accent-amber);
+}
+
+/* Brand mark */
+.brand-mark {
+  font-family: var(--font-brand);
+  font-weight: 700;
+  font-size: clamp(120px, 18vw, 240px);
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  background: linear-gradient(135deg, rgba(168, 139, 250, 0.85) 0%, rgba(232, 98, 42, 0.85) 50%, rgba(240, 180, 41, 0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 60px rgba(232, 98, 42, 0.2));
+}
+
+.brand-domain {
+  font-family: var(--font-brand);
+  font-size: clamp(18px, 1.6vw, 24px);
+  font-weight: 600;
+  color: var(--surface-400);
+  letter-spacing: -0.01em;
+  margin-top: 12px;
+}
+
+/* Cards */
+.grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.card {
+  background: rgba(22, 22, 31, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--surface-700);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(232, 98, 42, 0.3);
+  background: rgba(22, 22, 31, 0.8);
+}
+
+.card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 14px;
+  background: rgba(232, 98, 42, 0.12);
+  color: var(--accent-amber);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.card-text {
+  font-size: 14px;
+  color: var(--surface-400);
+  line-height: 1.55;
+}
+
+/* Pricing cards */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.pricing-card {
+  background: rgba(22, 22, 31, 0.7);
+  border: 1px solid var(--surface-700);
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+}
+
+.pricing-card.featured {
+  border-color: var(--accent-amber);
+  background: linear-gradient(180deg, rgba(232, 98, 42, 0.08) 0%, rgba(22, 22, 31, 0.7) 100%);
+  transform: scale(1.03);
+}
+
+.pricing-card .badge {
+  position: absolute;
+  top: -12px;
+  right: 24px;
+  background: var(--accent-amber);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.price {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 700;
+  margin: 8px 0 4px;
+}
+
+.price small {
+  font-size: 16px;
+  color: var(--surface-500);
+  font-weight: 500;
+}
+
+.plan-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.plan-features {
+  list-style: none;
+  margin-top: 20px;
+}
+
+.plan-features li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--surface-300);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plan-features li::before {
+  content: "→";
+  color: var(--accent-amber);
+  font-weight: 700;
+}
+
+/* Revenue table */
+.revenue-table {
+  width: 100%;
+  margin-top: 24px;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.revenue-table td, .revenue-table th {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 15px;
+}
+
+.revenue-table th {
+  font-family: var(--font-display);
+  color: var(--surface-500);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--surface-700);
+  padding-bottom: 12px;
+}
+
+.revenue-table tbody tr {
+  background: rgba(22, 22, 31, 0.6);
+  border-radius: 12px;
+}
+
+.revenue-table tbody tr td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+.revenue-table tbody tr td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+.revenue-table .total-row {
+  background: linear-gradient(90deg, rgba(232, 98, 42, 0.18) 0%, rgba(232, 98, 42, 0.05) 100%);
+}
+
+.revenue-table .total-row td {
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--accent-amber);
+}
+
+/* Step list */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.step {
+  position: relative;
+  padding: 24px;
+  background: rgba(22, 22, 31, 0.5);
+  border: 1px solid var(--surface-700);
+  border-radius: 14px;
+}
+
+.step-num {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-amber);
+  letter-spacing: 0.2em;
+  margin-bottom: 8px;
+}
+
+.step-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.step-text {
+  font-size: 13px;
+  color: var(--surface-400);
+  line-height: 1.5;
+}
+
+/* Roadmap */
+.roadmap {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.roadmap-col {
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(22, 22, 31, 0.5);
+  border: 1px solid var(--surface-700);
+}
+
+.roadmap-col h4 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--accent-amber);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.roadmap-col ul {
+  list-style: none;
+}
+
+.roadmap-col li {
+  font-size: 13.5px;
+  padding: 6px 0;
+  color: var(--surface-300);
+  border-bottom: 1px solid rgba(42, 42, 58, 0.5);
+}
+
+.roadmap-col li:last-child { border-bottom: none; }
+
+/* Two column layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Big stats */
+.stat {
+  text-align: center;
+  padding: 30px 20px;
+  border-radius: 18px;
+  background: rgba(22, 22, 31, 0.7);
+  border: 1px solid var(--surface-700);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-amber), var(--accent-highlight));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--surface-400);
+  margin-top: 8px;
+}
+
+/* Navigation */
+.nav {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  background: rgba(22, 22, 31, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--surface-700);
+  z-index: 100;
+  align-items: center;
+}
+
+.nav button {
+  background: transparent;
+  border: none;
+  color: var(--surface-400);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+.nav button:hover {
+  color: var(--foreground);
+  background: var(--surface-700);
+}
+
+.nav .counter {
+  font-size: 13px;
+  color: var(--surface-500);
+  font-variant-numeric: tabular-nums;
+  min-width: 50px;
+  text-align: center;
+}
+
+.slide-num {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  font-size: 12px;
+  color: var(--surface-600);
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  z-index: 100;
+}
+
+.brand-corner {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+  font-family: var(--font-brand);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+  z-index: 100;
+}
+
+.brand-corner span {
+  color: var(--accent-amber);
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232, 98, 42, 0.5), rgba(124, 58, 237, 0.5), transparent);
+  margin: 24px 0;
+}
+
+.problem-list, .feature-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.list-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(22, 22, 31, 0.5);
+  border: 1px solid var(--surface-700);
+  border-radius: 12px;
+  align-items: flex-start;
+}
+
+.list-item .marker {
+  color: var(--accent-amber);
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: -1px;
+}
+
+.list-item .content strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 2px;
+  color: var(--foreground);
+}
+
+.list-item .content span {
+  font-size: 14px;
+  color: var(--surface-400);
+  line-height: 1.5;
+}
+
+.cta-card {
+  background: linear-gradient(135deg, rgba(232, 98, 42, 0.15), rgba(168, 85, 247, 0.1));
+  border: 1px solid rgba(232, 98, 42, 0.4);
+  border-radius: 24px;
+  padding: 60px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .slide { padding: 30px 24px; }
+  .grid-3, .grid-4, .pricing-grid, .steps, .roadmap, .two-col, .equity-grid { grid-template-columns: 1fr; }
+}
+
+/* Equity / team layout */
+.equity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.equity-card {
+  background: rgba(22, 22, 31, 0.7);
+  border: 1px solid var(--surface-700);
+  border-radius: 18px;
+  padding: 28px;
+  text-align: center;
+  position: relative;
+}
+
+.equity-card.lead {
+  border-color: var(--accent-amber);
+  background: linear-gradient(180deg, rgba(232, 98, 42, 0.1) 0%, rgba(22, 22, 31, 0.7) 100%);
+}
+
+.equity-card .role {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--surface-500);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.equity-card .name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.equity-card .equity-pct {
+  font-family: var(--font-display);
+  font-size: 60px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-amber), var(--accent-highlight));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.equity-card .equity-label {
+  font-size: 13px;
+  color: var(--surface-400);
+  margin-top: 4px;
+}
+
+.equity-card .salary {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--surface-700);
+  font-size: 14px;
+  color: var(--surface-300);
+}
+
+.equity-card .salary strong {
+  color: var(--accent-amber);
+  font-weight: 700;
+  font-size: 18px;
+  font-family: var(--font-display);
+}
+
+.burn-row {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Print / PDF styles */
+@media print {
+  @page {
+    size: 1280px 800px;
+    margin: 0;
+  }
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+    background: #0d0d14 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .deck { height: auto !important; overflow: visible !important; }
+  .slide {
+    position: relative !important;
+    inset: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    width: 100% !important;
+    height: 800px !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    display: flex !important;
+  }
+  .slide:last-child { page-break-after: auto !important; }
+  .nav, .slide-num, .brand-corner { display: none !important; }
+  .aurora { filter: blur(60px) saturate(1.2) !important; }
+}
+
+.nav .pdf-btn {
+  background: var(--accent-amber);
+  color: white;
+  font-weight: 600;
+  padding: 6px 14px;
+}
+
+.nav .pdf-btn:hover {
+  background: #f57340;
+  color: white;
+}
+</style>
+</head>
+<body>
+
+<div class="brand-corner">Forge<span>Self</span></div>
+<div class="slide-num" id="slideNum">01 / 13</div>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Title -->
+  <div class="slide active">
+    <div class="aurora">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+      <div class="orb orb-c"></div>
+    </div>
+    <div class="slide-inner" style="text-align: center;">
+      <div class="brand-mark">FORGE<br>SELF</div>
+      <div class="brand-domain">forgeself.xyz</div>
+      <div class="divider" style="max-width: 200px; margin: 32px auto;"></div>
+      <p class="lead" style="margin: 0 auto;">Figure yourself out. Then do something about it.</p>
+    </div>
+  </div>
+
+  <!-- Slide 2: Problem -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">The Problem</div>
+      <h1 class="h1">Personality tests<br>are broken.</h1>
+      <p class="lead">Most are either rigid multiple-choice or fluffy quizzes that tell you nothing useful. None of them help you actually change.</p>
+      <div class="problem-list">
+        <div class="list-item">
+          <div class="marker">→</div>
+          <div class="content">
+            <strong>Multiple choice can't capture you</strong>
+            <span>Real personality is messy. Forcing it into A / B / C / D loses everything that matters.</span>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="marker">→</div>
+          <div class="content">
+            <strong>Single frameworks are limited</strong>
+            <span>MBTI alone misses energy patterns. Enneagram alone misses cognitive style. You need multiple lenses.</span>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="marker">→</div>
+          <div class="content">
+            <strong>No one tells you what to do next</strong>
+            <span>"You're an INTJ" — and? Where's the part where you actually grow?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Solution -->
+  <div class="slide">
+    <div class="aurora">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+    </div>
+    <div class="slide-inner">
+      <div class="eyebrow">The Solution</div>
+      <h1 class="h1">Tell your story.<br>We read the patterns.</h1>
+      <p class="lead">ForgeSelf uses six psychological frameworks and AI to read across your life, find what's consistent, and tell you what to do about it.</p>
+      <div class="grid grid-3" style="margin-top: 40px;">
+        <div class="card">
+          <div class="card-icon">◈</div>
+          <div class="card-title">No multiple choice</div>
+          <div class="card-text">You write or speak about yourself. AI reads what's actually there.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">◉</div>
+          <div class="card-title">Six frameworks</div>
+          <div class="card-text">Cross-validate your traits across Jungian, Socionics, Enneagram and more.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">Actually change</div>
+          <div class="card-text">Get concrete next steps, not vague horoscope advice.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: How It Works -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">How It Works</div>
+      <h1 class="h2">Four steps to forge yourself.</h1>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-title">Tell your story</div>
+          <div class="step-text">Write or speak naturally. No checkboxes, no scales.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-title">AI reads patterns</div>
+          <div class="step-text">Six frameworks analyse what you wrote — across cognitive, emotional, and energy domains.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-title">See yourself clearly</div>
+          <div class="step-text">Get a unified profile that combines all six lenses into one honest picture.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-title">Forge ahead</div>
+          <div class="step-text">Concrete growth steps tailored to your patterns, plus a chat to dig deeper.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Features -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">What You Get</div>
+      <h1 class="h2">Six frameworks. One you.</h1>
+      <div class="grid grid-3" style="margin-top: 28px;">
+        <div class="card">
+          <div class="card-icon" style="background: rgba(124, 92, 252, 0.12); color: var(--accent-blue);">◈</div>
+          <div class="card-title">Jungian Type</div>
+          <div class="card-text">8 cognitive functions, 16 type stack, story-based.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: rgba(232, 98, 42, 0.12); color: var(--accent-amber);">◉</div>
+          <div class="card-title">Socionics</div>
+          <div class="card-text">Information processing & interaction style.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: rgba(168, 85, 247, 0.12); color: var(--accent-purple);">⚡</div>
+          <div class="card-title">Energy Profile</div>
+          <div class="card-text">Where your energy goes & burnout patterns.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: rgba(168, 85, 247, 0.12); color: var(--accent-purple);">⬡</div>
+          <div class="card-title">Temperaments</div>
+          <div class="card-text">Choleric, Melancholic, Phlegmatic, Sanguine.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: rgba(45, 212, 191, 0.12); color: var(--accent-teal);">⚖</div>
+          <div class="card-title">Moral Alignment</div>
+          <div class="card-text">Where you fall on order-chaos and good-evil.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: rgba(232, 98, 42, 0.12); color: var(--accent-amber);">◎</div>
+          <div class="card-title">Enneagram</div>
+          <div class="card-text">Life-phase analysis across 9 types.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: How to Forge Yourself -->
+  <div class="slide">
+    <div class="aurora">
+      <div class="orb orb-b"></div>
+      <div class="orb orb-c"></div>
+    </div>
+    <div class="slide-inner">
+      <div class="eyebrow">The Forge Method</div>
+      <h1 class="h2">How to forge yourself.</h1>
+      <p class="lead">Knowing your type is step one. Forging yourself is the rest.</p>
+      <div class="grid grid-2" style="margin-top: 32px;">
+        <div class="card">
+          <div class="card-icon">🔥</div>
+          <div class="card-title">Heat — see yourself</div>
+          <div class="card-text">Honest input from six frameworks. The truths you've been avoiding surface in plain language.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔨</div>
+          <div class="card-title">Hammer — name the pattern</div>
+          <div class="card-text">AI synthesis spots what runs through every framework — the core pattern beneath everything.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚒</div>
+          <div class="card-title">Shape — act on it</div>
+          <div class="card-text">Concrete growth path with specific actions. Not "try journaling" — actual moves for your type.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛡</div>
+          <div class="card-title">Temper — repeat & track</div>
+          <div class="card-text">Come back over time. Re-test, see how you've changed, sharpen the next iteration.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Differentiation -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Why ForgeSelf</div>
+      <h1 class="h2">No one else does this.</h1>
+      <table class="revenue-table" style="margin-top: 32px;">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Free quizzes</th>
+            <th>16Personalities</th>
+            <th>ForgeSelf</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Open-ended input</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="color: var(--accent-amber); font-weight: 600;">✓</td>
+          </tr>
+          <tr>
+            <td>Multiple frameworks</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="color: var(--accent-amber); font-weight: 600;">6 frameworks</td>
+          </tr>
+          <tr>
+            <td>AI synthesis</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="color: var(--accent-amber); font-weight: 600;">✓</td>
+          </tr>
+          <tr>
+            <td>Conversational chat</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="color: var(--accent-amber); font-weight: 600;">✓</td>
+          </tr>
+          <tr>
+            <td>Voice input</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="color: var(--accent-amber); font-weight: 600;">✓</td>
+          </tr>
+          <tr>
+            <td>Growth guidance</td>
+            <td>—</td>
+            <td>Generic</td>
+            <td style="color: var(--accent-amber); font-weight: 600;">Personalised</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Slide 8: Monetization -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Monetization</div>
+      <h1 class="h2">Freemium → premium.</h1>
+      <p class="lead">Free taste. Pay for depth.</p>
+      <div class="grid grid-3" style="margin-top: 32px;">
+        <div class="card">
+          <div class="card-icon">🎯</div>
+          <div class="card-title">Hook</div>
+          <div class="card-text">One free framework. Strong enough to share, deep enough to want more.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💳</div>
+          <div class="card-title">Convert</div>
+          <div class="card-text">Unlock all 6 frameworks + AI synthesis + chat for $5/mo.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🚀</div>
+          <div class="card-title">Retain</div>
+          <div class="card-text">Pro tier ($8/mo) adds voice, progress tracking, and personalised growth plans.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Pricing -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Pricing</div>
+      <h1 class="h2">Simple. Honest. Cheap.</h1>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="plan-name">Free</div>
+          <div class="price">$0<small>/forever</small></div>
+          <ul class="plan-features">
+            <li>1 framework (Jungian)</li>
+            <li>Basic result page</li>
+            <li>3 chat messages</li>
+            <li>Email-only support</li>
+          </ul>
+        </div>
+        <div class="pricing-card featured">
+          <div class="badge">Most Popular</div>
+          <div class="plan-name">Forge</div>
+          <div class="price">$5<small>/month</small></div>
+          <ul class="plan-features">
+            <li>All 6 frameworks</li>
+            <li>AI synthesis profile</li>
+            <li>Unlimited chat</li>
+            <li>Shareable result cards</li>
+            <li>Re-test anytime</li>
+          </ul>
+        </div>
+        <div class="pricing-card">
+          <div class="plan-name">Forge Pro</div>
+          <div class="price">$8<small>/month</small></div>
+          <ul class="plan-features">
+            <li>Everything in Forge</li>
+            <li>Voice input</li>
+            <li>Progress tracking</li>
+            <li>Personalised growth plan</li>
+            <li>Priority support</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Revenue 100 users -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Revenue Projection</div>
+      <h1 class="h2">100 paying users.</h1>
+      <p class="lead">Assumed split: 70% Forge ($5) / 30% Forge Pro ($8).</p>
+      <table class="revenue-table">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Users</th>
+            <th>Price</th>
+            <th>Monthly</th>
+            <th>Yearly</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Forge</td>
+            <td>70</td>
+            <td>$5</td>
+            <td>$350</td>
+            <td>$4,200</td>
+          </tr>
+          <tr>
+            <td>Forge Pro</td>
+            <td>30</td>
+            <td>$8</td>
+            <td>$240</td>
+            <td>$2,880</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total</td>
+            <td>100</td>
+            <td>—</td>
+            <td>$590</td>
+            <td>$7,080</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="grid grid-3" style="margin-top: 32px;">
+        <div class="stat">
+          <div class="stat-value">$590</div>
+          <div class="stat-label">MRR</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">$7,080</div>
+          <div class="stat-label">ARR</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">$5.90</div>
+          <div class="stat-label">Avg ARPU</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Revenue 500 users -->
+  <div class="slide">
+    <div class="aurora">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+    </div>
+    <div class="slide-inner">
+      <div class="eyebrow">Revenue Projection</div>
+      <h1 class="h2">500 paying users.</h1>
+      <p class="lead">Same split. The numbers scale.</p>
+      <table class="revenue-table">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Users</th>
+            <th>Price</th>
+            <th>Monthly</th>
+            <th>Yearly</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Forge</td>
+            <td>350</td>
+            <td>$5</td>
+            <td>$1,750</td>
+            <td>$21,000</td>
+          </tr>
+          <tr>
+            <td>Forge Pro</td>
+            <td>150</td>
+            <td>$8</td>
+            <td>$1,200</td>
+            <td>$14,400</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total</td>
+            <td>500</td>
+            <td>—</td>
+            <td>$2,950</td>
+            <td>$35,400</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="grid grid-3" style="margin-top: 32px;">
+        <div class="stat">
+          <div class="stat-value">$2,950</div>
+          <div class="stat-label">MRR</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">$35,400</div>
+          <div class="stat-label">ARR</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">5x</div>
+          <div class="stat-label">vs 100 users</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12: Team / Equity / Burn -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="eyebrow">Team & Economics</div>
+      <h1 class="h2">Who builds this. What it costs.</h1>
+      <p class="lead">Three founders. Two minimum salaries. One mission.</p>
+
+      <div class="equity-grid">
+        <div class="equity-card lead">
+          <div class="role">Founder & Lead</div>
+          <div class="name">Zoe</div>
+          <div class="equity-pct">40%</div>
+          <div class="equity-label">Equity</div>
+          <div class="salary">No salary<br><strong>Equity-only</strong></div>
+        </div>
+        <div class="equity-card">
+          <div class="role">Co-founder & Engineering</div>
+          <div class="name">Gourav</div>
+          <div class="equity-pct">30%</div>
+          <div class="equity-label">Equity</div>
+          <div class="salary">Monthly salary<br><strong>$600 / mo</strong></div>
+        </div>
+        <div class="equity-card">
+          <div class="role">Co-founder & Engineering</div>
+          <div class="name">Pratik</div>
+          <div class="equity-pct">30%</div>
+          <div class="equity-label">Equity</div>
+          <div class="salary">Monthly salary<br><strong>$600 / mo</strong></div>
+        </div>
+      </div>
+
+      <div class="burn-row">
+        <div class="stat">
+          <div class="stat-value">$1,200</div>
+          <div class="stat-label">Monthly burn (salaries)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">~204</div>
+          <div class="stat-label">Users to break even</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">$1,750</div>
+          <div class="stat-label">Net profit at 500 users / mo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 13: Roadmap + CTA -->
+  <div class="slide">
+    <div class="aurora">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+      <div class="orb orb-c"></div>
+    </div>
+    <div class="slide-inner">
+      <div class="eyebrow">What's Next</div>
+      <h1 class="h2">The roadmap.</h1>
+      <div class="roadmap">
+        <div class="roadmap-col">
+          <h4>Now (MVP)</h4>
+          <ul>
+            <li>6 frameworks live</li>
+            <li>AI synthesis</li>
+            <li>Result chat</li>
+            <li>Browser voice input</li>
+          </ul>
+        </div>
+        <div class="roadmap-col">
+          <h4>Q3 2026</h4>
+          <ul>
+            <li>Shareable result cards</li>
+            <li>Native mobile UX</li>
+            <li>Stripe billing live</li>
+            <li>Re-test history</li>
+          </ul>
+        </div>
+        <div class="roadmap-col">
+          <h4>Q4 2026</h4>
+          <ul>
+            <li>Progress tracking</li>
+            <li>Personalised growth plans</li>
+            <li>Premium voice (AssemblyAI)</li>
+            <li>iOS / Android app</li>
+          </ul>
+        </div>
+        <div class="roadmap-col">
+          <h4>2027+</h4>
+          <ul>
+            <li>Coach marketplace</li>
+            <li>Couples & team profiles</li>
+            <li>Affiliate program</li>
+            <li>API for researchers</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cta-card" style="margin-top: 40px;">
+        <div class="brand-mark" style="font-size: clamp(48px, 6vw, 80px); margin-bottom: 12px;">FORGESELF</div>
+        <p class="lead" style="margin: 0 auto 8px;">forgeself.xyz</p>
+        <p style="color: var(--surface-400); font-size: 15px;">Figure yourself out. Then do something about it.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button id="prevBtn">←</button>
+  <span class="counter" id="counter">1 / 13</span>
+  <button id="nextBtn">→</button>
+  <button id="pdfBtn" class="pdf-btn">↓ PDF</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const slideNum = document.getElementById('slideNum');
+const counter = document.getElementById('counter');
+let current = 0;
+
+function show(i) {
+  slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+  current = i;
+  const total = slides.length;
+  const num = String(i + 1).padStart(2, '0');
+  const tot = String(total).padStart(2, '0');
+  slideNum.textContent = `${num} / ${tot}`;
+  counter.textContent = `${i + 1} / ${total}`;
+}
+
+document.getElementById('prevBtn').onclick = () => show((current - 1 + slides.length) % slides.length);
+document.getElementById('nextBtn').onclick = () => show((current + 1) % slides.length);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') show((current + 1) % slides.length);
+  if (e.key === 'ArrowLeft') show((current - 1 + slides.length) % slides.length);
+  if (e.key === 'Home') show(0);
+  if (e.key === 'End') show(slides.length - 1);
+});
+
+document.getElementById('pdfBtn').onclick = () => {
+  window.print();
+};
+</script>
+</body>
+</html>
