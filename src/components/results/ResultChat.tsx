@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { logEvent } from "@/lib/logger";
 
 interface Message {
   role: "user" | "assistant";
@@ -86,6 +87,12 @@ export default function ResultChat({ testType, result, accentColor = "var(--colo
           return updated;
         });
       }
+
+      // Log the user-AI exchange (fire-and-forget)
+      logEvent("result_chat_exchange", {
+        testType,
+        payload: { user: userMsg.text, assistant: accumulated },
+      });
     } catch {
       setMessages((prev) => {
         const updated = [...prev];

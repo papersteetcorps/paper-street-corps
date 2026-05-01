@@ -3,10 +3,16 @@
 import { useState, useCallback } from "react";
 import { motion } from "motion/react";
 import WizardShell from "@/components/wizard/WizardShell";
+import ModeSelector, { type TestMode } from "@/components/wizard/ModeSelector";
+import TestChat from "@/components/wizard/TestChat";
+import TestVoice from "@/components/wizard/TestVoice";
+import AnalysisLoader from "@/components/wizard/AnalysisLoader";
+import { logEvent } from "@/lib/logger";
 import ResultsLayout from "@/components/results/ResultsLayout";
 import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
+import ResultVoiceCoach from "@/components/results/ResultVoiceCoach";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
 
@@ -58,6 +64,7 @@ type Interpretation = {
 } | null;
 
 export default function PotentiologyPage() {
+  const [mode, setMode] = useState<TestMode | null>(null);
   const [interpretation, setInterpretation] = useState<Interpretation>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -79,19 +86,72 @@ export default function PotentiologyPage() {
         summary: "Your responses have been recorded.",
       };
       setInterpretation(interp);
-      if (data.interpretation) saveResult("potentiology", data.interpretation);
+      if (data.interpretation) {
+        saveResult("potentiology", data.interpretation);
+        logEvent("test_completed", {
+          testType: "potentiology",
+          mode: mode ?? undefined,
+          payload: { answers, result: data.interpretation },
+        });
+      }
     } catch {
       setInterpretation({ headline: "Analysis complete", summary: "Could not reach the interpretation service." });
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [mode]);
 
-  const handleReset = useCallback(() => setInterpretation(null), []);
+  const handleReset = useCallback(() => {
+    setInterpretation(null);
+    setMode(null);
+  }, []);
 
   const resultView = interpretation ? (
     <PBCEResults interpretation={interpretation} />
   ) : null;
+
+  if (!mode && !interpretation) {
+    return (
+      <ModeSelector
+        title="Energy Profile"
+        framework="Cognitive energy & burnout cycles"
+        subtitle="Sixteen questions about what energizes you and what drains you. You'll get your cognitive domain, energy stack, and the burnout patterns you fall into."
+        onSelect={setMode}
+        questionCount={FALLBACK_QUESTIONS.length}
+        estimateClassic="~8 mins"
+        estimateChat="~15 mins"
+        estimateVoice="~15 mins"
+      />
+    );
+  }
+
+  if (mode === "chat" && !interpretation && !isLoading) {
+    return (
+      <TestChat
+        title="Energy Profile"
+        questions={FALLBACK_QUESTIONS}
+        onComplete={handleComplete}
+        onSwitchToClassic={() => setMode("classic")}
+        storageKey="psc-chat-potentiology"
+      />
+    );
+  }
+
+  if (mode === "voice" && !interpretation && !isLoading) {
+    return (
+      <TestVoice
+        title="Energy Profile"
+        questions={FALLBACK_QUESTIONS}
+        onComplete={handleComplete}
+        onSwitchMode={(m) => setMode(m === "chat" ? "chat" : "classic")}
+        domain="cognitive energy patterns and burnout cycles"
+      />
+    );
+  }
+
+  if ((mode === "chat" || mode === "voice") && isLoading) {
+    return <AnalysisLoader title="Building your energy profile" />;
+  }
 
   return (
     <WizardShell
@@ -103,6 +163,7 @@ export default function PotentiologyPage() {
       resultView={resultView}
       isLoading={isLoading}
       onReset={handleReset}
+      autoStart
     />
   );
 }
@@ -210,6 +271,7 @@ function PBCEResults({ interpretation }: { interpretation: NonNullable<Interpret
       </p>
 
       <ResultChat testType="potentiology" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-purple)" />
+      <ResultVoiceCoach testType="potentiology" result={interpretation as Record<string, unknown>} accentColor="var(--color-accent-purple)" />
     </ResultsLayout>
   );
 }

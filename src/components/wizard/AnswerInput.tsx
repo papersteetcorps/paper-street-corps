@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { motion } from "motion/react";
 import Slider from "@/components/ui/Slider";
 import type { AnswerType } from "@/lib/types/wizard";
+import { useVoiceInput } from "@/lib/hooks/useVoiceInput";
 
 interface AnswerInputProps {
   type: AnswerType;
@@ -12,66 +13,6 @@ interface AnswerInputProps {
   labels?: [string, string];
   min?: number;
   max?: number;
-}
-
-function useSpeechRecognition(onResult: (finalText: string, interim: string) => void) {
-  const [listening, setListening] = useState(false);
-  const [interim, setInterim] = useState("");
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-
-  const supported =
-    typeof window !== "undefined" &&
-    ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
-
-  const toggle = useCallback(() => {
-    if (!supported) return;
-
-    if (recognitionRef.current && listening) {
-      recognitionRef.current.stop();
-      return;
-    }
-
-    const SR =
-      window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    if (!SR) return;
-    const recognition = new SR();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
-
-    recognition.onresult = (e: SpeechRecognitionEvent) => {
-      let interimText = "";
-      let finalText = "";
-      for (let i = 0; i < e.results.length; i++) {
-        const result = e.results[i];
-        if (result.isFinal) {
-          finalText += result[0].transcript;
-        } else {
-          interimText += result[0].transcript;
-        }
-      }
-      setInterim(interimText);
-      onResult(finalText, interimText);
-    };
-
-    recognition.onend = () => {
-      setListening(false);
-      setInterim("");
-      recognitionRef.current = null;
-    };
-
-    recognition.onerror = () => {
-      setListening(false);
-      setInterim("");
-      recognitionRef.current = null;
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-    setListening(true);
-  }, [supported, listening, onResult]);
-
-  return { listening, toggle, supported, interim };
 }
 
 export default function AnswerInput({
@@ -83,27 +24,27 @@ export default function AnswerInput({
   max = 5,
 }: AnswerInputProps) {
   const baseTextRef = useRef(typeof value === "string" ? value : "");
+  const { listening, supported, start, stop, error } = useVoiceInput();
 
-  const handleSpeechResult = useCallback(
-    (finalText: string, interim: string) => {
-      if (finalText) {
-        const base = baseTextRef.current;
-        const separator = base && !base.endsWith(" ") ? " " : "";
-        const updated = base + separator + finalText;
-        baseTextRef.current = updated;
-        onChange(updated);
-      }
-      void interim; // interim is displayed separately via the hook
-    },
-    [onChange]
-  );
-
-  const { listening, toggle, supported, interim } = useSpeechRecognition(handleSpeechResult);
+  const toggle = useCallback(() => {
+    if (listening) {
+      stop();
+      return;
+    }
+    baseTextRef.current = typeof value === "string" ? value : "";
+    start((transcript) => {
+      const base = baseTextRef.current;
+      const separator = base && !base.endsWith(" ") ? " " : "";
+      onChange(base + separator + transcript);
+    });
+  }, [listening, value, start, stop, onChange]);
 
   // Sync the ref when user types manually
-  if (!listening && typeof value === "string" && value !== baseTextRef.current) {
-    baseTextRef.current = value;
-  }
+  useEffect(() => {
+    if (!listening && typeof value === "string" && value !== baseTextRef.current) {
+      baseTextRef.current = value;
+    }
+  }, [listening, value]);
 
   if (type === "slider") {
     return (
@@ -165,10 +106,8 @@ export default function AnswerInput({
             </button>
           )}
         </div>
-        {listening && interim && (
-          <p className="text-accent-blue/70 text-sm italic animate-pulse">
-            {interim}
-          </p>
+        {error && (
+          <p className="text-red-400 text-sm">{error}</p>
         )}
         <p className="text-surface-400 text-sm">
           {listening
