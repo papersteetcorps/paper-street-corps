@@ -15,7 +15,7 @@ interface TestVoiceProps {
   title: string;
   questions: WizardQuestion[];
   onComplete: (answers: WizardAnswer[]) => void;
-  onSwitchMode: (mode: "classic" | "chat") => void;
+  onSwitchMode: () => void;
   domain?: string;
 }
 
@@ -407,13 +407,7 @@ After Q${total} is answered, wrap up warmly:
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <button
-              onClick={() => onSwitchMode("chat")}
-              className="text-xs text-surface-500 hover:text-surface-300 transition-colors"
-            >
-              Chat
-            </button>
-            <button
-              onClick={() => onSwitchMode("classic")}
+              onClick={onSwitchMode}
               className="text-xs text-surface-500 hover:text-surface-300 transition-colors"
             >
               Classic

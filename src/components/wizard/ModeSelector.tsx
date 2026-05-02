@@ -3,14 +3,13 @@
 import { motion } from "motion/react";
 import Container from "@/components/ui/Container";
 
-export type TestMode = "classic" | "chat" | "voice";
+export type TestMode = "classic" | "voice";
 
 interface ModeSelectorProps {
   title: string;
   subtitle: string;
   onSelect: (mode: TestMode) => void;
   estimateClassic?: string;
-  estimateChat?: string;
   estimateVoice?: string;
   questionCount?: number;
   framework?: string;
@@ -60,14 +59,6 @@ function Divider() {
   return <span className="w-1 h-1 rounded-full bg-surface-700" />;
 }
 
-function IconChat(props: { className?: string }) {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={props.className}>
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
-
 function IconWaveform(props: { className?: string }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={props.className}>
@@ -86,7 +77,6 @@ export default function ModeSelector({
   subtitle,
   onSelect,
   estimateClassic = "~5 mins",
-  estimateChat = "~10 mins",
   estimateVoice = "~10 mins",
   questionCount,
   framework,
@@ -148,24 +138,15 @@ export default function ModeSelector({
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
         <ModeCard
           icon={<IconList />}
           label="Classic"
-          title="Quick form"
-          description="Answer one question at a time on a clean form. Fastest if you know what you want to say."
+          title="Form with mic"
+          description="Answer one question at a time. Type your response or tap the mic to dictate. Fast and reliable."
           estimate={estimateClassic}
           delay={0.15}
           onClick={() => onSelect("classic")}
-        />
-        <ModeCard
-          icon={<IconChat />}
-          label="Chat"
-          title="Type or dictate"
-          description="A chat conversation. Type your answers or tap the mic to dictate. AI follows up if needed."
-          estimate={estimateChat}
-          delay={0.22}
-          onClick={() => onSelect("chat")}
         />
         <ModeCard
           icon={<IconWaveform />}
@@ -174,7 +155,7 @@ export default function ModeSelector({
           description="Just talk. AI reads each question aloud and listens. No typing at all."
           estimate={estimateVoice}
           accent
-          delay={0.29}
+          delay={0.22}
           onClick={() => onSelect("voice")}
         />
       </div>

@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import { motion } from "motion/react";
 import WizardShell from "@/components/wizard/WizardShell";
 import ModeSelector, { type TestMode } from "@/components/wizard/ModeSelector";
-import TestChat from "@/components/wizard/TestChat";
 import TestVoice from "@/components/wizard/TestVoice";
 import AnalysisLoader from "@/components/wizard/AnalysisLoader";
 import { logEvent } from "@/lib/logger";
@@ -116,20 +115,7 @@ export default function SocionicsPage() {
         onSelect={setMode}
         questionCount={FALLBACK_QUESTIONS.length}
         estimateClassic="~8 mins"
-        estimateChat="~15 mins"
         estimateVoice="~15 mins"
-      />
-    );
-  }
-
-  if (mode === "chat" && !interpretation && !isLoading) {
-    return (
-      <TestChat
-        title="Socionics"
-        questions={FALLBACK_QUESTIONS}
-        onComplete={handleComplete}
-        onSwitchToClassic={() => setMode("classic")}
-        storageKey="psc-chat-socionics"
       />
     );
   }
@@ -140,13 +126,13 @@ export default function SocionicsPage() {
         title="Socionics"
         questions={FALLBACK_QUESTIONS}
         onComplete={handleComplete}
-        onSwitchMode={(m) => setMode(m === "chat" ? "chat" : "classic")}
+        onSwitchMode={() => setMode("classic")}
         domain="Socionics and information metabolism"
       />
     );
   }
 
-  if ((mode === "chat" || mode === "voice") && isLoading) {
+  if (mode === "voice" && isLoading) {
     return <AnalysisLoader title="Building your sociotype profile" />;
   }
 
