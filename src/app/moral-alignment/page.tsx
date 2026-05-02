@@ -14,6 +14,7 @@ import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
 import ResultVoiceCoach from "@/components/results/ResultVoiceCoach";
+import ResultDictate from "@/components/results/ResultDictate";
 import { logEvent } from "@/lib/logger";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
@@ -181,6 +182,7 @@ function AlignmentResults({
 
   return (
     <ResultsLayout>
+      <ResultDictate testType="moral-alignment" result={localResult} accentColor="var(--color-accent-teal)" />
       <TypeCard
         typeCode={result.alignment}
         subtitle={result.archetype}

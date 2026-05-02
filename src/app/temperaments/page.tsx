@@ -18,6 +18,7 @@ import ScoreComparison from "@/components/results/ScoreComparison";
 import Badge from "@/components/ui/Badge";
 import ResultChat from "@/components/results/ResultChat";
 import ResultVoiceCoach from "@/components/results/ResultVoiceCoach";
+import ResultDictate from "@/components/results/ResultDictate";
 import { logEvent } from "@/lib/logger";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
@@ -173,6 +174,7 @@ function TemperamentResults({
 
   return (
     <ResultsLayout>
+      <ResultDictate testType="temperaments" result={localResult} accentColor="var(--color-accent-purple)" />
       {/* 0ms — Hero */}
       <TypeCard
         typeCode={displayType}

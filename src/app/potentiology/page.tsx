@@ -12,6 +12,7 @@ import TypeCard from "@/components/results/TypeCard";
 import NarrativeSection from "@/components/results/NarrativeSection";
 import ResultChat from "@/components/results/ResultChat";
 import ResultVoiceCoach from "@/components/results/ResultVoiceCoach";
+import ResultDictate from "@/components/results/ResultDictate";
 import type { WizardQuestion, WizardAnswer } from "@/lib/types/wizard";
 import { saveResult } from "@/lib/results-store";
 
@@ -166,6 +167,7 @@ function PBCEResults({ interpretation }: { interpretation: NonNullable<Interpret
 
   return (
     <ResultsLayout>
+      <ResultDictate testType="potentiology" result={interpretation as unknown as Record<string, unknown>} accentColor="var(--color-accent-purple)" />
       {/* Type hero */}
       <TypeCard
         typeCode={pbceType}
