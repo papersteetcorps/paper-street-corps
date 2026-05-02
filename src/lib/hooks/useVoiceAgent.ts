@@ -114,6 +114,16 @@ export function useVoiceAgent() {
       ws.onopen = () => {
         const session: Record<string, unknown> = {
           system_prompt: config.systemPrompt,
+          // Conservative turn detection — give the user time to think
+          // (matches AssemblyAI's "Conservative" preset for reflective speech)
+          input: {
+            turn_detection: {
+              vad_threshold: 0.5,
+              min_silence: 800,
+              max_silence: 3600,
+              interrupt_response: true,
+            },
+          },
         };
         if (config.greeting) session.greeting = config.greeting;
         if (config.voice) session.output = { voice: config.voice };
