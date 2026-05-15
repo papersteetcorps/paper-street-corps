@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "motion/react";
-import Container from "@/components/ui/Container";
 
 export type TestMode = "classic" | "voice";
 
@@ -15,10 +14,10 @@ interface ModeSelectorProps {
   framework?: string;
 }
 
-function IconList(props: { className?: string; size?: number }) {
-  const s = props.size ?? 24;
+function IconList(props: { size?: number }) {
+  const s = props.size ?? 22;
   return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="butt" strokeLinejoin="miter">
       <line x1="8" y1="6" x2="21" y2="6" />
       <line x1="8" y1="12" x2="21" y2="12" />
       <line x1="8" y1="18" x2="21" y2="18" />
@@ -29,39 +28,10 @@ function IconList(props: { className?: string; size?: number }) {
   );
 }
 
-function IconClock() {
+function IconWaveform(props: { size?: number }) {
+  const s = props.size ?? 22;
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
-
-function IconHeart() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
-  );
-}
-
-function Stat({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <div className="flex items-center gap-1.5 text-xs text-surface-400">
-      <span className="text-surface-500">{icon}</span>
-      <span>{label}</span>
-    </div>
-  );
-}
-
-function Divider() {
-  return <span className="w-1 h-1 rounded-full bg-surface-700" />;
-}
-
-function IconWaveform(props: { className?: string }) {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={props.className}>
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="butt" strokeLinejoin="miter">
       <line x1="2" y1="12" x2="2.01" y2="12" />
       <line x1="6" y1="9" x2="6" y2="15" />
       <line x1="10" y1="6" x2="10" y2="18" />
@@ -82,89 +52,113 @@ export default function ModeSelector({
   framework,
 }: ModeSelectorProps) {
   return (
-    <Container className="py-12 space-y-10">
-      <header className="text-center space-y-4 max-w-2xl mx-auto">
-        {framework && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-xs text-surface-500 uppercase tracking-widest font-medium"
-          >
-            {framework}
-          </motion.p>
-        )}
-        <motion.h1
-          initial={{ opacity: 0, y: 8 }}
+    <div className="relative min-h-[80vh] py-12 sm:py-16 px-5 sm:px-8 md:px-12">
+      <div className="precision-grid" />
+      <div
+        className="absolute pointer-events-none opacity-70"
+        style={{
+          inset: 0,
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 30%, rgba(255, 77, 28, 0.10) 0%, transparent 60%)",
+        }}
+      />
+      <div className="crosshair hidden sm:block" style={{ top: "32px", left: "32px" }} />
+      <div className="crosshair hidden sm:block" style={{ top: "32px", right: "32px" }} />
+
+      <div className="relative max-w-3xl mx-auto z-10">
+        {/* Stamp */}
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl md:text-4xl font-bold tracking-tight"
+          className="flex items-center gap-3 mb-8 text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--ember)]"
+        >
+          <span className="w-1.5 h-1.5 bg-[var(--ember)] ember-pulse" />
+          <span>{framework ?? "Forge Assessment"}</span>
+          <span className="flex-1 h-px bg-[var(--surface-700)]" />
+          <span className="text-[var(--surface-500)]">/ Mode Select</span>
+        </motion.div>
+
+        {/* Title */}
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="font-display text-[14vw] sm:text-6xl md:text-7xl leading-[0.92] tracking-[-0.03em] text-[var(--foreground)] mb-5"
+          style={{ fontWeight: 500, fontVariationSettings: '"opsz" 144' }}
         >
           {title}
         </motion.h1>
+
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="text-surface-300 leading-relaxed"
+          className="text-[14px] sm:text-[15px] text-[var(--surface-300)] leading-relaxed max-w-xl mb-8"
         >
           {subtitle}
         </motion.p>
 
-        {/* Stats line */}
+        {/* Stats */}
         {questionCount !== undefined && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.18 }}
-            className="flex items-center justify-center gap-3 pt-2"
+            className="flex flex-wrap gap-x-6 gap-y-2 mb-12 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.22em] text-[var(--surface-400)]"
           >
-            <Stat icon={<IconList size={14} />} label={`${questionCount} questions`} />
-            <Divider />
-            <Stat icon={<IconClock />} label="No right answer" />
-            <Divider />
-            <Stat icon={<IconHeart />} label="Be honest" />
+            <span>
+              <span className="text-[var(--ember)]">{String(questionCount).padStart(2, "0")}</span>{" "}
+              Questions
+            </span>
+            <span className="text-[var(--surface-600)]">·</span>
+            <span>No right answer</span>
+            <span className="text-[var(--surface-600)]">·</span>
+            <span>Be specific</span>
           </motion.div>
         )}
-      </header>
 
-      {/* Mode picker label */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.25 }}
-        className="text-center"
-      >
-        <p className="text-xs text-surface-500 uppercase tracking-widest font-medium">
-          Pick how you want to take it
-        </p>
-      </motion.div>
+        {/* Mode picker label */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25 }}
+          className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--surface-500)] mb-4"
+        >
+          / Pick how you take it
+        </motion.p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-        <ModeCard
-          icon={<IconList />}
-          label="Classic"
-          title="Form with mic"
-          description="Answer one question at a time. Type your response or tap the mic to dictate. Fast and reliable."
-          estimate={estimateClassic}
-          delay={0.15}
-          onClick={() => onSelect("classic")}
-        />
-        <ModeCard
-          icon={<IconWaveform />}
-          label="Voice"
-          title="Hands-free"
-          description="Just talk. AI reads each question aloud and listens. No typing at all."
-          estimate={estimateVoice}
-          accent
-          delay={0.22}
-          onClick={() => onSelect("voice")}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-[var(--surface-700)]">
+          <ModeCard
+            icon={<IconList />}
+            index="A"
+            label="Classic"
+            title="Form with Mic"
+            description="Answer one question at a time. Type or dictate. Fast and reliable."
+            estimate={estimateClassic}
+            delay={0.15}
+            onClick={() => onSelect("classic")}
+            position="left"
+          />
+          <ModeCard
+            icon={<IconWaveform />}
+            index="B"
+            label="Voice"
+            title="Hands-Free"
+            description="Just talk. AI reads each question aloud and listens. No typing."
+            estimate={estimateVoice}
+            accent
+            delay={0.22}
+            onClick={() => onSelect("voice")}
+            position="right"
+          />
+        </div>
       </div>
-    </Container>
+    </div>
   );
 }
 
 function ModeCard({
   icon,
+  index,
   label,
   title,
   description,
@@ -172,8 +166,10 @@ function ModeCard({
   accent,
   delay,
   onClick,
+  position,
 }: {
   icon: React.ReactNode;
+  index: string;
   label: string;
   title: string;
   description: string;
@@ -181,65 +177,69 @@ function ModeCard({
   accent?: boolean;
   delay: number;
   onClick: () => void;
+  position: "left" | "right";
 }) {
   return (
     <motion.button
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      whileHover={{ y: -3 }}
       onClick={onClick}
-      className={`text-left p-6 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group ${
+      className={`group relative text-left p-6 sm:p-8 transition-colors cursor-pointer ${
+        position === "left"
+          ? "border-b md:border-b-0 md:border-r border-[var(--surface-700)]"
+          : ""
+      } ${
         accent
-          ? "border-accent-amber/40 bg-accent-amber/5 hover:border-accent-amber/60 hover:bg-accent-amber/10"
-          : "border-surface-700 bg-surface-800/50 hover:border-surface-600 hover:bg-surface-800/80"
+          ? "bg-[var(--ember-muted)] hover:bg-[var(--ember-muted)] hover:brightness-150"
+          : "hover:bg-[var(--surface-900)]/60"
       }`}
     >
-      {/* Subtle gradient glow on hover */}
-      <div
-        className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${
-          accent ? "bg-gradient-to-br from-accent-amber/10 via-transparent to-accent-purple/10" : "bg-gradient-to-br from-surface-700/30 to-transparent"
+      {/* Ember top rule on hover */}
+      <span
+        className={`absolute top-0 left-0 right-0 h-[2px] bg-[var(--ember)] origin-left transition-transform duration-300 ${
+          accent ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
         }`}
       />
 
-      <div className="relative flex items-start justify-between mb-5">
-        <div
-          className={`w-11 h-11 rounded-xl flex items-center justify-center ${
-            accent
-              ? "bg-accent-amber/15 text-accent-amber"
-              : "bg-surface-700/60 text-surface-300"
+      <div className="flex items-start justify-between mb-6">
+        <span
+          className={`text-[10px] font-mono uppercase tracking-[0.25em] ${
+            accent ? "text-[var(--ember)]" : "text-[var(--surface-500)] group-hover:text-[var(--ember)] transition-colors"
+          }`}
+        >
+          {index} / {label}
+        </span>
+        <span
+          className={`${
+            accent ? "text-[var(--ember)]" : "text-[var(--surface-500)] group-hover:text-[var(--ember)] transition-colors"
           }`}
         >
           {icon}
-        </div>
-        <span
-          className={`text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 rounded-full ${
-            accent
-              ? "bg-accent-amber/15 text-accent-amber"
-              : "bg-surface-700 text-surface-400"
-          }`}
-        >
-          {label}
         </span>
       </div>
-      <h2 className="relative text-xl font-semibold mb-2">{title}</h2>
-      <p className="relative text-sm text-surface-400 leading-relaxed mb-5">{description}</p>
-      <div className="relative flex items-center justify-between">
-        <p className="text-xs text-surface-500">{estimate}</p>
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={`transition-transform duration-300 group-hover:translate-x-1 ${accent ? "text-accent-amber" : "text-surface-500"}`}
+
+      <h2
+        className="font-display text-2xl sm:text-3xl tracking-[-0.02em] text-[var(--foreground)] mb-3"
+        style={{ fontWeight: 500 }}
+      >
+        {title}
+      </h2>
+      <p className="text-[13px] sm:text-[14px] text-[var(--surface-300)] leading-relaxed mb-6">
+        {description}
+      </p>
+
+      <div className="flex items-center justify-between pt-4 border-t border-dashed border-[var(--surface-700)]">
+        <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[var(--surface-500)]">
+          {estimate}
+        </span>
+        <span
+          className={`text-lg transition-transform ${
+            accent ? "text-[var(--ember)]" : "text-[var(--surface-500)] group-hover:text-[var(--ember)]"
+          } group-hover:translate-x-1`}
         >
-          <line x1="5" y1="12" x2="19" y2="12" />
-          <polyline points="12 5 19 12 12 19" />
-        </svg>
+          →
+        </span>
       </div>
     </motion.button>
   );

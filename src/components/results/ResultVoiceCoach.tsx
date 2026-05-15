@@ -47,7 +47,7 @@ function IconSpeaker({ size = 22, className = "" }: { size?: number; className?:
 
 function IconX({ size = 18, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="butt" strokeLinejoin="miter" className={className}>
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
@@ -57,7 +57,7 @@ function IconX({ size = 18, className = "" }: { size?: number; className?: strin
 function IconStop({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <rect x="6" y="6" width="12" height="12" rx="2" />
+      <rect x="6" y="6" width="12" height="12" />
     </svg>
   );
 }
@@ -66,71 +66,73 @@ function IconStop({ size = 16, className = "" }: { size?: number; className?: st
 
 function Visualizer({
   state,
-  accentColor,
 }: {
   state: "idle" | "connecting" | "user" | "agent" | "ready";
-  accentColor: string;
 }) {
   const isUser = state === "user";
   const isAgent = state === "agent";
   const isActive = isUser || isAgent;
-  const color = isUser ? "rgb(248, 113, 113)" : isAgent ? accentColor : accentColor;
 
   return (
-    <div className="relative w-48 h-48 flex items-center justify-center">
+    <div className="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center">
+      {/* Outer dial */}
       <motion.div
-        className="absolute inset-0 rounded-full blur-2xl"
-        animate={{
-          opacity: isActive ? [0.4, 0.7, 0.4] : 0.2,
-          scale: isActive ? [1, 1.1, 1] : 1,
-        }}
-        transition={{ duration: 1.6, repeat: isActive ? Infinity : 0 }}
-        style={{ background: `radial-gradient(circle, ${color} 0%, transparent 65%)` }}
-      />
-      {[0, 1, 2, 3].map((i) => (
+        className="absolute inset-0"
+        animate={{ rotate: isActive ? 360 : 0 }}
+        transition={{ duration: 8, repeat: isActive ? Infinity : 0, ease: "linear" }}
+      >
+        <svg width="100%" height="100%" viewBox="0 0 100 100">
+          <circle
+            cx="50"
+            cy="50"
+            r="48"
+            fill="none"
+            stroke="var(--surface-700)"
+            strokeWidth="1"
+            strokeDasharray="2 3"
+          />
+        </svg>
+      </motion.div>
+
+      {/* Pulse rings — only when active */}
+      {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="absolute rounded-full border-2"
-          style={{ borderColor: `${color}40` }}
+          className="absolute inset-6 border border-[var(--ember)]/45"
           animate={
             isActive
-              ? { scale: [0.85, 1.45, 0.85], opacity: [0, 0.5, 0] }
+              ? { scale: [1, 1.35], opacity: [0.6, 0] }
               : { scale: 1, opacity: 0 }
           }
           transition={{
-            duration: 2.4,
+            duration: 2.2,
             repeat: isActive ? Infinity : 0,
-            delay: i * 0.6,
+            delay: i * 0.7,
             ease: "easeOut",
           }}
-          initial={{ width: 150, height: 150 }}
         />
       ))}
+
+      {/* Center plate */}
       <motion.div
-        className="absolute rounded-full"
-        style={{
-          width: 130,
-          height: 130,
-          border: `1px solid ${color}55`,
-          background: `radial-gradient(circle at 50% 30%, ${color}22, transparent 70%)`,
-        }}
-        animate={{ scale: isActive ? [1, 1.03, 1] : 1 }}
-        transition={{ duration: 1.6, repeat: isActive ? Infinity : 0 }}
-      />
-      <motion.div
-        className="relative w-24 h-24 rounded-full flex items-center justify-center backdrop-blur-sm"
-        style={{
-          background: isActive
-            ? `radial-gradient(circle at 50% 30%, ${color}30, ${color}10)`
-            : "linear-gradient(180deg, rgba(42,42,58,0.6), rgba(16,16,24,0.8))",
+        className="relative w-20 h-20 sm:w-24 sm:h-24 border-2 border-[var(--ember)] flex items-center justify-center bg-[#0a0a0c]"
+        animate={{
+          scale: isUser ? [1, 1.06, 1] : isAgent ? [1, 1.03, 1] : 1,
           boxShadow: isActive
-            ? `0 0 40px ${color}55, inset 0 0 30px ${color}33`
-            : "0 0 20px rgba(0,0,0,0.4)",
+            ? [
+                "0 0 24px rgba(255, 77, 28, 0.35), inset 0 0 16px rgba(255, 77, 28, 0.18)",
+                "0 0 36px rgba(255, 77, 28, 0.55), inset 0 0 22px rgba(255, 77, 28, 0.28)",
+                "0 0 24px rgba(255, 77, 28, 0.35), inset 0 0 16px rgba(255, 77, 28, 0.18)",
+              ]
+            : "0 0 0px rgba(255, 77, 28, 0)",
         }}
-        animate={{ scale: state === "user" ? [1, 1.06, 1] : state === "agent" ? [1, 1.03, 1] : 1 }}
-        transition={{ duration: 1.2, repeat: isActive ? Infinity : 0 }}
+        transition={{ duration: 1.4, repeat: isActive ? Infinity : 0 }}
       >
-        {isAgent ? <IconSpeaker size={32} className="text-foreground" /> : <IconMic size={32} className="text-foreground" />}
+        {isAgent ? (
+          <IconSpeaker size={30} className="text-[var(--ember)]" />
+        ) : (
+          <IconMic size={30} className={isUser ? "text-[var(--ember)]" : "text-[var(--surface-300)]"} />
+        )}
       </motion.div>
     </div>
   );
@@ -138,7 +140,7 @@ function Visualizer({
 
 /* ── Main component ─────────────────────────────────────────────────── */
 
-export default function ResultVoiceCoach({ testType, result, accentColor = "var(--color-accent-amber)" }: ResultVoiceCoachProps) {
+export default function ResultVoiceCoach({ testType, result }: ResultVoiceCoachProps) {
   const [open, setOpen] = useState(false);
   const [transcript, setTranscript] = useState<Turn[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -149,7 +151,6 @@ export default function ResultVoiceCoach({ testType, result, accentColor = "var(
     transcriptEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [transcript]);
 
-  // Stop session if modal closes
   useEffect(() => {
     if (!open) {
       voiceAgent.stop();
@@ -217,7 +218,6 @@ A short, warm greeting acknowledging their result. Something like "Hey, so you c
   }, [testType, result, voiceAgent]);
 
   const endSession = useCallback(() => {
-    // Log the full coach transcript before closing
     if (transcript.length > 0) {
       logEvent("voice_coach_session", {
         testType,
@@ -240,27 +240,31 @@ A short, warm greeting acknowledging their result. Something like "Hey, so you c
     ? "ready"
     : "idle";
 
+  const statusLabel =
+    !voiceAgent.connected && !voiceAgent.connecting
+      ? "Tap start to talk"
+      : voiceAgent.connecting
+      ? "Connecting…"
+      : voiceAgent.userSpeaking
+      ? "Listening to you"
+      : voiceAgent.agentSpeaking
+      ? "Coach is talking"
+      : "Your turn";
+
   return (
     <>
-      {/* Floating trigger button (bottom-left to avoid conflict with chat bubble at bottom-right) */}
+      {/* Floating trigger button — industrial cut-btn */}
       <motion.button
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        whileTap={{ scale: 0.95 }}
-        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.97 }}
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full shadow-2xl border font-semibold text-sm transition-all"
-        style={{
-          background: `linear-gradient(135deg, ${accentColor}, var(--color-accent-purple))`,
-          borderColor: accentColor,
-          color: "white",
-          boxShadow: `0 8px 32px -8px ${accentColor}88`,
-        }}
+        className="cut-btn fixed bottom-5 left-5 sm:bottom-6 sm:left-6 z-40"
         aria-label="Open voice coach"
       >
-        <IconMic size={18} />
-        <span>Talk to coach</span>
+        <IconMic size={15} />
+        <span>Talk to Coach</span>
       </motion.button>
 
       {/* Modal overlay */}
@@ -270,60 +274,51 @@ A short, warm greeting acknowledging their result. Something like "Hey, so you c
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
             onClick={(e) => {
-              // Close only when clicking the backdrop, not the modal content
               if (e.target === e.currentTarget) setOpen(false);
             }}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 20 }}
+              initial={{ opacity: 0, scale: 0.97, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 20 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative w-full max-w-xl rounded-3xl overflow-hidden border border-surface-700 bg-surface-900 shadow-2xl"
+              exit={{ opacity: 0, scale: 0.97, y: 12 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="relative w-full max-w-xl border border-[var(--surface-600)] bg-[#0c0c10] overflow-hidden"
               style={{
-                background:
-                  "linear-gradient(180deg, rgba(22,22,31,0.95) 0%, rgba(13,13,20,0.98) 100%)",
+                boxShadow: "0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255, 77, 28, 0.06)",
               }}
             >
-              {/* Subtle aurora background */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <motion.div
-                  className="absolute rounded-full blur-3xl"
-                  style={{
-                    width: 400,
-                    height: 400,
-                    top: "-20%",
-                    left: "-10%",
-                    background: `radial-gradient(circle, ${accentColor}33, transparent 65%)`,
-                  }}
-                  animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
-                  transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <motion.div
-                  className="absolute rounded-full blur-3xl"
-                  style={{
-                    width: 350,
-                    height: 350,
-                    bottom: "-20%",
-                    right: "-10%",
-                    background: "radial-gradient(circle, rgba(168,85,247,0.18), transparent 65%)",
-                  }}
-                  animate={{ x: [0, -30, 0], y: [0, -20, 0] }}
-                  transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-                />
-              </div>
+              {/* Crosshair corners */}
+              <div className="crosshair" style={{ top: "-6px", left: "-6px" }} />
+              <div className="crosshair" style={{ top: "-6px", right: "-6px" }} />
+              <div className="crosshair" style={{ bottom: "-6px", left: "-6px" }} />
+              <div className="crosshair" style={{ bottom: "-6px", right: "-6px" }} />
 
-              {/* Header */}
-              <div className="relative px-6 py-4 flex items-center justify-between border-b border-surface-800/60">
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-surface-500 font-medium">Voice Coach</p>
-                  <p className="text-sm font-semibold mt-0.5">Talk about your {TEST_LABELS[testType] ?? testType} result</p>
+              {/* Heat from below */}
+              <div
+                className="absolute inset-0 pointer-events-none opacity-70"
+                style={{
+                  background:
+                    "radial-gradient(ellipse 60% 50% at 50% 60%, rgba(255, 77, 28, 0.10) 0%, transparent 60%)",
+                }}
+              />
+
+              {/* Header stamp */}
+              <div className="relative px-5 sm:px-6 py-3 flex items-center justify-between border-b border-[var(--surface-700)] bg-[var(--surface-900)]/80">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span
+                    className={`w-1.5 h-1.5 flex-shrink-0 ${
+                      voiceAgent.connected ? "bg-[var(--ember)] ember-pulse" : "bg-[var(--surface-600)]"
+                    }`}
+                  />
+                  <p className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.22em] sm:tracking-[0.25em] text-[var(--ember)] truncate">
+                    Voice Coach · {TEST_LABELS[testType] ?? testType}
+                  </p>
                 </div>
                 <button
                   onClick={endSession}
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-surface-400 hover:text-foreground hover:bg-surface-800 transition-colors"
+                  className="w-8 h-8 flex items-center justify-center border border-[var(--surface-700)] text-[var(--surface-400)] hover:text-[var(--foreground)] hover:border-[var(--ember)] transition-colors"
                   aria-label="Close"
                 >
                   <IconX />
@@ -331,42 +326,38 @@ A short, warm greeting acknowledging their result. Something like "Hey, so you c
               </div>
 
               {/* Visualizer + status */}
-              <div className="relative px-6 pt-6 pb-3 flex flex-col items-center">
-                <Visualizer state={vizState} accentColor={accentColor} />
+              <div className="relative px-6 pt-7 pb-3 flex flex-col items-center">
+                <Visualizer state={vizState} />
                 <motion.p
                   key={vizState}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 text-base font-medium"
+                  className="mt-5 text-[11px] sm:text-[12px] font-mono uppercase tracking-[0.22em] text-[var(--foreground)]"
                 >
-                  {!voiceAgent.connected && !voiceAgent.connecting
-                    ? "Tap Start to talk"
-                    : voiceAgent.connecting
-                    ? "Connecting…"
-                    : voiceAgent.userSpeaking
-                    ? "Listening to you"
-                    : voiceAgent.agentSpeaking
-                    ? "Coach is talking"
-                    : "Your turn"}
+                  {statusLabel}
                 </motion.p>
               </div>
 
               {/* Live transcript */}
-              <div className="relative mx-6 mb-4 border border-surface-800 rounded-xl bg-surface-900/40 overflow-hidden">
-                <div className="px-3 py-2 border-b border-surface-800/60 flex items-center justify-between">
+              <div className="relative mx-5 sm:mx-6 mb-4 border border-[var(--surface-700)] bg-[var(--surface-900)]/70 overflow-hidden">
+                <div className="px-3 py-2 border-b border-[var(--surface-700)] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        voiceAgent.connected ? "bg-emerald-400 animate-pulse" : "bg-surface-600"
+                      className={`w-1.5 h-1.5 ${
+                        voiceAgent.connected ? "bg-[var(--ember)]" : "bg-[var(--surface-600)]"
                       }`}
                     />
-                    <p className="text-[10px] uppercase tracking-widest text-surface-500 font-semibold">Transcript</p>
+                    <p className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--surface-400)]">
+                      Transcript
+                    </p>
                   </div>
-                  <span className="text-[10px] text-surface-600 tabular-nums">{transcript.length}</span>
+                  <span className="text-[10px] font-mono text-[var(--surface-500)] tabular-nums">
+                    {String(transcript.length).padStart(2, "0")}
+                  </span>
                 </div>
                 <div className="max-h-56 overflow-y-auto p-3 space-y-2">
                   {transcript.length === 0 ? (
-                    <p className="text-xs text-surface-500 text-center py-6">
+                    <p className="text-[11px] sm:text-[12px] font-mono uppercase tracking-[0.2em] text-[var(--surface-500)] text-center py-6">
                       {voiceAgent.connected ? "Waiting for the coach…" : "Tap Start, then talk naturally"}
                     </p>
                   ) : (
@@ -379,10 +370,10 @@ A short, warm greeting acknowledging their result. Something like "Hey, so you c
                           className={`flex ${t.role === "user" ? "justify-end" : "justify-start"}`}
                         >
                           <div
-                            className={`max-w-[85%] rounded-xl px-3 py-1.5 text-sm leading-relaxed ${
+                            className={`max-w-[88%] px-3 py-2 text-[13px] leading-relaxed ${
                               t.role === "user"
-                                ? "bg-accent-amber/10 border border-accent-amber/20"
-                                : "bg-surface-800/80 border border-surface-700 text-surface-200"
+                                ? "bg-[var(--ember-muted)] border-l-2 border-[var(--ember)] text-[var(--foreground)]"
+                                : "bg-[var(--surface-800)] border-l-2 border-[var(--surface-600)] text-[var(--surface-200)]"
                             }`}
                           >
                             {t.text}
@@ -396,30 +387,22 @@ A short, warm greeting acknowledging their result. Something like "Hey, so you c
               </div>
 
               {error && (
-                <p className="mx-6 mb-3 text-xs text-red-400 text-center">{error}</p>
+                <p className="mx-6 mb-3 text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--ember-hot)] text-center">
+                  {error}
+                </p>
               )}
 
               {/* Action buttons */}
-              <div className="relative px-6 pb-6 flex justify-center gap-2">
+              <div className="relative px-5 sm:px-6 pb-6 flex justify-center gap-3">
                 {!voiceAgent.connected && !voiceAgent.connecting ? (
-                  <button
-                    onClick={startSession}
-                    className="px-6 py-2.5 rounded-xl font-semibold text-white text-sm flex items-center gap-2 transition-all hover:brightness-110"
-                    style={{
-                      background: `linear-gradient(135deg, ${accentColor}, var(--color-accent-purple))`,
-                      boxShadow: `0 4px 16px -4px ${accentColor}88`,
-                    }}
-                  >
-                    <IconMic size={16} />
-                    Start
+                  <button onClick={startSession} className="cut-btn">
+                    <IconMic size={14} />
+                    <span>Start</span>
                   </button>
                 ) : (
-                  <button
-                    onClick={endSession}
-                    className="px-6 py-2.5 rounded-xl bg-surface-800 border border-surface-700 text-surface-200 font-medium text-sm hover:bg-surface-700 transition-colors flex items-center gap-2"
-                  >
-                    <IconStop size={14} />
-                    End call
+                  <button onClick={endSession} className="cut-btn cut-btn-ghost">
+                    <IconStop size={12} />
+                    <span>End Call</span>
                   </button>
                 )}
               </div>

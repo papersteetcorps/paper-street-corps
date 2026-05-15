@@ -27,21 +27,12 @@ function AnimatedCounter({ target, delay }: { target: number; delay: number }) {
   return <motion.span>{rounded}</motion.span>;
 }
 
-const ACCENT_MAP: Record<string, string> = {
-  blue: "var(--color-accent-blue)",
-  purple: "var(--color-accent-purple)",
-  teal: "var(--color-accent-teal)",
-  amber: "var(--color-accent-amber)",
-};
-
 export default function TypeCard({
   typeCode,
   subtitle,
   confidence,
-  accentColor = "blue",
   delay = 0,
 }: TypeCardProps) {
-  const color = ACCENT_MAP[accentColor] ?? accentColor;
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
@@ -50,89 +41,81 @@ export default function TypeCard({
   }, [delay]);
 
   return (
-    <div className="relative py-10">
-      {/* Background glow pulse on reveal */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={revealed ? { opacity: 1, scale: 1 } : {}}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 60% 80% at 50% 50%, ${color}15 0%, transparent 70%)`,
-        }}
-      />
+    <div className="relative border border-[var(--surface-600)] bg-[#0c0c10] overflow-hidden">
+      {/* Crosshairs */}
+      <div className="crosshair" style={{ top: "-6px", left: "-6px" }} />
+      <div className="crosshair" style={{ top: "-6px", right: "-6px" }} />
+      <div className="crosshair" style={{ bottom: "-6px", left: "-6px" }} />
+      <div className="crosshair" style={{ bottom: "-6px", right: "-6px" }} />
 
-      {/* Ember line above result */}
+      {/* Plate header */}
       <motion.div
-        initial={{ scaleX: 0, opacity: 0 }}
-        animate={revealed ? { scaleX: 1, opacity: 1 } : {}}
-        transition={{ duration: 0.6, delay: delay + 0.1 }}
-        className="mx-auto mb-8 h-px w-32"
-        style={{
-          background: "linear-gradient(90deg, transparent, rgba(232, 98, 42, 0.6), rgba(124, 58, 237, 0.6), transparent)",
-        }}
-      />
+        initial={{ opacity: 0 }}
+        animate={revealed ? { opacity: 1 } : {}}
+        transition={{ duration: 0.4, delay }}
+        className="flex items-center justify-between gap-3 px-4 sm:px-6 py-2.5 sm:py-3 border-b border-[var(--surface-700)] bg-[var(--surface-900)]/80 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.18em] sm:tracking-[0.22em] text-[var(--surface-400)]"
+      >
+        <span className="flex items-center gap-2 min-w-0">
+          <span className="w-1.5 h-1.5 bg-[var(--ember)] ember-pulse flex-shrink-0" />
+          <span className="truncate">Forge Identity Plate · Issued {new Date().toLocaleDateString("en-US", { year: "numeric", month: "short" })}</span>
+        </span>
+        {confidence !== undefined && (
+          <span className="text-[var(--ember)] flex-shrink-0 tabular-nums">
+            <AnimatedCounter target={confidence * 100} delay={delay + 0.8} />% match
+          </span>
+        )}
+      </motion.div>
 
-      <div className="relative text-center space-y-4">
-        {/* Pre-reveal label */}
+      {/* Body */}
+      <div className="relative px-5 sm:px-8 md:px-10 py-10 sm:py-12 md:py-16">
+        {/* Heat orb backdrop */}
+        <div
+          className="absolute pointer-events-none opacity-80"
+          style={{
+            inset: 0,
+            background:
+              "radial-gradient(ellipse 60% 70% at 50% 50%, rgba(255, 77, 28, 0.10) 0%, transparent 65%)",
+          }}
+        />
+
         <motion.p
           initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={revealed ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, delay }}
-          className="text-xs text-surface-500 uppercase tracking-widest"
+          className="relative text-[10px] font-mono uppercase tracking-[0.28em] text-[var(--ember)] mb-4"
         >
-          You are
+          You are —
         </motion.p>
 
-        {/* Type code: dramatic scale-up reveal */}
         <motion.h2
-          initial={{ opacity: 0, scale: 0.6, filter: "blur(12px)" }}
+          initial={{ opacity: 0, scale: 0.85, filter: "blur(10px)" }}
           animate={revealed ? { opacity: 1, scale: 1, filter: "blur(0px)" } : {}}
           transition={{ duration: 0.7, delay: delay + 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-7xl md:text-9xl font-bold tracking-tight"
+          className="relative font-display text-[20vw] sm:text-[14vw] md:text-[10rem] leading-[0.82] tracking-[-0.05em] text-[var(--ember)]"
           style={{
-            color,
-            textShadow: `0 0 60px ${color}30, 0 0 120px ${color}15`,
+            fontWeight: 500,
+            fontVariationSettings: '"opsz" 144, "SOFT" 0',
+            textShadow: "0 0 50px rgba(255, 77, 28, 0.4), 0 0 100px rgba(255, 77, 28, 0.2)",
           }}
         >
           {typeCode}
         </motion.h2>
 
-        {/* Subtitle */}
         {subtitle && (
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={revealed ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: delay + 0.5 }}
-            className="text-xl text-surface-300"
+            className="relative font-display text-xl sm:text-2xl md:text-3xl italic font-light text-[var(--foreground)] mt-4"
+            style={{ fontVariationSettings: '"opsz" 144, "SOFT" 100' }}
           >
             {subtitle}
           </motion.p>
         )}
-
-        {/* Confidence */}
-        {confidence !== undefined && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={revealed ? { opacity: 1 } : {}}
-            transition={{ duration: 0.4, delay: delay + 0.7 }}
-            className="text-surface-500 text-sm pt-2"
-          >
-            <AnimatedCounter target={confidence * 100} delay={delay + 0.8} />% match
-          </motion.p>
-        )}
       </div>
 
-      {/* Ember line below result */}
-      <motion.div
-        initial={{ scaleX: 0, opacity: 0 }}
-        animate={revealed ? { scaleX: 1, opacity: 1 } : {}}
-        transition={{ duration: 0.6, delay: delay + 0.6 }}
-        className="mx-auto mt-8 h-px w-32"
-        style={{
-          background: "linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.6), rgba(232, 98, 42, 0.6), transparent)",
-        }}
-      />
+      {/* Bottom ember seam */}
+      <div className="h-[2px] bg-[var(--ember)]" />
     </div>
   );
 }

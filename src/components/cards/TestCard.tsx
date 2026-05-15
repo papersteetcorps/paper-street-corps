@@ -7,78 +7,75 @@ interface TestCardProps {
   title: string;
   description: string;
   href: string;
-  accentColor: string;
-  accentMuted: string;
-  icon: string;
+  accentColor?: string;
+  accentMuted?: string;
+  icon?: string;
   badge?: string;
   delay?: number;
+  index?: string | number;
 }
 
 export default function TestCard({
   title,
   description,
   href,
-  accentColor,
-  accentMuted,
-  icon,
+  icon = "◈",
   badge,
   delay = 0,
+  index,
 }: TestCardProps) {
+  const idx =
+    index !== undefined
+      ? typeof index === "number"
+        ? String(index).padStart(2, "0")
+        : index
+      : "—";
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
+      transition={{ duration: 0.35, delay }}
     >
-      <Link href={href} className="group block h-full">
-        <div className="card-glow gradient-border relative h-full border border-surface-700 rounded-2xl p-6 transition-all duration-300 group-hover:border-transparent overflow-hidden flex flex-col bg-surface-900/40">
-          {/* Hover glow */}
-          <div
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            style={{ background: accentMuted }}
-          />
+      <Link
+        href={href}
+        className="group block relative border border-[var(--surface-700)] bg-[var(--surface-900)]/60 hover:border-[var(--ember)] transition-colors h-full"
+      >
+        {/* Top ember rule on hover */}
+        <span className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--ember)] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
 
-          <div className="relative flex flex-col flex-1 space-y-4">
-            {/* Icon + badge row */}
-            <div className="flex items-start justify-between">
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center text-lg font-mono"
-                style={{ background: accentMuted, color: accentColor }}
-              >
-                {icon}
-              </div>
-              {badge && (
-                <span
-                  className="text-xs font-mono px-2 py-0.5 rounded-md border"
-                  style={{ color: accentColor, borderColor: `${accentColor}30`, background: `${accentMuted}` }}
-                >
-                  {badge}
-                </span>
-              )}
-            </div>
+        <div className="p-6 flex flex-col h-full">
+          <div className="flex items-start justify-between mb-6">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--surface-500)] group-hover:text-[var(--ember)] transition-colors">
+              {idx} / Test
+            </span>
+            {badge && (
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] px-1.5 py-0.5 border border-[var(--ember)]/40 text-[var(--ember)]">
+                {badge}
+              </span>
+            )}
+          </div>
 
-            {/* Content */}
-            <div className="flex-1">
-              <h3 className="font-display text-base font-semibold group-hover:text-foreground transition-colors">
-                {title}
-              </h3>
-              <p className="mt-2 text-sm text-surface-400 leading-relaxed">
-                {description}
-              </p>
-            </div>
-
-            {/* CTA */}
-            <span
-              className="inline-block text-sm font-medium transition-all group-hover:translate-x-1"
-              style={{ color: accentColor }}
+          <div className="flex items-baseline gap-3 mb-3">
+            <span className="font-mono text-2xl text-[var(--ember)]">{icon}</span>
+            <h3
+              className="font-display text-2xl tracking-[-0.02em] text-[var(--foreground)] group-hover:text-[var(--ember)] transition-colors"
+              style={{ fontWeight: 500 }}
             >
-              Take Test &rarr;
+              {title}
+            </h3>
+          </div>
+
+          <p className="text-[14px] text-[var(--surface-300)] leading-relaxed flex-1">{description}</p>
+
+          <div className="flex items-center justify-between mt-6 pt-5 border-t border-dashed border-[var(--surface-700)]">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--surface-500)] group-hover:text-[var(--foreground)] transition-colors">
+              Begin →
+            </span>
+            <span className="text-[var(--surface-600)] group-hover:text-[var(--ember)] group-hover:translate-x-1 transition-all">
+              →
             </span>
           </div>
-          <div
-            className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(234, 88, 12, 0.6), rgba(124, 58, 237, 0.6), transparent)" }}
-          />
         </div>
       </Link>
     </motion.div>

@@ -3,8 +3,8 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { tests } from "@/data/offerings";
-import TestCard from "@/components/cards/TestCard";
-import Container from "@/components/ui/Container";
+import CountUp from "@/components/motion/CountUp";
+import WordsReveal from "@/components/motion/WordsReveal";
 
 const RESULT_PREVIEW = {
   type: "INTJ",
@@ -12,495 +12,1057 @@ const RESULT_PREVIEW = {
   oneLiner: "You redesign the model, never your conviction.",
   strengths: ["Strategic thinking", "Independent analysis", "Long-range vision"],
   challenges: ["Emotional blind spots", "Impatience with process", "Over-reliance on logic"],
-  howYouThink: "You process the world through internal models. When something doesn't fit, you don't adjust your expectations. You rebuild the framework. Most people experience this as stubbornness. You experience it as integrity.",
-  whatPeopleGetWrong: "They think you don't care. You do. You just don't perform it. Your loyalty shows up in problem-solving, not in words. When you fix something for someone without being asked, that's your version of love.",
-  burnoutCycle: "You burn out silently. First you over-optimize. Then you stop sleeping properly. Then you lose interest in the thing you were obsessed with last week. By the time anyone notices, you've already mentally left. Recovery requires solitude and a new problem worth solving.",
-  whereYouExcel: "Complex systems with clear goals. Give you a hard problem, enough autonomy, and people who can execute without hand-holding. You'll deliver something better than what was asked for. Strategy, architecture, long-term planning, debugging systems that nobody else can see through.",
-  whereYouStruggle: "Anything requiring emotional performance. Small talk, team morale, giving feedback that's gentle instead of accurate. You also struggle with delegation because nobody meets your internal standard on the first try.",
-  howToGrow: "Stop waiting for people to earn your trust before you let them in. Start explaining your thinking out loud, even when it feels inefficient. The gap between your clarity and everyone else's confusion is the problem you actually need to solve.",
-  atWork: "You're the one who sees the flaw in the plan three steps ahead. You won't say it in the meeting. You'll send a message after with a better version. You'd rather be right than credited.",
-  inRelationships: "You show love through competence. You fix things, optimize things, plan things. The people closest to you sometimes wish you'd just sit with them instead of solving their problems. Learning to be present without a purpose is your real edge.",
+  howYouThink:
+    "You process the world through internal models. When something doesn't fit, you don't adjust your expectations. You rebuild the framework. Most people experience this as stubbornness. You experience it as integrity.",
+  whatPeopleGetWrong:
+    "They think you don't care. You do. You just don't perform it. Your loyalty shows up in problem-solving, not in words. When you fix something for someone without being asked, that's your version of love.",
+  burnoutCycle:
+    "You burn out silently. First you over-optimize. Then you stop sleeping properly. Then you lose interest in the thing you were obsessed with last week. By the time anyone notices, you've already mentally left.",
   crossFramework: [
-    { framework: "Enneagram", result: "Type 5w6", color: "text-accent-amber" },
-    { framework: "Temperament", result: "Melancholic", color: "text-accent-purple" },
-    { framework: "Moral Alignment", result: "Lawful Neutral", color: "text-accent-teal" },
-    { framework: "Energy Profile", result: "SbjA", color: "text-accent-blue" },
+    { framework: "Enneagram", result: "5w6" },
+    { framework: "Temperament", result: "Melancholic" },
+    { framework: "Moral Align.", result: "Lawful N." },
+    { framework: "Energy", result: "SbjA" },
   ],
 };
 
+const enterEase: [number, number, number, number] = [0.2, 0.85, 0.3, 1];
+const VIEWPORT = { once: true, margin: "-80px" } as const;
+
 export default function HomePage() {
   return (
-    <div className="pb-32">
+    <div className="relative">
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* HERO — editorial magazine cover, typographic                     */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <section className="relative min-h-[92vh] flex flex-col overflow-hidden border-b border-[var(--surface-700)]">
+        <div className="precision-grid" />
 
-      {/* ═══════════════ HERO ═══════════════ */}
-      <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        <div className="aurora" aria-hidden="true">
-          <div className="orb orb-a" />
-          <div className="orb orb-b" />
-          <div className="orb orb-c" />
-          <div className="orb orb-d" />
-        </div>
-        <div className="aurora-vignette" aria-hidden="true" />
-        <div className="aurora-line" aria-hidden="true" />
-        <div className="dot-grid" aria-hidden="true" />
-        <Container>
-          <section className="relative z-10 text-center max-w-4xl mx-auto space-y-10">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              className="space-y-6"
-            >
-              <h1 className="font-display text-5xl sm:text-6xl md:text-8xl font-bold leading-[1.0] tracking-tight">
-                Figure yourself out.
-              </h1>
-              <p className="text-2xl md:text-3xl text-surface-300 font-medium">
-                Then do something about it.
-              </p>
-            </motion.div>
+        {/* Ambient heat: large soft ember radial behind the type */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: "10%",
+            right: "-20%",
+            width: "85vw",
+            height: "85vw",
+            maxWidth: "1100px",
+            maxHeight: "1100px",
+            background:
+              "radial-gradient(circle at center, rgba(255, 77, 28, 0.14) 0%, transparent 60%)",
+            filter: "blur(60px)",
+          }}
+        />
+        {/* Top stamp — full width thin bar */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 flex items-center justify-between gap-3 px-5 sm:px-8 md:px-12 py-3 border-b border-[var(--surface-700)] text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.22em] sm:tracking-[0.28em]"
+        >
+          <span className="flex items-center gap-2 text-[var(--ember)] min-w-0">
+            <span className="w-1.5 h-1.5 bg-[var(--ember)] ember-pulse flex-shrink-0" />
+            <span className="truncate">Live · v0.6 / Specimen No. 0001</span>
+          </span>
+          <span className="hidden sm:inline text-[var(--surface-500)] flex-shrink-0">
+            Vol. 01 — 2026
+          </span>
+        </motion.div>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-base md:text-lg text-surface-400 max-w-2xl mx-auto leading-relaxed"
+        {/* Main editorial grid */}
+        <div className="relative z-10 flex-1 grid grid-cols-12 px-5 sm:px-8 md:px-12 py-10 sm:py-14 md:py-16 gap-y-10 md:gap-x-8">
+          {/* LEFT — typographic mass */}
+          <div className="col-span-12 md:col-span-8 flex flex-col justify-center">
+            <h1
+              className="font-display leading-[0.84] tracking-[-0.045em] text-[var(--foreground)]"
+              style={{ fontWeight: 500, fontVariationSettings: '"opsz" 144, "SOFT" 0' }}
             >
-              Forge uses 6 research-backed psychological frameworks to map who you are
-              from your real experiences, not multiple-choice guesses.
-              For individuals who want clarity. For teams that want to work better.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
-              className="flex flex-wrap justify-center gap-4 pt-4"
-            >
-              <Link
-                href="/cjte"
-                className="bg-accent-blue hover:brightness-110 text-white font-semibold px-10 py-4 rounded-2xl transition-all text-base shadow-lg shadow-accent-blue/25"
+              {/* Line 1 — "Figure" solid */}
+              <motion.span
+                initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{ duration: 0.55, delay: 0.05, ease: enterEase }}
+                className="block text-[16vw] sm:text-[14vw] md:text-[11vw] lg:text-[10rem]"
               >
-                Take the assessment
-              </Link>
-              <Link
-                href="mailto:admin@forge.com"
-                className="bg-surface-800/60 hover:bg-surface-700/60 text-surface-300 font-medium px-10 py-4 rounded-2xl transition-colors text-base border border-surface-700 backdrop-blur-sm"
-              >
-                Join the waitlist
-              </Link>
-            </motion.div>
+                Figure
+              </motion.span>
 
-            {/* Academic credibility */}
+              {/* Line 2 — "yourself" outlined (text-stroke trick) */}
+              <motion.span
+                initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{ duration: 0.55, delay: 0.15, ease: enterEase }}
+                className="block text-[16vw] sm:text-[14vw] md:text-[11vw] lg:text-[10rem] italic font-light"
+                style={{
+                  color: "transparent",
+                  WebkitTextStroke: "1.5px rgba(245, 245, 247, 0.85)",
+                  paintOrder: "stroke fill",
+                  fontVariationSettings: '"opsz" 144, "SOFT" 100',
+                }}
+              >
+                yourself
+              </motion.span>
+
+              {/* Line 3 — "out." ember italic, the punch */}
+              <motion.span
+                initial={{ opacity: 0, y: 24, filter: "blur(8px)", scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+                transition={{ duration: 0.65, delay: 0.25, ease: enterEase }}
+                className="block text-[20vw] sm:text-[17vw] md:text-[14vw] lg:text-[13rem] italic font-light text-[var(--ember)]"
+                style={{
+                  fontVariationSettings: '"opsz" 144, "SOFT" 100',
+                  textShadow:
+                    "0 0 50px rgba(255, 77, 28, 0.45), 0 0 100px rgba(255, 77, 28, 0.2)",
+                }}
+              >
+                out
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.4 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.7, ease: [0.2, 1.4, 0.4, 1] }}
+                  className="inline-block"
+                >
+                  .
+                </motion.span>
+              </motion.span>
+            </h1>
+
+            {/* CTAs anchor directly under the headline */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap justify-center gap-x-6 gap-y-3 pt-6"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.55 }}
+              className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-4 mt-10 sm:mt-12"
             >
-              {["Jungian cognitive function theory", "Socionics Model A", "Enneagram (Ichazo & Naranjo)"].map((framework) => (
-                <span key={framework} className="text-sm text-surface-300 px-4 py-2 rounded-xl border border-surface-700 bg-surface-800/30 backdrop-blur-sm">
-                  {framework}
+              <Link href="/cjte" className="cut-btn">
+                <span>Open the Assessment</span>
+                <span>→</span>
+              </Link>
+              <Link href="#how" className="cut-btn cut-btn-ghost">
+                <span>How it works</span>
+              </Link>
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[var(--surface-500)] sm:ml-2">
+                ~5 min · no login · free
+              </span>
+            </motion.div>
+          </div>
+
+          {/* RIGHT — live specimen card (the product showing itself) */}
+          <motion.aside
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.35, ease: enterEase }}
+            className="col-span-12 md:col-span-4 flex flex-col justify-center gap-5 md:pl-6 md:border-l md:border-[var(--surface-700)]"
+          >
+            <div className="relative border border-[var(--surface-600)] bg-[var(--surface-900)]/70 backdrop-blur-sm">
+              {/* Corner crosshairs */}
+              <span className="absolute -top-px -left-px w-2.5 h-2.5 border-l border-t border-[var(--ember)]" />
+              <span className="absolute -top-px -right-px w-2.5 h-2.5 border-r border-t border-[var(--ember)]" />
+              <span className="absolute -bottom-px -left-px w-2.5 h-2.5 border-l border-b border-[var(--ember)]" />
+              <span className="absolute -bottom-px -right-px w-2.5 h-2.5 border-r border-b border-[var(--ember)]" />
+
+              {/* Card header */}
+              <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-2.5 border-b border-[var(--surface-700)] bg-[var(--surface-900)]/80">
+                <div className="flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.25em] text-[var(--ember)]">
+                  <span className="w-1.5 h-1.5 bg-[var(--ember)] ember-pulse" />
+                  <span>Specimen / Live</span>
+                </div>
+                <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[var(--surface-500)]">
+                  No. 0001
                 </span>
-              ))}
-            </motion.div>
-          </section>
-        </Container>
-      </div>
-
-      {/* ═══════════════ DIFFERENTIATOR ═══════════════ */}
-      <div className="py-28">
-        <Container>
-          <motion.section
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto space-y-12"
-          >
-            <div className="text-center max-w-2xl mx-auto">
-              <p className="text-sm text-surface-400 uppercase tracking-widest mb-3 font-medium">Why Forge is different</p>
-              <h2 className="font-display text-3xl md:text-5xl font-bold">Your life is the data.</h2>
-              <p className="mt-4 text-surface-300 text-base leading-relaxed">
-                Other tests ask you to rate yourself. Forge asks you to describe what actually happened.
-                Self-rating is unreliable. Your life story isn't.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Other tests */}
-              <motion.div
-                initial={{ opacity: 0, x: -16 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="rounded-2xl border border-surface-700 bg-surface-900/30 p-8 space-y-6"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-surface-700 flex items-center justify-center text-surface-400 text-sm">?</div>
-                  <p className="text-sm text-surface-400 font-semibold">Traditional personality tests</p>
-                </div>
-                <div className="space-y-4">
-                  <p className="text-base text-surface-200 italic">&ldquo;I prefer being alone to being in groups.&rdquo;</p>
-                  <div className="flex flex-wrap gap-2">
-                    {["Strongly agree", "Agree", "Neutral", "Disagree"].map((opt) => (
-                      <span key={opt} className="px-3 py-2 rounded-lg border border-surface-600 text-sm text-surface-400 bg-surface-800/30">
-                        {opt}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="pt-4 border-t border-surface-700 space-y-1.5">
-                    <p className="text-sm text-surface-300 font-medium">Result: You are an introvert.</p>
-                    <p className="text-sm text-surface-500">Based on: what you chose to tell it.</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Forge */}
-              <motion.div
-                initial={{ opacity: 0, x: 16 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="rounded-2xl border border-accent-blue/25 p-8 space-y-6"
-                style={{ background: "linear-gradient(135deg, rgba(124, 92, 252, 0.04) 0%, rgba(232, 98, 42, 0.03) 100%)" }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-accent-blue/15 flex items-center justify-center text-accent-blue text-sm font-bold">F</div>
-                  <p className="text-sm text-accent-blue font-semibold">Forge</p>
-                </div>
-                <div className="space-y-4">
-                  <p className="text-base text-surface-100 font-medium">&ldquo;Tell me about a time you burned out. What caused it? What were the warning signs?&rdquo;</p>
-                  <div className="rounded-xl border border-surface-600 bg-surface-800/50 p-5 space-y-3">
-                    <p className="text-sm text-surface-200 leading-relaxed">
-                      I was working 14-hour days for three months straight. I stopped eating properly. The sign was when I couldn't remember the last time I laughed...
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-md bg-accent-blue/10 flex items-center justify-center">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-accent-blue"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
-                      </div>
-                      <span className="text-xs text-surface-400">Voice input available</span>
-                    </div>
-                  </div>
-                  <div className="pt-4 border-t border-accent-blue/15 space-y-1.5">
-                    <p className="text-sm text-surface-200 font-medium">Result: Your burnout maps to SbjA energy depletion.</p>
-                    <p className="text-sm text-surface-400">Based on: what actually happened to you.</p>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </motion.section>
-        </Container>
-      </div>
-
-      {/* ═══════════════ CREDIBILITY STRIP ═══════════════ */}
-      <div className="border-y border-surface-700 bg-surface-900/20 py-14">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
-          >
-            {[
-              { value: "6", label: "Frameworks" },
-              { value: "16+", label: "Types mapped" },
-              { value: "Open-ended", label: "Question format" },
-              { value: "Peer-reviewed", label: "Source material" },
-            ].map(({ value, label }) => (
-              <div key={label}>
-                <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{value}</p>
-                <p className="text-xs text-surface-500 mt-2 uppercase tracking-wide">{label}</p>
               </div>
-            ))}
-          </motion.div>
-        </Container>
-      </div>
 
-      {/* ═══════════════ RESULT PREVIEW ═══════════════ */}
-      <div className="py-32">
-        <Container>
-          <motion.section
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto"
-          >
-            <p className="text-sm text-surface-400 uppercase tracking-widest font-medium mb-6 text-center">
-              Sample report
-            </p>
-
-            <div className="gradient-border rounded-3xl border border-surface-700 bg-surface-900/60 overflow-hidden backdrop-blur-sm">
-              <div className="p-10 md:p-14 text-center space-y-4 border-b border-surface-700">
-                <p className="font-display text-6xl md:text-8xl font-bold text-accent-blue">
-                  {RESULT_PREVIEW.type}
+              {/* Type glyph + nickname */}
+              <div className="p-5 sm:p-6 border-b border-[var(--surface-700)]">
+                <p className="text-[9px] font-mono uppercase tracking-[0.3em] text-[var(--surface-500)] mb-2">
+                  Primary type · Jungian
                 </p>
-                <p className="text-xl text-surface-300">{RESULT_PREVIEW.nickname}</p>
-                <p className="text-surface-400 text-sm max-w-md mx-auto italic">
+                <motion.p
+                  initial={{ opacity: 0, filter: "blur(10px)" }}
+                  animate={{ opacity: 1, filter: "blur(0px)" }}
+                  transition={{ duration: 0.8, delay: 0.55, ease: enterEase }}
+                  className="font-display text-[72px] sm:text-[88px] leading-[0.82] tracking-[-0.05em] text-[var(--ember)]"
+                  style={{
+                    fontWeight: 500,
+                    fontVariationSettings: '"opsz" 144',
+                    textShadow: "0 0 40px rgba(255, 77, 28, 0.35)",
+                  }}
+                >
+                  {RESULT_PREVIEW.type}
+                </motion.p>
+                <p
+                  className="font-display text-xl sm:text-2xl italic font-light mt-2 text-[var(--foreground)]"
+                  style={{ fontVariationSettings: '"opsz" 144, "SOFT" 100' }}
+                >
+                  {RESULT_PREVIEW.nickname}
+                </p>
+                <p className="text-[12px] text-[var(--surface-400)] mt-2 italic leading-[1.55]">
                   &ldquo;{RESULT_PREVIEW.oneLiner}&rdquo;
                 </p>
               </div>
 
-              <div className="p-8 md:p-10 space-y-3 border-b border-surface-700">
-                <p className="text-sm text-accent-blue uppercase tracking-widest font-medium">How you think</p>
-                <p className="text-surface-200 text-sm leading-relaxed">{RESULT_PREVIEW.howYouThink}</p>
-              </div>
-
-              <div className="p-8 md:p-10 space-y-3 border-b border-surface-700">
-                <p className="text-sm text-accent-purple uppercase tracking-widest font-medium">What people get wrong about you</p>
-                <p className="text-surface-200 text-sm leading-relaxed">{RESULT_PREVIEW.whatPeopleGetWrong}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-surface-700 border-b border-surface-700">
-                <div className="p-8 space-y-4">
-                  <p className="text-sm text-accent-teal uppercase tracking-widest font-medium">What you're built for</p>
-                  <div className="space-y-2">
-                    {RESULT_PREVIEW.strengths.map((s) => (
-                      <p key={s} className="text-surface-200 text-sm">{s}</p>
-                    ))}
-                  </div>
-                </div>
-                <div className="p-8 space-y-4">
-                  <p className="text-sm text-accent-amber uppercase tracking-widest font-medium">What trips you up</p>
-                  <div className="space-y-2">
-                    {RESULT_PREVIEW.challenges.map((c) => (
-                      <p key={c} className="text-surface-200 text-sm">{c}</p>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* BURNOUT CYCLE */}
-              <div className="p-8 md:p-10 space-y-3 border-b border-surface-700">
-                <p className="text-sm text-accent-amber uppercase tracking-widest font-medium">Your burnout cycle</p>
-                <p className="text-surface-200 text-sm leading-relaxed">{RESULT_PREVIEW.burnoutCycle}</p>
-              </div>
-
-              {/* EXCEL + STRUGGLE */}
-              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-surface-700 border-b border-surface-700">
-                <div className="p-8 space-y-3">
-                  <p className="text-sm text-accent-teal uppercase tracking-widest font-medium">Where you excel</p>
-                  <p className="text-surface-200 text-sm leading-relaxed">{RESULT_PREVIEW.whereYouExcel}</p>
-                </div>
-                <div className="p-8 space-y-3">
-                  <p className="text-sm text-accent-amber uppercase tracking-widest font-medium">Where you struggle</p>
-                  <p className="text-surface-200 text-sm leading-relaxed">{RESULT_PREVIEW.whereYouStruggle}</p>
-                </div>
-              </div>
-
-              {/* AT WORK + IN RELATIONSHIPS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-surface-700 border-b border-surface-700">
-                <div className="p-8 space-y-3">
-                  <p className="text-sm text-surface-400 uppercase tracking-widest font-medium font-medium">At work</p>
-                  <p className="text-surface-200 text-sm leading-relaxed">{RESULT_PREVIEW.atWork}</p>
-                </div>
-                <div className="p-8 space-y-3">
-                  <p className="text-sm text-surface-400 uppercase tracking-widest font-medium font-medium">In relationships</p>
-                  <p className="text-surface-200 text-sm leading-relaxed">{RESULT_PREVIEW.inRelationships}</p>
-                </div>
-              </div>
-
-              {/* HOW TO GROW */}
-              <div className="p-8 md:p-10 space-y-3 border-b border-surface-700"
-                style={{ background: "linear-gradient(135deg, rgba(124, 92, 252, 0.03) 0%, rgba(45, 212, 191, 0.03) 100%)" }}
-              >
-                <p className="text-sm text-accent-teal uppercase tracking-widest font-medium">How to become better</p>
-                <p className="text-surface-200 text-sm leading-relaxed">{RESULT_PREVIEW.howToGrow}</p>
-              </div>
-
-              {/* CROSS-FRAMEWORK */}
-              <div className="grid grid-cols-2 md:grid-cols-4 border-b border-surface-700">
-                {RESULT_PREVIEW.crossFramework.map((cf) => (
-                  <div key={cf.framework} className="p-6 text-center border-r border-surface-700 last:border-r-0">
-                    <p className="text-xs text-surface-400 uppercase tracking-widest font-medium">{cf.framework}</p>
-                    <p className={`font-display text-lg font-bold mt-1 ${cf.color}`}>{cf.result}</p>
-                  </div>
+              {/* Cross-framework grid — the triangulation proof */}
+              <div className="grid grid-cols-2">
+                {RESULT_PREVIEW.crossFramework.map((cf, i) => (
+                  <motion.div
+                    key={cf.framework}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: 0.75 + i * 0.06 }}
+                    className={`px-4 py-3 ${
+                      i % 2 === 0 ? "border-r border-[var(--surface-700)]" : ""
+                    } ${i < 2 ? "border-b border-[var(--surface-700)]" : ""}`}
+                  >
+                    <p className="text-[8px] font-mono uppercase tracking-[0.22em] text-[var(--surface-500)]">
+                      {cf.framework}
+                    </p>
+                    <p
+                      className="font-display text-[15px] sm:text-base mt-0.5 text-[var(--foreground)]"
+                      style={{ fontWeight: 500 }}
+                    >
+                      {cf.result}
+                    </p>
+                  </motion.div>
                 ))}
               </div>
-
-              <div className="p-8 md:p-10 text-center space-y-4">
-                <p className="text-surface-400 text-sm">This is a sample. Yours goes deeper.</p>
-                <Link
-                  href="/cjte"
-                  className="inline-block bg-accent-blue hover:brightness-110 text-white font-semibold px-8 py-3.5 rounded-2xl transition-all text-sm shadow-lg shadow-accent-blue/20"
-                >
-                  Get your real report
-                </Link>
-              </div>
             </div>
-          </motion.section>
-        </Container>
-      </div>
 
-      {/* ═══════════════ FOR TEAMS ═══════════════ */}
-      <div className="py-28" id="for-teams">
-        <Container>
-          <motion.section
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto"
+            {/* Caption under the card */}
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-[var(--surface-500)] flex items-center gap-2">
+              <span className="w-1 h-1 bg-[var(--ember)]" />
+              <span>Sample reading · yours goes deeper</span>
+            </p>
+          </motion.aside>
+        </div>
+
+        {/* Bottom band — single thin line */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.65 }}
+          className="relative z-10 border-t border-[var(--surface-700)] px-5 sm:px-8 md:px-12 py-3.5 flex items-center justify-between gap-4 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--surface-500)]"
+        >
+          <span className="truncate">
+            Six frameworks · Voice or text · Open-ended
+          </span>
+          <motion.span
+            className="flex items-center gap-2 flex-shrink-0"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="rounded-3xl border border-surface-700 overflow-hidden"
-              style={{ background: "linear-gradient(135deg, rgba(232, 98, 42, 0.03) 0%, rgba(124, 92, 252, 0.04) 100%)" }}
-            >
-              <div className="p-10 md:p-14 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="px-3 py-1 rounded-lg bg-accent-amber/10 text-accent-amber text-xs font-medium uppercase tracking-wider">
-                    For Teams
-                  </div>
-                </div>
-                <h2 className="font-display text-3xl md:text-4xl font-bold">
-                  Your team already has patterns.<br />
-                  <span className="text-surface-400">Forge makes them visible.</span>
-                </h2>
-                <p className="text-surface-400 text-sm leading-relaxed max-w-xl">
-                  Same frameworks, built for the workplace. Understand how your team thinks,
-                  communicates, and handles pressure. No facilitator required.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-                  {[
-                    { title: "Team profiles", desc: "See each member's type, strengths, and blind spots side by side." },
-                    { title: "Compatibility maps", desc: "Know where people align and where they'll clash before it happens." },
-                    { title: "Growth playbooks", desc: "Actionable steps for each person, specific to how they work." },
-                  ].map(({ title, desc }) => (
-                    <div key={title} className="rounded-xl border border-surface-700 bg-surface-800/30 p-5 space-y-2">
-                      <p className="text-sm font-semibold text-foreground">{title}</p>
-                      <p className="text-xs text-surface-400 leading-relaxed">{desc}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="pt-4">
-                  <Link
-                    href="mailto:admin@forge.com"
-                    className="inline-block bg-accent-amber/10 hover:bg-accent-amber/20 text-accent-amber border border-accent-amber/20 font-medium px-8 py-3.5 rounded-2xl transition-colors text-sm"
-                  >
-                    Join the waitlist
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </motion.section>
-        </Container>
-      </div>
+            <span>Scroll</span>
+            <span className="text-[var(--ember)]">↓</span>
+          </motion.span>
+        </motion.div>
+      </section>
 
-      {/* ═══════════════ ASSESSMENTS ═══════════════ */}
-      <div className="py-28" id="assessments">
-        <Container>
-          <section className="space-y-12 scroll-mt-8">
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* 01 — PREMISE / DIFFERENTIATOR                                    */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <section className="relative py-24 md:py-32 border-b border-[var(--surface-700)]">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-12 gap-6 mb-16">
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              className="text-center max-w-xl mx-auto"
+              initial={{ opacity: 0, x: -12 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.6, ease: enterEase }}
+              className="col-span-12 md:col-span-3"
             >
-              <p className="text-sm text-surface-400 uppercase tracking-widest font-medium mb-3">Assessments</p>
-              <h2 className="font-display text-4xl md:text-5xl font-bold">Six angles. One you.</h2>
-              <p className="mt-4 text-surface-400 text-base leading-relaxed">
-                Each framework reads personality differently. Take one to start, or all six for the full picture.
+              <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--ember)]">
+                01 / Premise
               </p>
             </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {tests.map((test, i) => (
-                <TestCard
-                  key={test.id}
-                  title={test.title}
-                  description={test.description}
-                  href={test.href}
-                  accentColor={test.color || "var(--color-accent-blue)"}
-                  accentMuted={test.colorMuted || "var(--color-accent-blue-muted)"}
-                  icon={test.icon || "✦"}
-                  badge={test.badge}
-                  delay={0.1 + i * 0.06}
-                />
-              ))}
+            <div className="col-span-12 md:col-span-9">
+              <h2
+                className="font-display text-5xl md:text-7xl leading-[0.95] tracking-[-0.03em] text-[var(--foreground)]"
+                style={{ fontWeight: 500 }}
+              >
+                <WordsReveal text="Your life is the data." />
+                <br />
+                <span className="text-[var(--surface-400)] italic font-light">
+                  <WordsReveal text="Not your guesses." delay={0.25} />
+                </span>
+              </h2>
             </div>
-          </section>
-        </Container>
-      </div>
+          </div>
 
-      {/* ═══════════════ HOW IT WORKS ═══════════════ */}
-      <div className="border-y border-surface-700 bg-surface-900/30 py-28">
-        <Container>
-          <section className="space-y-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 border border-[var(--surface-700)]">
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              className="text-center max-w-lg mx-auto"
+              initial={{ opacity: 0, x: -24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.7, ease: enterEase }}
+              className="p-8 md:p-10 border-b md:border-b-0 md:border-r border-[var(--surface-700)] bg-[var(--surface-900)]/40"
             >
-              <p className="text-sm text-surface-400 uppercase tracking-widest font-medium mb-3">How it works</p>
-              <h2 className="font-display text-4xl md:text-5xl font-bold">Simple. Honest. Useful.</h2>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--surface-500)]">
+                  A · Traditional Test
+                </span>
+                <span className="flex-1 h-px bg-[var(--surface-700)]" />
+                <span className="text-[10px] font-mono text-[var(--surface-600)]">[obsolete]</span>
+              </div>
+
+              <div className="relative inline-block mb-5">
+                <p className="text-[15px] text-[var(--surface-300)] italic">
+                  &ldquo;I prefer being alone to being in groups.&rdquo;
+                </p>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={VIEWPORT}
+                  transition={{ duration: 0.7, delay: 0.5, ease: enterEase }}
+                  className="absolute left-0 right-0 top-1/2 h-px bg-[var(--surface-500)] origin-left"
+                />
+              </div>
+
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={VIEWPORT}
+                variants={{
+                  hidden: {},
+                  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.7 } },
+                }}
+                className="flex flex-wrap gap-2 mb-8"
+              >
+                {["Strongly agree", "Agree", "Neutral", "Disagree"].map((opt) => (
+                  <motion.span
+                    key={opt}
+                    variants={{
+                      hidden: { opacity: 0, y: 6 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    className="px-2.5 py-1 text-[11px] font-mono border border-[var(--surface-700)] text-[var(--surface-500)]"
+                  >
+                    {opt}
+                  </motion.span>
+                ))}
+              </motion.div>
+
+              <div className="pt-4 border-t border-dashed border-[var(--surface-700)]">
+                <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--surface-500)] mb-2">
+                  Output
+                </p>
+                <p className="text-[var(--surface-400)] text-sm">
+                  &ldquo;You are an introvert.&rdquo;
+                </p>
+                <p className="text-[var(--surface-600)] text-[11px] mt-1 font-mono">
+                  basis: what you chose to claim
+                </p>
+              </div>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+            <motion.div
+              initial={{ opacity: 0, x: 24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.7, ease: enterEase, delay: 0.15 }}
+              className="relative p-8 md:p-10 bg-[var(--surface-800)]/30"
+            >
+              <motion.div
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={VIEWPORT}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--ember)] origin-left"
+              />
+
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--ember)]">
+                  B · The Forge Method
+                </span>
+                <span className="flex-1 h-px bg-[var(--ember)]/30" />
+                <span className="text-[10px] font-mono text-[var(--ember)]">[live]</span>
+              </div>
+
+              <p className="text-[15px] text-[var(--foreground)] mb-5 font-medium">
+                &ldquo;Tell me about a time you burned out. What caused it?
+                What were the warning signs?&rdquo;
+              </p>
+
+              <div className="border border-[var(--surface-700)] bg-[var(--surface-900)]/70 p-4 mb-8">
+                <p className="text-[13px] text-[var(--surface-300)] leading-relaxed">
+                  I was working 14-hour days for three months straight. I stopped eating
+                  properly. The sign was when I couldn&apos;t remember the last time I
+                  laughed...
+                </p>
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-dashed border-[var(--surface-700)] text-[10px] font-mono uppercase tracking-[0.2em] text-[var(--surface-500)]">
+                  <span className="w-1.5 h-1.5 bg-[var(--ember)] ember-pulse" />
+                  <span>Voice input · live transcription</span>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-dashed border-[var(--ember)]/30">
+                <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--ember)] mb-2">
+                  Output
+                </p>
+                <p className="text-[var(--foreground)] text-sm">
+                  Burnout pattern maps to{" "}
+                  <strong className="text-[var(--ember)]">SbjA energy depletion</strong>;
+                  cross-loaded with Type 5w6 withdrawal.
+                </p>
+                <p className="text-[var(--surface-400)] text-[11px] mt-1 font-mono">
+                  basis: events that actually occurred
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* DATA STRIP — count up                                            */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <section className="border-b border-[var(--surface-700)] bg-[var(--surface-900)]/40">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-y-6 md:gap-y-0">
+          {[
+            { value: 6, label: "Frameworks", pad: 2 },
+            { value: 16, label: "Types Mapped", suffix: "+" },
+            { value: 5, label: "Min To Finish", suffix: "" },
+            { value: 0, label: "Trackers", pad: 1 },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.5, delay: i * 0.1, ease: enterEase }}
+              className={`flex items-baseline gap-2 sm:gap-3 ${
+                i > 0 ? "md:border-l md:border-[var(--surface-700)] md:pl-6" : ""
+              } ${i === 1 || i === 3 ? "border-l border-[var(--surface-700)] pl-4 md:pl-6" : ""}`}
+            >
+              <span
+                className="font-display text-4xl sm:text-5xl text-[var(--foreground)]"
+                style={{ fontWeight: 500, fontVariationSettings: '"opsz" 144' }}
+              >
+                <CountUp
+                  to={stat.value}
+                  pad={stat.pad}
+                  suffix={stat.suffix ?? ""}
+                  duration={1.6}
+                />
+              </span>
+              <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.22em] sm:tracking-[0.25em] text-[var(--surface-400)]">
+                {stat.label}
+              </span>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* 02 — SPECIMEN / Identity Plate reveal                            */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <section className="relative py-24 md:py-32 border-b border-[var(--surface-700)]">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-12 gap-6 mb-12">
+            <motion.div
+              initial={{ opacity: 0, x: -12 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.6, ease: enterEase }}
+              className="col-span-12 md:col-span-3"
+            >
+              <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--ember)]">
+                02 / Specimen
+              </p>
+            </motion.div>
+            <div className="col-span-12 md:col-span-9">
+              <h2
+                className="font-display text-5xl md:text-7xl leading-[0.95] tracking-[-0.03em]"
+                style={{ fontWeight: 500 }}
+              >
+                <WordsReveal text="A sample report." />
+                <br />
+                <span className="text-[var(--surface-400)] italic font-light">
+                  <WordsReveal text="Yours goes deeper." delay={0.25} />
+                </span>
+              </h2>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="crosshair" style={{ top: "-6px", left: "-6px" }} />
+            <div className="crosshair" style={{ top: "-6px", right: "-6px" }} />
+            <div className="crosshair" style={{ bottom: "-6px", left: "-6px" }} />
+            <div className="crosshair" style={{ bottom: "-6px", right: "-6px" }} />
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.7, ease: enterEase }}
+              className="border border-[var(--surface-600)] bg-[#0c0c10]"
+            >
+              <motion.div
+                initial={{ y: -30, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT}
+                transition={{ duration: 0.5, delay: 0.2, ease: enterEase }}
+                className="flex items-center justify-between gap-3 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 border-b border-[var(--surface-700)] text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[var(--surface-400)] bg-[var(--surface-900)]/80"
+              >
+                <span className="flex items-center gap-2 min-w-0">
+                  <span className="w-1.5 h-1.5 bg-[var(--ember)] flex-shrink-0" />
+                  <span className="truncate">
+                    <span className="hidden sm:inline">Forge </span>Identity Plate · No. 0001
+                  </span>
+                </span>
+                <span className="flex-shrink-0">
+                  <span className="hidden sm:inline">Issued · </span>
+                  {new Date().toLocaleDateString("en-US", { year: "numeric", month: "short" })}
+                </span>
+              </motion.div>
+
+              <div className="grid grid-cols-12 border-b border-[var(--surface-700)]">
+                <div className="col-span-12 md:col-span-7 p-8 md:p-12 border-b md:border-b-0 md:border-r border-[var(--surface-700)]">
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={VIEWPORT}
+                    transition={{ delay: 0.3 }}
+                    className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--surface-500)] mb-3"
+                  >
+                    Primary Type · Jungian
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, filter: "blur(12px)", scale: 0.95 }}
+                    whileInView={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+                    viewport={VIEWPORT}
+                    transition={{ duration: 1.1, delay: 0.5, ease: enterEase }}
+                    className="font-display text-[26vw] md:text-[12rem] leading-[0.82] tracking-[-0.05em] text-[var(--ember)]"
+                    style={{
+                      fontWeight: 500,
+                      fontVariationSettings: '"opsz" 144, "SOFT" 0',
+                      textShadow: "0 0 60px rgba(255, 77, 28, 0.45), 0 0 120px rgba(255, 77, 28, 0.2)",
+                    }}
+                  >
+                    {RESULT_PREVIEW.type}
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 8 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={VIEWPORT}
+                    transition={{ duration: 0.6, delay: 1.1 }}
+                    className="font-display text-3xl md:text-4xl mt-4 italic font-light text-[var(--foreground)]"
+                    style={{ fontVariationSettings: '"opsz" 144, "SOFT" 100' }}
+                  >
+                    {RESULT_PREVIEW.nickname}
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={VIEWPORT}
+                    transition={{ duration: 0.5, delay: 1.4 }}
+                    className="text-[14px] text-[var(--surface-400)] mt-3 italic max-w-md"
+                  >
+                    &ldquo;{RESULT_PREVIEW.oneLiner}&rdquo;
+                  </motion.p>
+                </div>
+
+                <div className="col-span-12 md:col-span-5 grid grid-cols-2 grid-rows-2">
+                  {RESULT_PREVIEW.crossFramework.map((cf, i) => (
+                    <motion.div
+                      key={cf.framework}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={VIEWPORT}
+                      transition={{ duration: 0.45, delay: 0.7 + i * 0.12, ease: enterEase }}
+                      className={`p-5 md:p-6 ${
+                        i % 2 === 0 ? "border-r border-[var(--surface-700)]" : ""
+                      } ${i < 2 ? "border-b border-[var(--surface-700)]" : ""}`}
+                    >
+                      <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-[var(--surface-500)]">
+                        {cf.framework}
+                      </p>
+                      <p
+                        className="font-display text-2xl md:text-3xl mt-2 text-[var(--foreground)]"
+                        style={{ fontWeight: 500 }}
+                      >
+                        {cf.result}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <PlateRow label={<>§ How<br className="hidden md:block" /><span className="md:hidden"> </span>you think</>}>
+                <p
+                  className="font-display text-lg sm:text-xl md:text-2xl leading-[1.45] text-[var(--foreground)] tracking-[-0.01em]"
+                  style={{ fontWeight: 400 }}
+                >
+                  <span
+                    className="float-left font-display text-5xl sm:text-6xl leading-[0.85] mr-2 sm:mr-3 text-[var(--ember)] italic"
+                    style={{ fontWeight: 500, fontVariationSettings: '"opsz" 144, "SOFT" 100' }}
+                  >
+                    Y
+                  </span>
+                  {RESULT_PREVIEW.howYouThink.slice(1)}
+                </p>
+              </PlateRow>
+
+              <PlateRow label={<>§ What<br className="hidden md:block" /><span className="md:hidden"> </span>people miss</>}>
+                <p className="text-[15px] text-[var(--surface-200)] leading-relaxed">
+                  {RESULT_PREVIEW.whatPeopleGetWrong}
+                </p>
+              </PlateRow>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 border-b border-[var(--surface-700)]">
+                <PlateHalf label="+ Built For" emberLabel>
+                  <ul className="divide-y divide-dashed divide-[var(--surface-700)]">
+                    {RESULT_PREVIEW.strengths.map((s, i) => (
+                      <motion.li
+                        key={s}
+                        initial={{ opacity: 0, x: -6 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={VIEWPORT}
+                        transition={{ delay: i * 0.07 }}
+                        className="flex items-baseline gap-3 py-2.5"
+                      >
+                        <span className="text-[10px] font-mono text-[var(--surface-500)] w-5">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-[15px] text-[var(--foreground)]">{s}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </PlateHalf>
+                <PlateHalf label="− Trips You Up" border>
+                  <ul className="divide-y divide-dashed divide-[var(--surface-700)]">
+                    {RESULT_PREVIEW.challenges.map((c, i) => (
+                      <motion.li
+                        key={c}
+                        initial={{ opacity: 0, x: -6 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={VIEWPORT}
+                        transition={{ delay: i * 0.07 }}
+                        className="flex items-baseline gap-3 py-2.5"
+                      >
+                        <span className="text-[10px] font-mono text-[var(--surface-500)] w-5">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-[15px] text-[var(--surface-300)]">{c}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </PlateHalf>
+              </div>
+
+              <PlateRow label={<>§ Burnout<br className="hidden md:block" /><span className="md:hidden"> </span>cycle</>}>
+                <p className="text-[15px] text-[var(--surface-200)] leading-relaxed italic">
+                  {RESULT_PREVIEW.burnoutCycle}
+                </p>
+              </PlateRow>
+
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 md:p-8 bg-[var(--surface-900)]/60">
+                <p className="text-[12px] font-mono uppercase tracking-[0.2em] text-[var(--surface-400)]">
+                  This is a sample. Yours goes deeper.
+                </p>
+                <Link href="/cjte" className="cut-btn">
+                  <span>Generate My Report</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* 03 — INVENTORY                                                   */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <section className="relative py-24 md:py-32 border-b border-[var(--surface-700)]" id="assessments">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-12 gap-6 mb-12">
+            <motion.div
+              initial={{ opacity: 0, x: -12 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.6, ease: enterEase }}
+              className="col-span-12 md:col-span-3"
+            >
+              <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--ember)]">
+                03 / Inventory
+              </p>
+            </motion.div>
+            <div className="col-span-12 md:col-span-9">
+              <h2
+                className="font-display text-5xl md:text-7xl leading-[0.95] tracking-[-0.03em]"
+                style={{ fontWeight: 500 }}
+              >
+                <WordsReveal text="Six angles." />{" "}
+                <span className="italic font-light text-[var(--ember)]">
+                  <WordsReveal text="One you." delay={0.3} />
+                </span>
+              </h2>
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={VIEWPORT}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="mt-5 text-[15px] text-[var(--surface-300)] max-w-xl leading-relaxed"
+              >
+                Each framework reads personality differently. Take one to start, or all six
+                to triangulate. They sharpen each other.
+              </motion.p>
+            </div>
+          </div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={VIEWPORT}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
+            }}
+            className="border-y border-[var(--surface-700)] divide-y divide-[var(--surface-700)]"
+          >
+            {tests.map((test, i) => (
+              <motion.div
+                key={test.id}
+                variants={{
+                  hidden: { opacity: 0, x: -20 },
+                  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: enterEase } },
+                }}
+              >
+                <Link
+                  href={test.href}
+                  className="group flex flex-col md:grid md:grid-cols-12 md:gap-4 md:items-center px-4 sm:px-5 md:px-6 py-5 md:py-7 hover:bg-[var(--surface-900)]/60 transition-colors"
+                >
+                  <div className="flex items-baseline justify-between md:contents">
+                    <div className="flex items-baseline gap-3 md:col-span-5 md:gap-4">
+                      <span className="text-[11px] font-mono text-[var(--surface-500)] group-hover:text-[var(--ember)] transition-colors md:col-span-1">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <h3
+                        className="font-display text-xl sm:text-2xl md:text-3xl tracking-[-0.02em] text-[var(--foreground)] group-hover:text-[var(--ember)] transition-colors md:col-span-4"
+                        style={{ fontWeight: 500 }}
+                      >
+                        {test.title}
+                      </h3>
+                    </div>
+                    <span className="md:hidden text-[var(--surface-500)] group-hover:text-[var(--ember)] transition-colors">
+                      →
+                    </span>
+                  </div>
+                  <p className="mt-2 md:mt-0 md:col-span-6 text-[13px] sm:text-[14px] text-[var(--surface-300)] leading-relaxed md:pl-0 pl-9">
+                    {test.description}
+                  </p>
+                  <span className="hidden md:flex md:col-span-1 md:justify-end text-[var(--surface-500)] group-hover:text-[var(--ember)] group-hover:translate-x-1 transition-all">
+                    →
+                  </span>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* 04 — METHOD                                                      */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <section
+        className="relative py-24 md:py-32 border-b border-[var(--surface-700)] bg-[var(--surface-900)]/30"
+        id="how"
+      >
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-12 gap-6 mb-16">
+            <motion.div
+              initial={{ opacity: 0, x: -12 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.6 }}
+              className="col-span-12 md:col-span-3"
+            >
+              <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--ember)]">
+                04 / Method
+              </p>
+            </motion.div>
+            <div className="col-span-12 md:col-span-9">
+              <h2
+                className="font-display text-5xl md:text-7xl leading-[0.95] tracking-[-0.03em]"
+                style={{ fontWeight: 500 }}
+              >
+                <WordsReveal text="Simple. Honest." />{" "}
+                <span className="italic font-light text-[var(--ember)]">
+                  <WordsReveal text="Useful." delay={0.3} />
+                </span>
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[var(--surface-700)]">
+            {[
+              {
+                step: "01",
+                title: "Tell your story",
+                body: "Open-ended questions about your real life. Experiences, relationships, reactions, the things that drive you.",
+              },
+              {
+                step: "02",
+                title: "Patterns read",
+                body: "Your answers analyzed across six psychological frameworks using peer-reviewed research, not pop quizzes.",
+              },
+              {
+                step: "03",
+                title: "See who you are",
+                body: "Your type, strengths, blind spots, and what to do next. Based on your life, not your guesses.",
+              },
+            ].map(({ step, title, body }, i) => (
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={VIEWPORT}
+                transition={{ duration: 0.6, delay: i * 0.15, ease: enterEase }}
+                className={`p-8 md:p-10 space-y-4 ${
+                  i < 2 ? "border-b md:border-b-0 md:border-r border-[var(--surface-700)]" : ""
+                }`}
+              >
+                <motion.p
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={VIEWPORT}
+                  transition={{
+                    duration: 0.7,
+                    delay: i * 0.15 + 0.15,
+                    ease: [0.2, 1.3, 0.4, 1],
+                  }}
+                  className="font-display text-7xl md:text-8xl leading-none text-[var(--ember)] origin-left"
+                  style={{ fontWeight: 500, fontVariationSettings: '"opsz" 144' }}
+                >
+                  {step}
+                </motion.p>
+                <h3
+                  className="font-display text-2xl tracking-[-0.02em] text-[var(--foreground)]"
+                  style={{ fontWeight: 500 }}
+                >
+                  {title}
+                </h3>
+                <p className="text-[14px] text-[var(--surface-300)] leading-relaxed">{body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* 05 — FOR TEAMS                                                   */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <section className="relative py-24 md:py-32 border-b border-[var(--surface-700)]" id="for-teams">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-12 gap-6 mb-12">
+            <motion.div
+              initial={{ opacity: 0, x: -12 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.6 }}
+              className="col-span-12 md:col-span-3"
+            >
+              <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--ember)]">
+                05 / For Teams
+              </p>
+            </motion.div>
+            <div className="col-span-12 md:col-span-9">
+              <h2
+                className="font-display text-5xl md:text-7xl leading-[0.95] tracking-[-0.03em]"
+                style={{ fontWeight: 500 }}
+              >
+                <WordsReveal text="Your team has patterns." />
+                <br />
+                <span className="text-[var(--ember)] italic font-light">
+                  <WordsReveal text="Forge makes them visible." delay={0.3} />
+                </span>
+              </h2>
+            </div>
+          </div>
+
+          <div className="border border-[var(--surface-700)] bg-[var(--surface-900)]/30">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={VIEWPORT}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.1 } },
+              }}
+              className="grid grid-cols-1 md:grid-cols-3 divide-x-0 md:divide-x divide-y md:divide-y-0 divide-[var(--surface-700)]"
+            >
               {[
                 {
-                  step: "01",
-                  title: "Tell your story",
-                  body: "Open-ended questions about your real life. Experiences, relationships, reactions, what drives you.",
+                  title: "Team profiles",
+                  desc: "Each member's type, strengths, blind spots, side by side.",
                 },
                 {
-                  step: "02",
-                  title: "Patterns get read",
-                  body: "Your answers analyzed across 6 psychological frameworks using published research.",
+                  title: "Compatibility maps",
+                  desc: "Where people align and where they clash — before it happens.",
                 },
                 {
-                  step: "03",
-                  title: "See who you are",
-                  body: "Your type, strengths, blind spots, and what to do next. Based on your life, not your guesses.",
+                  title: "Growth playbooks",
+                  desc: "Actionable steps for each person, specific to how they work.",
                 },
-              ].map(({ step, title, body }, i) => (
+              ].map((b, i) => (
                 <motion.div
-                  key={step}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="text-center space-y-4"
+                  key={b.title}
+                  variants={{
+                    hidden: { opacity: 0, y: 14 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: enterEase } },
+                  }}
+                  className="p-7 space-y-3"
                 >
-                  <span className="font-display text-6xl font-bold text-surface-600">{step}</span>
-                  <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-                  <p className="text-sm text-surface-400 leading-relaxed max-w-xs mx-auto">{body}</p>
+                  <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--ember)]">
+                    {String(i + 1).padStart(2, "0")} ·
+                  </p>
+                  <p className="font-display text-xl text-[var(--foreground)]" style={{ fontWeight: 500 }}>
+                    {b.title}
+                  </p>
+                  <p className="text-[13px] text-[var(--surface-300)] leading-relaxed">{b.desc}</p>
                 </motion.div>
               ))}
+            </motion.div>
+            <div className="border-t border-[var(--surface-700)] p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <p className="text-[13px] text-[var(--surface-300)] max-w-md">
+                Same frameworks, built for the workplace. No facilitator required.
+              </p>
+              <Link href="mailto:admin@forge.com" className="cut-btn cut-btn-ghost">
+                <span>Join the Waitlist</span>
+                <span>→</span>
+              </Link>
             </div>
-          </section>
-        </Container>
-      </div>
+          </div>
+        </div>
+      </section>
 
-      {/* ═══════════════ BOTTOM CTA ═══════════════ */}
-      <div className="py-32">
-        <Container>
-          <motion.section
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* 06 — BEGIN / final CTA                                           */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <section className="relative py-32 md:py-40 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={VIEWPORT}
+          transition={{ duration: 1.2 }}
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 60% at 50% 50%, rgba(255, 77, 28, 0.12) 0%, transparent 60%)",
+          }}
+        />
+        <div className="precision-grid" />
+
+        <div className="relative max-w-5xl mx-auto px-5 sm:px-8 md:px-12 text-center">
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT}
+            transition={{ duration: 0.5 }}
+            className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--ember)] mb-5 sm:mb-6"
+          >
+            06 / Begin
+          </motion.p>
+          <h2
+            className="font-display text-[13vw] sm:text-[10vw] md:text-9xl leading-[0.88] tracking-[-0.04em]"
+            style={{ fontWeight: 500, fontVariationSettings: '"opsz" 144' }}
+          >
+            <WordsReveal text="Ready to see the" />
+            <br />
+            <span
+              className="italic font-light text-[var(--ember)]"
+              style={{
+                fontVariationSettings: '"opsz" 144, "SOFT" 100',
+                textShadow: "0 0 50px rgba(255, 77, 28, 0.4)",
+              }}
+            >
+              <WordsReveal text="real you?" delay={0.3} />
+            </span>
+          </h2>
+          <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center space-y-8"
+            viewport={VIEWPORT}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="mt-6 sm:mt-8 text-[11px] sm:text-[13px] font-mono uppercase tracking-[0.2em] text-[var(--surface-400)]"
           >
-            <h2 className="font-display text-4xl md:text-6xl font-bold">
-              Ready to see the real you?
-            </h2>
-            <p className="text-surface-400 text-lg max-w-lg mx-auto">
-              5 minutes. Open-ended. Based on your actual life. Not a quiz.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <Link
-                href="/cjte"
-                className="inline-block bg-accent-blue hover:brightness-110 text-white font-semibold px-12 py-5 rounded-2xl transition-all text-lg shadow-lg shadow-accent-blue/25"
-              >
-                Start the assessment
-              </Link>
-              <Link
-                href="mailto:admin@forge.com"
-                className="inline-block bg-surface-800/60 hover:bg-surface-700/60 text-surface-300 font-medium px-12 py-5 rounded-2xl transition-colors text-lg border border-surface-700"
-              >
-                Join the waitlist
-              </Link>
-            </div>
-          </motion.section>
-        </Container>
-      </div>
+            5 minutes · open-ended · based on your actual life
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT}
+            transition={{ duration: 0.5, delay: 1.0 }}
+            className="mt-10 sm:mt-12 flex flex-col sm:flex-row sm:flex-wrap sm:justify-center gap-3 sm:gap-4"
+          >
+            <Link href="/cjte" className="cut-btn">
+              <span>Start the Assessment</span>
+              <span>→</span>
+            </Link>
+            <Link href="mailto:admin@forge.com" className="cut-btn cut-btn-ghost">
+              <span>Join the Waitlist</span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
     </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   Identity-Plate row helpers (kept inline to avoid extra files)
+   ──────────────────────────────────────────────────────────────────────── */
+
+function PlateRow({
+  label,
+  children,
+}: {
+  label: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={VIEWPORT}
+      transition={{ duration: 0.55, ease: enterEase }}
+      className="grid grid-cols-12 border-b border-[var(--surface-700)]"
+    >
+      <div className="col-span-12 md:col-span-2 p-6 md:p-8 md:border-r border-[var(--surface-700)]">
+        <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--ember)]">
+          {label}
+        </p>
+      </div>
+      <div className="col-span-12 md:col-span-10 p-6 md:p-8">{children}</div>
+    </motion.div>
+  );
+}
+
+function PlateHalf({
+  label,
+  emberLabel,
+  border,
+  children,
+}: {
+  label: string;
+  emberLabel?: boolean;
+  border?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={VIEWPORT}
+      transition={{ duration: 0.55, ease: enterEase }}
+      className={`p-6 md:p-8 ${border ? "border-l-0 md:border-l border-[var(--surface-700)]" : ""}`}
+    >
+      <p
+        className={`text-[10px] font-mono uppercase tracking-[0.25em] mb-4 ${
+          emberLabel ? "text-[var(--ember)]" : "text-[var(--surface-400)]"
+        }`}
+      >
+        {label}
+      </p>
+      {children}
+    </motion.div>
   );
 }

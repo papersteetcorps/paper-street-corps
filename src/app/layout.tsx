@@ -1,31 +1,34 @@
 import { Suspense } from "react";
-import { Plus_Jakarta_Sans, Space_Grotesk, Instrument_Sans } from "next/font/google";
+import { Fraunces, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/layout/PageTransition";
-import ThemeProvider from "@/components/ThemeProvider";
 
-const body = Plus_Jakarta_Sans({
+const body = Inter_Tight({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
 });
-const display = Space_Grotesk({
+
+const display = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["500", "600", "700"],
+  axes: ["opsz", "SOFT"],
 });
-const brand = Instrument_Sans({
+
+const mono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-brand",
-  weight: ["500", "600", "700"],
+  variable: "--font-mono",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata = {
   title: "Forge — Figure Yourself Out",
-  description: "No multiple choice. You tell your story. Forge reads the patterns across your life and shows you who you actually are. Six psychological frameworks.",
+  description:
+    "No multiple choice. You tell your story. Forge reads the patterns across your life and shows you who you actually are. Six psychological frameworks.",
 };
 
 export default function RootLayout({
@@ -35,16 +38,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${body.className} ${display.variable} ${brand.variable} antialiased min-h-screen flex flex-col`}>
-        <ThemeProvider>
-          <Header />
-          <main className="flex-1 px-6 py-10">
-            <Suspense fallback={null}>
-              <PageTransition>{children}</PageTransition>
-            </Suspense>
-          </main>
-          <Footer />
-        </ThemeProvider>
+      <body
+        className={`${body.className} ${display.variable} ${mono.variable} antialiased min-h-screen flex flex-col`}
+      >
+        <Header />
+        <main className="flex-1 relative">
+          <Suspense fallback={null}>
+            <PageTransition>{children}</PageTransition>
+          </Suspense>
+        </main>
+        <Footer />
         <Analytics />
         <SpeedInsights />
       </body>

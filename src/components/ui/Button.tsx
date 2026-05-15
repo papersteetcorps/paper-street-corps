@@ -4,14 +4,6 @@ import { motion } from "motion/react";
 
 type Variant = "primary" | "secondary" | "ghost";
 
-const variantClasses: Record<Variant, string> = {
-  primary:
-    "bg-accent-blue text-white hover:bg-accent-blue/90 shadow-sm shadow-accent-blue/20 hover:shadow-[0_0_20px_-4px_rgba(232,98,42,0.3)]",
-  secondary:
-    "border border-surface-600 text-surface-200 hover:bg-surface-800 hover:border-surface-500",
-  ghost: "text-surface-400 hover:text-surface-200 hover:bg-surface-800/50",
-};
-
 interface ButtonProps {
   variant?: Variant;
   className?: string;
@@ -20,6 +12,13 @@ interface ButtonProps {
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
 }
+
+const variantClasses: Record<Variant, string> = {
+  primary: "cut-btn",
+  secondary: "cut-btn cut-btn-ghost",
+  ghost:
+    "inline-flex items-center gap-2 px-4 py-2 text-[12px] font-mono uppercase tracking-[0.18em] text-[var(--surface-400)] hover:text-[var(--foreground)] transition-colors",
+};
 
 export default function Button({
   variant = "primary",
@@ -31,13 +30,12 @@ export default function Button({
 }: ButtonProps) {
   return (
     <motion.button
-      whileHover={disabled ? undefined : { scale: 1.02 }}
-      whileTap={disabled ? undefined : { scale: 0.98 }}
-      transition={{ duration: 0.15 }}
+      whileTap={disabled ? undefined : { scale: 0.97 }}
+      transition={{ duration: 0.1 }}
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:pointer-events-none ${variantClasses[variant]} ${className}`}
+      className={`${variantClasses[variant]} disabled:opacity-40 disabled:pointer-events-none ${className}`}
     >
       {children}
     </motion.button>

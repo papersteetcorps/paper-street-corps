@@ -196,7 +196,7 @@ export default function WizardShell({
     error ? "error" : isLoading ? "loading" : resultView ? "results" : state.phase;
 
   return (
-    <Container className="py-8">
+    <Container className="py-10 sm:py-14">
       <AnimatePresence mode="wait">
         {phase === "intro" && (
           <motion.div
@@ -205,25 +205,44 @@ export default function WizardShell({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.3 }}
-            className="space-y-6 text-center max-w-xl mx-auto"
+            className="space-y-7 max-w-xl mx-auto"
           >
-            <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">{title}</h1>
-            <p className="text-surface-300 text-base leading-relaxed">{subtitle}</p>
+            <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--ember)]">
+              <span className="w-1.5 h-1.5 bg-[var(--ember)] ember-pulse" />
+              <span>Forge Assessment</span>
+              <span className="flex-1 h-px bg-[var(--surface-700)]" />
+            </div>
+            <h1
+              className="font-display text-4xl sm:text-5xl md:text-6xl tracking-[-0.03em] leading-[0.95]"
+              style={{ fontWeight: 500, fontVariationSettings: '"opsz" 144' }}
+            >
+              {title}
+            </h1>
+            <p className="text-[14px] sm:text-[15px] text-[var(--surface-300)] leading-relaxed">
+              {subtitle}
+            </p>
             {loadingQuestions ? (
               <LoadingState compact message="Getting ready..." accent="blue" />
             ) : (
               <>
-                <p className="text-sm text-surface-400 font-medium">
-                  {questions.length} questions &middot; About{" "}
-                  {Math.max(1, Math.round(questions.length * 0.5))} minutes &middot; Be honest.
-                </p>
-                <div className="flex flex-col items-center gap-3">
+                <div className="flex flex-wrap gap-x-5 gap-y-2 text-[10px] font-mono uppercase tracking-[0.22em] text-[var(--surface-400)] border-t border-[var(--surface-700)] pt-5">
+                  <span>
+                    <span className="text-[var(--ember)]">{String(questions.length).padStart(2, "0")}</span>{" "}
+                    Questions
+                  </span>
+                  <span className="text-[var(--surface-600)]">·</span>
+                  <span>~{Math.max(1, Math.round(questions.length * 0.5))} mins</span>
+                  <span className="text-[var(--surface-600)]">·</span>
+                  <span>Be honest</span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
                   <Button onClick={() => dispatch({ type: "START" })}>
-                    Let&apos;s Go
+                    <span>Begin</span>
+                    <span>→</span>
                   </Button>
                   {showResume && savedDraft && (
                     <Button variant="secondary" onClick={handleResume}>
-                      Pick up where you left off ({savedDraft.answers.length}/{questions.length})
+                      <span>Resume {savedDraft.answers.length}/{questions.length}</span>
                     </Button>
                   )}
                 </div>
@@ -238,7 +257,7 @@ export default function WizardShell({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="space-y-8 max-w-xl mx-auto"
+            className="space-y-7 max-w-xl mx-auto"
           >
             <ProgressHeader
               current={state.currentIndex + 1}
@@ -279,7 +298,7 @@ export default function WizardShell({
             {resultView}
             <div className="text-center pt-4">
               <Button variant="secondary" onClick={handleReset}>
-                Start Over
+                <span>Start Over</span>
               </Button>
             </div>
           </motion.div>
@@ -292,11 +311,11 @@ export default function WizardShell({
             animate={{ opacity: 1 }}
             className="text-center py-20 space-y-4"
           >
-            <p className="text-red-400">
+            <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--ember-hot)]">
               {error || state.error || "Something went wrong. Not your fault."}
             </p>
             <Button variant="secondary" onClick={handleReset}>
-              Try again
+              <span>Try Again</span>
             </Button>
           </motion.div>
         )}

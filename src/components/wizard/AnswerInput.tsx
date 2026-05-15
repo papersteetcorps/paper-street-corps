@@ -39,7 +39,6 @@ export default function AnswerInput({
     });
   }, [listening, value, start, stop, onChange]);
 
-  // Sync the ref when user types manually
   useEffect(() => {
     if (!listening && typeof value === "string" && value !== baseTextRef.current) {
       baseTextRef.current = value;
@@ -67,33 +66,31 @@ export default function AnswerInput({
             onChange={(e) => onChange(e.target.value)}
             placeholder="Say it however it comes out."
             rows={5}
-            className="w-full bg-surface-800 border border-surface-600 rounded-xl px-5 py-4 pr-12 text-foreground placeholder-surface-400 text-base focus:outline-none focus:border-accent-blue/60 focus:ring-1 focus:ring-accent-blue/30 transition-colors resize-none leading-relaxed"
+            className="w-full bg-[#0a0a0c] border border-[var(--surface-700)] px-4 py-3.5 pr-14 text-[var(--foreground)] placeholder-[var(--surface-500)] text-[15px] focus:outline-none focus:border-[var(--ember)] focus:ring-1 focus:ring-[var(--ember)]/40 transition-colors resize-none leading-relaxed font-body"
           />
           {supported && (
             <button
               type="button"
               onClick={toggle}
-              className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
+              className={`absolute top-3 right-3 w-9 h-9 flex items-center justify-center border transition-all ${
                 listening
-                  ? "bg-red-500/20 text-red-400 animate-pulse"
-                  : "bg-surface-700 text-surface-400 hover:text-foreground hover:bg-surface-600"
+                  ? "border-[var(--ember)] bg-[var(--ember)] text-[#0a0a0c] animate-pulse"
+                  : "border-[var(--surface-700)] text-[var(--surface-400)] hover:text-[var(--ember)] hover:border-[var(--ember)]"
               }`}
               aria-label={listening ? "Stop recording" : "Start recording"}
             >
               <svg
-                width="16"
-                height="16"
+                width="14"
+                height="14"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                strokeLinecap="butt"
+                strokeLinejoin="miter"
               >
                 {listening ? (
-                  <>
-                    <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
-                  </>
+                  <rect x="6" y="6" width="12" height="12" fill="currentColor" />
                 ) : (
                   <>
                     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
@@ -107,12 +104,14 @@ export default function AnswerInput({
           )}
         </div>
         {error && (
-          <p className="text-red-400 text-sm">{error}</p>
+          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--ember-hot)]">
+            {error}
+          </p>
         )}
-        <p className="text-surface-400 text-sm">
+        <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--surface-500)]">
           {listening
-            ? "Listening. Tap stop when you're done."
-            : "A few sentences. Specific beats vague."}
+            ? "● Listening · tap stop when done"
+            : "Be specific. Vague answers produce vague results."}
         </p>
       </div>
     );
@@ -123,7 +122,7 @@ export default function AnswerInput({
   return (
     <div className="space-y-3">
       {labels && (
-        <div className="flex justify-between text-sm text-surface-300 font-medium">
+        <div className="flex justify-between text-[10px] font-mono uppercase tracking-[0.2em] text-[var(--surface-400)]">
           <span>{labels[0]}</span>
           <span>{labels[1]}</span>
         </div>
@@ -132,13 +131,12 @@ export default function AnswerInput({
         {options.map((opt) => (
           <motion.button
             key={opt}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => onChange(opt)}
-            className={`flex-1 h-12 rounded-lg border text-base font-semibold transition-colors cursor-pointer ${
+            className={`flex-1 h-12 border text-base font-mono font-semibold transition-colors cursor-pointer ${
               value === opt
-                ? "border-accent-blue bg-accent-blue-muted text-accent-blue"
-                : "border-surface-600 text-surface-300 hover:border-surface-500 hover:text-foreground"
+                ? "border-[var(--ember)] bg-[var(--ember-muted)] text-[var(--ember)]"
+                : "border-[var(--surface-700)] text-[var(--surface-300)] hover:border-[var(--ember)]/60 hover:text-[var(--foreground)]"
             }`}
           >
             {opt}
